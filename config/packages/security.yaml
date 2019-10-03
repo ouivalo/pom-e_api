@@ -1,9 +1,8 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     encoders:
-        FOS\UserBundle\Model\UserInterface: bcrypt
         App\Entity\User:
-            algorithm: argon2i
+            algorithm: auto
 
 
     role_hierarchy:
