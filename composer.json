@@ -5,7 +5,9 @@
         "php": "^7.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-json": "*",
         "api-platform/api-pack": "^1.0",
+        "box/spout": "^3.0",
         "lexik/jwt-authentication-bundle": "^2.6",
         "mailjet/mailjet-apiv3-php": "^1.4",
         "symfony/apache-pack": "^1.0",
@@ -20,8 +22,7 @@
         "symfony/swiftmailer-bundle": "^3.2",
         "symfony/templating": "*",
         "symfony/twig-bundle": "*",
-        "symfony/yaml": "*",
-        "ext-json": "*"
+        "symfony/yaml": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master"

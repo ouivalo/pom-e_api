@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 
 /**
- * A book.
+ * Composter. Lieux ou l'on transform les bio déchets en composte
  *
  * @ORM\Entity
  * @ApiResource(
@@ -42,7 +42,7 @@ class Composter
     /**
      * @var string The short description of the composter to be shown on the composter page
      *
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
     public $short_description;
@@ -50,7 +50,7 @@ class Composter
     /**
      * @var string The description of the composter to be shown on the composter page
      *
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
     public $description;
@@ -66,7 +66,7 @@ class Composter
     /**
      * @var float The latitude of the composter
      *
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      * @Groups({"composter"})
      */
     public $lat;
@@ -74,7 +74,7 @@ class Composter
     /**
      * @var float The longitude of the composter
      *
-     * @ORM\Column(type="float")
+     * @ORM\Column(type="float", nullable=true)
      * @Groups({"composter"})
      */
     public $lng;
@@ -100,7 +100,7 @@ class Composter
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
