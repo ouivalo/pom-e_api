@@ -25,7 +25,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * A Permanence
  *
  * @ORM\Entity(repositoryClass="App\Repository\PermanenceRepository")
+ *
  * @ApiResource(
+ *     attributes={"security"="is_granted('ROLE_USER')"},
  *     collectionOperations={"get"},
  *     itemOperations={"get"},
  *     normalizationContext={"groups"={"permanence"}}

@@ -6,3 +6,4 @@ vendor/
 ###< symfony/framework-bundle ###
 
 .DS_Store
+/config/jwt
