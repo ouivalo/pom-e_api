@@ -6,7 +6,10 @@ security:
 
 
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
+        ROLE_OUVREUR:       ROLE_USER
+        ROLE_REFERENT:      ROLE_OUVREUR
+        ROLE_MC:            ROLE_REFERENT
+        ROLE_ADMIN:         ROLE_MC
 
     providers:
         app_user_provider:

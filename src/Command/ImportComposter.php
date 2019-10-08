@@ -4,7 +4,12 @@
 namespace App\Command;
 
 
+use App\Entity\Commune;
 use App\Entity\Composter;
+use App\Entity\PavilionsVolume;
+use App\Entity\Pole;
+use App\Entity\Quartier;
+use App\Entity\User;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -44,7 +49,13 @@ class ImportComposter extends Command
 
         $filePath = $input->getArgument('filePath');
 
-        $composterRepository = $this->em->getRepository(Composter::class);
+        $composterRepository    = $this->em->getRepository(Composter::class);
+        $communeRepository      = $this->em->getRepository(Commune::class);
+        $poleRepository         = $this->em->getRepository(Pole::class);
+        $quartierRepository     = $this->em->getRepository(Quartier::class);
+        $volumeRepository       = $this->em->getRepository(PavilionsVolume::class);
+        $userRepository         = $this->em->getRepository(User::class);
+
         $reader = ReaderEntityFactory::createODSReader();
 
         $reader->open( $filePath);
@@ -66,6 +77,98 @@ class ImportComposter extends Command
 
                         $composter->setName( (string) $cells[1] );
                         $composter->setAddress( (string) $cells[6] );
+
+                        // Commune
+                        $communeName = trim( (string) $cells[3] );
+                        $commune = $communeRepository->findOneBy( [ 'name' => $communeName ] );
+
+                        if( ! $commune ){
+                            $commune = new Commune();
+                            $commune->setName( $communeName );
+                            $this->em->persist( $commune );
+                            $this->em->flush();
+                        }
+                        $composter->setCommune( $commune );
+
+                        // Pole
+                        $poleName = trim( (string) $cells[4] );
+
+                        if( $poleName !== '' ){
+                            if( $poleName === 'LSV' || strpos( $poleName, 'ignoble' ) ){
+                                $poleName =  'Loire, Sèvre et Vignoble';
+                            }
+                            $pole = $poleRepository->findOneBy( [ 'name' => $poleName ] );
+
+                            if( ! $pole ){
+                                $pole = new Pole();
+                                $pole->setName( $poleName );
+                                $this->em->persist( $pole );
+                                $this->em->flush();
+                                $output->writeln( "Pole créé : {$pole->getName()}"  );
+                            }
+                            $composter->setPole( $pole );
+                        }
+
+                        // Quartier
+                        $quartierName = trim( (string) $cells[5] );
+                        if( $quartierName !== '' ){
+
+                            if( $quartierName === 'Ile de Nantes' ){
+                                $quartierName =  'Nantes Île-de-Nantes';
+                            } elseif ( $quartierName === 'Dervallières Zola') {
+                                $quartierName =  'Nantes Dervallières-Zola';
+                            } elseif ( $quartierName === 'Nantes Malakoff – Saint-Donatien') {
+                                $quartierName =  'Nantes Malakoff - Saint-Donatien';
+                            } elseif ( $quartierName === 'Breil Barberie') {
+                                $quartierName =  'Nantes Breil-Barberie';
+                            }
+
+                            $quartier = $quartierRepository->findOneBy( [ 'name' => $quartierName ] );
+
+                            if( ! $quartier ){
+                                $quartier = new Quartier();
+                                $quartier->setName( $quartierName );
+                                $this->em->persist( $quartier );
+                                $this->em->flush();
+                                $output->writeln( "Quartier créé : {$quartier->getName()}"  );
+                            }
+                            $composter->setQuartier( $quartier );
+                        }
+
+                        // Volume des pavillons
+                        $volumeName = trim( (string) $cells[7] );
+                        if( $volumeName !== '' ){
+
+                            $pavilionVolume = $volumeRepository->findOneBy( [ 'volume' => $volumeName ] );
+
+                            if( ! $pavilionVolume ){
+                                $pavilionVolume = new PavilionsVolume();
+                                $pavilionVolume->setVolume( $volumeName );
+                                $this->em->persist( $pavilionVolume );
+                                $this->em->flush();
+                                $output->writeln( "volume de pavillons créé : {$pavilionVolume->getVolume()}"  );
+                            }
+                            $composter->setPavilionsVolume( $pavilionVolume );
+                        }
+
+                        // MC
+                        $mcName = trim( (string) $cells[11] );
+                        if( $mcName !== '' ){
+
+                            $mc = $userRepository->findOneBy( [ 'username' => $mcName ] );
+
+                            if( ! $mc ){
+                                $mc = new User();
+                                $mc->setUsername( $mcName );
+                                $mc->setEmail( mb_strtolower( $mcName ) . '@compostri.fr' );
+                                $mc->setPassword( $mcName );
+                                $mc->setRoles( ['ROLE_MC'] );
+                                $this->em->persist( $mc );
+                                $this->em->flush();
+                                $output->writeln( "Maitre composter créer : {$mc->getUsername()}"  );
+                            }
+                            $composter->setMc( $mc );
+                        }
 
                         // Lat Long
                         $latlong = trim( (string) $cells[10] );

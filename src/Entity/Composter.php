@@ -13,8 +13,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *
  * @ORM\Entity
  * @ApiResource(
- *     collectionOperations={"get"},
- *     itemOperations={"get"},
  *     normalizationContext={"groups"={"composter"}}
  * )
  */
@@ -85,6 +83,34 @@ class Composter
      * @ORM\OneToMany(targetEntity="Permanence", mappedBy="composter")
      */
     public $permanences;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Commune", inversedBy="composters")
+     */
+    private $commune;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Pole", inversedBy="composters")
+     */
+    private $pole;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Quartier", inversedBy="composters")
+     */
+    private $quartier;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\PavilionsVolume", inversedBy="composters")
+     */
+    private $pavilionsVolume;
+
+    /**
+     * Name of the Maitre Composter
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="mcComposters")
+     */
+    private $mc;
+
 
     public function __construct()
     {
@@ -199,6 +225,66 @@ class Composter
     public function setShortDescription(string $short_description): self
     {
         $this->short_description = $short_description;
+
+        return $this;
+    }
+
+    public function getCommune(): ?Commune
+    {
+        return $this->commune;
+    }
+
+    public function setCommune(?Commune $commune): self
+    {
+        $this->commune = $commune;
+
+        return $this;
+    }
+
+    public function getPole(): ?Pole
+    {
+        return $this->pole;
+    }
+
+    public function setPole(?Pole $pole): self
+    {
+        $this->pole = $pole;
+
+        return $this;
+    }
+
+    public function getQuartier(): ?Quartier
+    {
+        return $this->quartier;
+    }
+
+    public function setQuartier(?Quartier $quartier): self
+    {
+        $this->quartier = $quartier;
+
+        return $this;
+    }
+
+    public function getPavilionsVolume(): ?PavilionsVolume
+    {
+        return $this->pavilionsVolume;
+    }
+
+    public function setPavilionsVolume(?PavilionsVolume $pavilionsVolume): self
+    {
+        $this->pavilionsVolume = $pavilionsVolume;
+
+        return $this;
+    }
+
+    public function getMc(): ?User
+    {
+        return $this->mc;
+    }
+
+    public function setMc(?User $mc): self
+    {
+        $this->mc = $mc;
 
         return $this;
     }
