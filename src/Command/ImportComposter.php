@@ -127,6 +127,18 @@ class ImportComposter extends Command
 
             $composter->setShortDescription( (string) $cells[5] );
             $composter->setCadena( (string) $cells[6] );
+
+            // Dynamisme
+            $animation = is_numeric( (string) $cells[16] ) ? (int) (string) $cells[16] : false;
+            $environnement = is_numeric( (string) $cells[17] ) ? (int) (string) $cells[17] : false;
+            $technique	 = is_numeric( (string) $cells[18] ) ? (int) (string) $cells[18] : false;
+            $autonomie = is_numeric( (string) $cells[19] ) ? (int) (string) $cells[19] : false;
+
+            if( $animation !== false ) { $composter->setAnimation( $animation ); }
+            if( $environnement !== false ) { $composter->setEnvironnement( $environnement ); }
+            if( $technique !== false ) { $composter->setTechnique( $technique ); }
+            if( $autonomie !== false ) { $composter->setAutonomie( $autonomie ); }
+
         }
     }
     private function importOnglet1( $cells, OutputInterface $output )
