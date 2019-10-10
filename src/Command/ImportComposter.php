@@ -4,6 +4,7 @@
 namespace App\Command;
 
 
+use App\Entity\ApprovisionnementBroyat;
 use App\Entity\Commune;
 use App\Entity\Composter;
 use App\Entity\PavilionsVolume;
@@ -49,12 +50,7 @@ class ImportComposter extends Command
 
         $filePath = $input->getArgument('filePath');
 
-        $composterRepository    = $this->em->getRepository(Composter::class);
-        $communeRepository      = $this->em->getRepository(Commune::class);
-        $poleRepository         = $this->em->getRepository(Pole::class);
-        $quartierRepository     = $this->em->getRepository(Quartier::class);
-        $volumeRepository       = $this->em->getRepository(PavilionsVolume::class);
-        $userRepository         = $this->em->getRepository(User::class);
+
 
         $reader = ReaderEntityFactory::createODSReader();
 
@@ -68,126 +64,20 @@ class ImportComposter extends Command
                     if( $rkey > 2 ){
 
                         $cells = $row->getCells();
-                        $importId = (string) $cells[0];
-                        $composter = $composterRepository->find( $importId);
-
-                        if( ! $composter ){
-                            $composter = new Composter();
-                        }
-
-                        $composter->setName( (string) $cells[1] );
-                        $composter->setAddress( (string) $cells[6] );
-
-                        // Commune
-                        $communeName = trim( (string) $cells[3] );
-                        $commune = $communeRepository->findOneBy( [ 'name' => $communeName ] );
-
-                        if( ! $commune ){
-                            $commune = new Commune();
-                            $commune->setName( $communeName );
-                            $this->em->persist( $commune );
-                            $this->em->flush();
-                        }
-                        $composter->setCommune( $commune );
-
-                        // Pole
-                        $poleName = trim( (string) $cells[4] );
-
-                        if( $poleName !== '' ){
-                            if( $poleName === 'LSV' || strpos( $poleName, 'ignoble' ) ){
-                                $poleName =  'Loire, Sèvre et Vignoble';
-                            }
-                            $pole = $poleRepository->findOneBy( [ 'name' => $poleName ] );
-
-                            if( ! $pole ){
-                                $pole = new Pole();
-                                $pole->setName( $poleName );
-                                $this->em->persist( $pole );
-                                $this->em->flush();
-                                $output->writeln( "Pole créé : {$pole->getName()}"  );
-                            }
-                            $composter->setPole( $pole );
-                        }
-
-                        // Quartier
-                        $quartierName = trim( (string) $cells[5] );
-                        if( $quartierName !== '' ){
-
-                            if( $quartierName === 'Ile de Nantes' ){
-                                $quartierName =  'Nantes Île-de-Nantes';
-                            } elseif ( $quartierName === 'Dervallières Zola') {
-                                $quartierName =  'Nantes Dervallières-Zola';
-                            } elseif ( $quartierName === 'Nantes Malakoff – Saint-Donatien') {
-                                $quartierName =  'Nantes Malakoff - Saint-Donatien';
-                            } elseif ( $quartierName === 'Breil Barberie') {
-                                $quartierName =  'Nantes Breil-Barberie';
-                            }
-
-                            $quartier = $quartierRepository->findOneBy( [ 'name' => $quartierName ] );
-
-                            if( ! $quartier ){
-                                $quartier = new Quartier();
-                                $quartier->setName( $quartierName );
-                                $this->em->persist( $quartier );
-                                $this->em->flush();
-                                $output->writeln( "Quartier créé : {$quartier->getName()}"  );
-                            }
-                            $composter->setQuartier( $quartier );
-                        }
-
-                        // Volume des pavillons
-                        $volumeName = trim( (string) $cells[7] );
-                        if( $volumeName !== '' ){
-
-                            $pavilionVolume = $volumeRepository->findOneBy( [ 'volume' => $volumeName ] );
-
-                            if( ! $pavilionVolume ){
-                                $pavilionVolume = new PavilionsVolume();
-                                $pavilionVolume->setVolume( $volumeName );
-                                $this->em->persist( $pavilionVolume );
-                                $this->em->flush();
-                                $output->writeln( "volume de pavillons créé : {$pavilionVolume->getVolume()}"  );
-                            }
-                            $composter->setPavilionsVolume( $pavilionVolume );
-                        }
-
-                        // MC
-                        $mcName = trim( (string) $cells[11] );
-                        if( $mcName !== '' ){
-
-                            $mc = $userRepository->findOneBy( [ 'username' => $mcName ] );
-
-                            if( ! $mc ){
-                                $mc = new User();
-                                $mc->setUsername( $mcName );
-                                $mc->setEmail( mb_strtolower( $mcName ) . '@compostri.fr' );
-                                $mc->setPassword( $mcName );
-                                $mc->setRoles( ['ROLE_MC'] );
-                                $this->em->persist( $mc );
-                                $this->em->flush();
-                                $output->writeln( "Maitre composter créer : {$mc->getUsername()}"  );
-                            }
-                            $composter->setMc( $mc );
-                        }
-
-                        // Lat Long
-                        $latlong = trim( (string) $cells[10] );
-                        $latlong = str_replace(PHP_EOL, ' ', $latlong);
-                        $latlong = str_replace('  ', ' ', $latlong);
-                        $hasCommat = strpos( $latlong, ','  );
-                        $latlong = explode( $hasCommat ? ',' : ' ', $latlong );
+                        //$this->importOnglet1( $cells, $output );
 
 
-                        if( count( $latlong ) === 2 && is_numeric( $latlong[0]) && is_numeric( $latlong[1] ) ){
-                            $composter->setLat( (float) $latlong[0]);
-                            $composter->setLng( (float) $latlong[1]);
-                        } else if ( count( $latlong ) > 1 ){
-                            $output->writeln( "Erreur lors de l‘import de latLong ( composteur #{$importId}): {$cells[10]}"  );
-                        }
-
-                        // Persist
-                        $this->em->persist( $composter );
                         $composterCount++;
+                    }
+                }
+            } else if( 2 === $key ){
+                foreach ($sheet->getRowIterator() as $rkey => $row) {
+
+                    // Les deux premières lignes du doc sont des entête
+                    if( $rkey > 2 ){
+
+                        $cells = $row->getCells();
+                        $this->importOnglet2( $cells, $output );
                     }
                 }
             }
@@ -198,5 +88,177 @@ class ImportComposter extends Command
         $this->em->flush();
 
 
+    }
+
+    private function importOnglet2( $cells, OutputInterface $output )
+    {
+        $composterRepository                    = $this->em->getRepository(Composter::class);
+        $approvisionnementBroyatRepository      = $this->em->getRepository(ApprovisionnementBroyat::class);
+
+        $composter = $composterRepository->findOneBy( [ 'name' => (string) $cells[0] ] );
+        if( ! $composter ){
+            $output->writeln( "Pas trouvé {$cells[0]}"  );
+        } else {
+
+            // approvisionnement Broyat
+            $appBroyatName = (string) $cells[4];
+
+            if( ! empty( $appBroyatName ) ){
+
+                if( 'Compostri (libre service)' === $appBroyatName ){
+
+                    $appBroyatName = 'Libre service Compostri';
+                } elseif ( 'Autonome + Compostri' === $appBroyatName ){
+                    $appBroyatName = 'Compostri + Autonome';
+                }
+
+                $approvisionnementBroyat = $approvisionnementBroyatRepository->findOneBy( [ 'name' => $appBroyatName ] );
+
+                if( ! $approvisionnementBroyat ){
+                    $approvisionnementBroyat = new ApprovisionnementBroyat();
+                    $approvisionnementBroyat->setName( $appBroyatName );
+                    $this->em->persist( $approvisionnementBroyat );
+                    $this->em->flush();
+                }
+
+                $composter->setApprovisionnementBroyat( $approvisionnementBroyat );
+            }
+
+
+            $composter->setShortDescription( (string) $cells[5] );
+            $composter->setCadena( (string) $cells[6] );
+        }
+    }
+    private function importOnglet1( $cells, OutputInterface $output )
+    {
+
+        $composterRepository    = $this->em->getRepository(Composter::class);
+        $communeRepository      = $this->em->getRepository(Commune::class);
+        $poleRepository         = $this->em->getRepository(Pole::class);
+        $quartierRepository     = $this->em->getRepository(Quartier::class);
+        $volumeRepository       = $this->em->getRepository(PavilionsVolume::class);
+        $userRepository         = $this->em->getRepository(User::class);
+
+
+        $importId = (string) $cells[0];
+        $composter = $composterRepository->find( $importId);
+
+        if( ! $composter ){
+            $composter = new Composter();
+        }
+
+        $this->importOnglet1( $cells );
+        $composter->setName( (string) $cells[1] );
+        $composter->setAddress( (string) $cells[6] );
+
+        // Commune
+        $communeName = trim( (string) $cells[3] );
+        $commune = $communeRepository->findOneBy( [ 'name' => $communeName ] );
+
+        if( ! $commune ){
+            $commune = new Commune();
+            $commune->setName( $communeName );
+            $this->em->persist( $commune );
+            $this->em->flush();
+        }
+        $composter->setCommune( $commune );
+
+        // Pole
+        $poleName = trim( (string) $cells[4] );
+
+        if( $poleName !== '' ){
+            if( $poleName === 'LSV' || strpos( $poleName, 'ignoble' ) ){
+                $poleName =  'Loire, Sèvre et Vignoble';
+            }
+            $pole = $poleRepository->findOneBy( [ 'name' => $poleName ] );
+
+            if( ! $pole ){
+                $pole = new Pole();
+                $pole->setName( $poleName );
+                $this->em->persist( $pole );
+                $this->em->flush();
+                $output->writeln( "Pole créé : {$pole->getName()}"  );
+            }
+            $composter->setPole( $pole );
+        }
+
+        // Quartier
+        $quartierName = trim( (string) $cells[5] );
+        if( $quartierName !== '' ){
+
+            if( $quartierName === 'Ile de Nantes' ){
+                $quartierName =  'Nantes Île-de-Nantes';
+            } elseif ( $quartierName === 'Dervallières Zola') {
+                $quartierName =  'Nantes Dervallières-Zola';
+            } elseif ( $quartierName === 'Nantes Malakoff – Saint-Donatien') {
+                $quartierName =  'Nantes Malakoff - Saint-Donatien';
+            } elseif ( $quartierName === 'Breil Barberie') {
+                $quartierName =  'Nantes Breil-Barberie';
+            }
+
+            $quartier = $quartierRepository->findOneBy( [ 'name' => $quartierName ] );
+
+            if( ! $quartier ){
+                $quartier = new Quartier();
+                $quartier->setName( $quartierName );
+                $this->em->persist( $quartier );
+                $this->em->flush();
+                $output->writeln( "Quartier créé : {$quartier->getName()}"  );
+            }
+            $composter->setQuartier( $quartier );
+        }
+
+        // Volume des pavillons
+        $volumeName = trim( (string) $cells[7] );
+        if( $volumeName !== '' ){
+
+            $pavilionVolume = $volumeRepository->findOneBy( [ 'volume' => $volumeName ] );
+
+            if( ! $pavilionVolume ){
+                $pavilionVolume = new PavilionsVolume();
+                $pavilionVolume->setVolume( $volumeName );
+                $this->em->persist( $pavilionVolume );
+                $this->em->flush();
+                $output->writeln( "volume de pavillons créé : {$pavilionVolume->getVolume()}"  );
+            }
+            $composter->setPavilionsVolume( $pavilionVolume );
+        }
+
+        // MC
+        $mcName = trim( (string) $cells[11] );
+        if( $mcName !== '' ){
+
+            $mc = $userRepository->findOneBy( [ 'username' => $mcName ] );
+
+            if( ! $mc ){
+                $mc = new User();
+                $mc->setUsername( $mcName );
+                $mc->setEmail( mb_strtolower( $mcName ) . '@compostri.fr' );
+                $mc->setPassword( $mcName );
+                $mc->setRoles( ['ROLE_MC'] );
+                $this->em->persist( $mc );
+                $this->em->flush();
+                $output->writeln( "Maitre composter créer : {$mc->getUsername()}"  );
+            }
+            $composter->setMc( $mc );
+        }
+
+        // Lat Long
+        $latlong = trim( (string) $cells[10] );
+        $latlong = str_replace(PHP_EOL, ' ', $latlong);
+        $latlong = str_replace('  ', ' ', $latlong);
+        $hasCommat = strpos( $latlong, ','  );
+        $latlong = explode( $hasCommat ? ',' : ' ', $latlong );
+
+
+        if( count( $latlong ) === 2 && is_numeric( $latlong[0]) && is_numeric( $latlong[1] ) ){
+            $composter->setLat( (float) $latlong[0]);
+            $composter->setLng( (float) $latlong[1]);
+        } else if ( count( $latlong ) > 1 ){
+            $output->writeln( "Erreur lors de l‘import de latLong ( composteur #{$importId}): {$cells[10]}"  );
+        }
+
+        // Persist
+        $this->em->persist( $composter );
     }
 }

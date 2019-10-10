@@ -86,11 +86,13 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Commune", inversedBy="composters")
+     * @Groups({"composter"})
      */
     private $commune;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Pole", inversedBy="composters")
+     * @Groups({"composter"})
      */
     private $pole;
 
@@ -110,6 +112,16 @@ class Composter
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="mcComposters")
      */
     private $mc;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $cadena;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ApprovisionnementBroyat", inversedBy="composters")
+     */
+    private $approvisionnementBroyat;
 
 
     public function __construct()
@@ -285,6 +297,30 @@ class Composter
     public function setMc(?User $mc): self
     {
         $this->mc = $mc;
+
+        return $this;
+    }
+
+    public function getCadena(): ?string
+    {
+        return $this->cadena;
+    }
+
+    public function setCadena(?string $cadena): self
+    {
+        $this->cadena = $cadena;
+
+        return $this;
+    }
+
+    public function getApprovisionnementBroyat(): ?ApprovisionnementBroyat
+    {
+        return $this->approvisionnementBroyat;
+    }
+
+    public function setApprovisionnementBroyat(?ApprovisionnementBroyat $approvisionnementBroyat): self
+    {
+        $this->approvisionnementBroyat = $approvisionnementBroyat;
 
         return $this;
     }
