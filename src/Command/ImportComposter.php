@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Entity\ApprovisionnementBroyat;
 use App\Entity\Commune;
 use App\Entity\Composter;
+use App\Entity\LivraisonBroyat;
 use App\Entity\PavilionsVolume;
 use App\Entity\Pole;
 use App\Entity\Quartier;
@@ -71,9 +72,9 @@ class ImportComposter extends Command
                     // Les deux premières lignes du doc sont des entête
                     if( $rkey > 2 ){
 
-                        $cells = $row->getCells();
-                        $this->importOnglet1( $cells );
-                        $this->em->flush();
+//                        $cells = $row->getCells();
+//                        $this->importOnglet1( $cells );
+//                        $this->em->flush();
 
 
                         $composterCount++;
@@ -110,61 +111,119 @@ class ImportComposter extends Command
         } else {
 
             // approvisionnement Broyat
-            $appBroyatName = (string) $cells[4];
-
-            if( ! empty( $appBroyatName ) ){
-
-                if( 'Compostri (libre service)' === $appBroyatName ){
-
-                    $appBroyatName = 'Libre service Compostri';
-                } elseif ( 'Autonome + Compostri' === $appBroyatName ){
-                    $appBroyatName = 'Compostri + Autonome';
-                }
-
-                $approvisionnementBroyat = $approvisionnementBroyatRepository->findOneBy( [ 'name' => $appBroyatName ] );
-
-                if( ! $approvisionnementBroyat ){
-                    $approvisionnementBroyat = new ApprovisionnementBroyat();
-                    $approvisionnementBroyat->setName( $appBroyatName );
-                    $this->em->persist( $approvisionnementBroyat );
-                    $this->em->flush();
-                }
-
-                $composter->setApprovisionnementBroyat( $approvisionnementBroyat );
-            }
-
-
-            $composter->setShortDescription( (string) $cells[5] );
-            $composter->setCadena( (string) $cells[6] );
+//            $appBroyatName = (string) $cells[4];
+//
+//            if( ! empty( $appBroyatName ) ){
+//
+//                if( 'Compostri (libre service)' === $appBroyatName ){
+//
+//                    $appBroyatName = 'Libre service Compostri';
+//                } elseif ( 'Autonome + Compostri' === $appBroyatName ){
+//                    $appBroyatName = 'Compostri + Autonome';
+//                }
+//
+//                $approvisionnementBroyat = $approvisionnementBroyatRepository->findOneBy( [ 'name' => $appBroyatName ] );
+//
+//                if( ! $approvisionnementBroyat ){
+//                    $approvisionnementBroyat = new ApprovisionnementBroyat();
+//                    $approvisionnementBroyat->setName( $appBroyatName );
+//                    $this->em->persist( $approvisionnementBroyat );
+//                    $this->em->flush();
+//                }
+//
+//                $composter->setApprovisionnementBroyat( $approvisionnementBroyat );
+//            }
+//
+//
+//            $composter->setShortDescription( (string) $cells[5] );
+//            $composter->setCadena( (string) $cells[6] );
 
             // Dates
-            $installation   =  ! $cells[7]->isEmpty() ? $this->getDateStringFromFile( $cells[7] ) : false;
-            $inauguration   =  ! $cells[8]->isEmpty() ? $this->getDateStringFromFile( $cells[8] ) : false;
-            $miseEnRoute    =  ! $cells[9]->isEmpty() ? $this->getDateStringFromFile( $cells[9] ) : false;
+//            $installation   =  ! $cells[7]->isEmpty() ? $this->getDateStringFromFile( $cells[7] ) : false;
+//            $inauguration   =  ! $cells[8]->isEmpty() ? $this->getDateStringFromFile( $cells[8] ) : false;
+//            $miseEnRoute    =  ! $cells[9]->isEmpty() ? $this->getDateStringFromFile( $cells[9] ) : false;
+//
+//            if( $installation instanceof DateTime) {
+//                $composter->setDateInstallation($installation);
+//            }
+//            if( $inauguration instanceof DateTime) {
+//                $composter->setDateInauguration($inauguration);
+//            }
+//            if( $miseEnRoute instanceof DateTime){
+//                $composter->setDateMiseEnRoute($miseEnRoute);
+//            } else {
+//                $composter->setDateMiseEnRoute( new DateTime( "{$cells[1]->getValue()}-06-26" ));
+//            }
+//
+//            // Dynamisme
+//            $animation = is_numeric( (string) $cells[16] ) ? (int) (string) $cells[16] : false;
+//            $environnement = is_numeric( (string) $cells[17] ) ? (int) (string) $cells[17] : false;
+//            $technique	 = is_numeric( (string) $cells[18] ) ? (int) (string) $cells[18] : false;
+//            $autonomie = is_numeric( (string) $cells[19] ) ? (int) (string) $cells[19] : false;
 
-            if( $installation instanceof DateTime) {
-                $composter->setDateInstallation($installation);
-            }
-            if( $inauguration instanceof DateTime) {
-                $composter->setDateInauguration($inauguration);
-            }
-            if( $miseEnRoute instanceof DateTime){
-                $composter->setDateMiseEnRoute($miseEnRoute);
-            } else {
-                $composter->setDateMiseEnRoute( new DateTime( "{$cells[1]->getValue()}-06-26" ));
-            }
+//            if( $animation !== false ) { $composter->setAnimation( $animation ); }
+//            if( $environnement !== false ) { $composter->setEnvironnement( $environnement ); }
+//            if( $technique !== false ) { $composter->setTechnique( $technique ); }
+//            if( $autonomie !== false ) { $composter->setAutonomie( $autonomie ); }
 
-            // Dynamisme
-            $animation = is_numeric( (string) $cells[16] ) ? (int) (string) $cells[16] : false;
-            $environnement = is_numeric( (string) $cells[17] ) ? (int) (string) $cells[17] : false;
-            $technique	 = is_numeric( (string) $cells[18] ) ? (int) (string) $cells[18] : false;
-            $autonomie = is_numeric( (string) $cells[19] ) ? (int) (string) $cells[19] : false;
 
-            if( $animation !== false ) { $composter->setAnimation( $animation ); }
-            if( $environnement !== false ) { $composter->setEnvironnement( $environnement ); }
-            if( $technique !== false ) { $composter->setTechnique( $technique ); }
-            if( $autonomie !== false ) { $composter->setAutonomie( $autonomie ); }
+            // Livraison de Broyat
+            // 2018
+//            $livraison2018 = $cells[13]->getValue();
+//            if( $livraison2018 ){
+//                $find = preg_match('/([\d]+)( *bacs)*/', $livraison2018, $matches);
+//                if( $find ){
+//                    $quantity = (int) $matches[1];
+//                    $livraisonBroyat = new LivraisonBroyat();
+//                    $livraisonBroyat->setQuantite( $quantity );
+//                    $livraisonBroyat->setUnite( $quantity < 100 ? 'bacs' : 'L');
+//                    $livraisonBroyat->setLivreur( 'compostri' );
+//                    $livraisonBroyat->setComposter( $composter );
+//                    $livraisonBroyat->setDate( new DateTime( '2018-06-26' ) );
+//
+//                    $this->em->persist( $livraisonBroyat );
+//                } else {
+//                    $this->output->writeln( "Pas gérable : '{$livraison2018}'"  );
+//                }
+//            }
 
+            // 2019
+//            $livraison2019 = $cells[14]->getValue();
+//            if( $livraison2019 ){
+//                $find = preg_match('/([\d]+)( *bacs)*/', $livraison2019, $matches);
+//                if( $find ){
+//                    $quantity = (int) $matches[1];
+//                    $livraisonBroyat = new LivraisonBroyat();
+//                    $livraisonBroyat->setQuantite( $quantity );
+//                    $livraisonBroyat->setUnite( $quantity < 100 ? 'bacs' : 'L');
+//                    $livraisonBroyat->setLivreur( 'compostri' );
+//                    $livraisonBroyat->setComposter( $composter );
+//                    $livraisonBroyat->setDate( new DateTime( '2019-06-26' ) );
+//
+//                    $this->em->persist( $livraisonBroyat );
+//                } else {
+//                    $this->output->writeln( "Pas gérable : '{$livraison2019}'"  );
+//                }
+//            }
+
+            // 2019 ALISE
+//            $livraisonAlise = $cells[15]->getValue();
+//            if( $livraisonAlise ){
+//                $find = preg_match('/([\d]+)( *poubelles)*/', $livraisonAlise, $matches);
+//                if( $find ){
+//                    $quantity = (int) $matches[1];
+//                    $livraisonBroyat = new LivraisonBroyat();
+//                    $livraisonBroyat->setQuantite( $quantity );
+//                    $livraisonBroyat->setUnite( 'poubelles');
+//                    $livraisonBroyat->setLivreur( 'alise' );
+//                    $livraisonBroyat->setComposter( $composter );
+//                    $livraisonBroyat->setDate( new DateTime( '2019-06-26' ) );
+//
+//                    $this->em->persist( $livraisonBroyat );
+//                } else {
+//                    $this->output->writeln( "Pas gérable : '{$livraisonAlise}'"  );
+//                }
+//            }
         }
     }
 

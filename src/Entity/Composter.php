@@ -158,10 +158,16 @@ class Composter
      */
     private $DateInstallation;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\LivraisonBroyat", mappedBy="composter", orphanRemoval=true)
+     */
+    private $livraisonBroyats;
+
 
     public function __construct()
     {
         $this->permanences = new ArrayCollection();
+        $this->livraisonBroyats = new ArrayCollection();
     }
 
     public function __toString() {
@@ -440,6 +446,37 @@ class Composter
     public function setDateInstallation(?\DateTimeInterface $DateInstallation): self
     {
         $this->DateInstallation = $DateInstallation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|LivraisonBroyat[]
+     */
+    public function getLivraisonBroyats(): Collection
+    {
+        return $this->livraisonBroyats;
+    }
+
+    public function addLivraisonBroyat(LivraisonBroyat $livraisonBroyat): self
+    {
+        if (!$this->livraisonBroyats->contains($livraisonBroyat)) {
+            $this->livraisonBroyats[] = $livraisonBroyat;
+            $livraisonBroyat->setComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLivraisonBroyat(LivraisonBroyat $livraisonBroyat): self
+    {
+        if ($this->livraisonBroyats->contains($livraisonBroyat)) {
+            $this->livraisonBroyats->removeElement($livraisonBroyat);
+            // set the owning side to null (unless already changed)
+            if ($livraisonBroyat->getComposter() === $this) {
+                $livraisonBroyat->setComposter(null);
+            }
+        }
 
         return $this;
     }
