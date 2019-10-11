@@ -163,11 +163,17 @@ class Composter
      */
     private $livraisonBroyats;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Suivi", mappedBy="composter", orphanRemoval=true)
+     */
+    private $suivis;
+
 
     public function __construct()
     {
         $this->permanences = new ArrayCollection();
         $this->livraisonBroyats = new ArrayCollection();
+        $this->suivis = new ArrayCollection();
     }
 
     public function __toString() {
@@ -475,6 +481,37 @@ class Composter
             // set the owning side to null (unless already changed)
             if ($livraisonBroyat->getComposter() === $this) {
                 $livraisonBroyat->setComposter(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Suivi[]
+     */
+    public function getSuivis(): Collection
+    {
+        return $this->suivis;
+    }
+
+    public function addSuivi(Suivi $suivi): self
+    {
+        if (!$this->suivis->contains($suivi)) {
+            $this->suivis[] = $suivi;
+            $suivi->setComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSuivi(Suivi $suivi): self
+    {
+        if ($this->suivis->contains($suivi)) {
+            $this->suivis->removeElement($suivi);
+            // set the owning side to null (unless already changed)
+            if ($suivi->getComposter() === $this) {
+                $suivi->setComposter(null);
             }
         }
 

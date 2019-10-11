@@ -11,6 +11,7 @@ use App\Entity\LivraisonBroyat;
 use App\Entity\PavilionsVolume;
 use App\Entity\Pole;
 use App\Entity\Quartier;
+use App\Entity\Suivi;
 use App\Entity\User;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Box\Spout\Common\Entity\Cell;
@@ -224,6 +225,18 @@ class ImportComposter extends Command
 //                    $this->output->writeln( "Pas gérable : '{$livraisonAlise}'"  );
 //                }
 //            }
+
+            // Suivi
+            $suiviDescription = $cells[20]->getValue();
+            if( $suiviDescription ){
+
+                $suivi = new Suivi();
+                $suivi->setDescription( $suiviDescription );
+                $suivi->setComposter( $composter );
+                $suivi->setDate( new DateTime( '2019-06-26' ) );
+
+                $this->em->persist( $suivi );
+            }
         }
     }
 
