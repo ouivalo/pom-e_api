@@ -12,7 +12,10 @@ use App\Entity\Pole;
 use App\Entity\Quartier;
 use App\Entity\User;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+use Box\Spout\Common\Entity\Cell;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,11 +28,13 @@ class ImportComposter extends Command
     protected static $defaultName = 'compost:import-composteur';
 
     private $em;
+    private $output;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager )
     {
         parent::__construct();
         $this->em = $entityManager;
+
     }
 
     protected function configure()
@@ -47,6 +52,7 @@ class ImportComposter extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->output = $output;
 
         $filePath = $input->getArgument('filePath');
 
@@ -57,6 +63,8 @@ class ImportComposter extends Command
         $reader->open( $filePath);
         $composterCount = 0;
         foreach ($reader->getSheetIterator() as $key => $sheet) {
+
+
             if( 1 === $key ){
                 foreach ($sheet->getRowIterator() as $rkey => $row) {
 
@@ -64,7 +72,8 @@ class ImportComposter extends Command
                     if( $rkey > 2 ){
 
                         $cells = $row->getCells();
-                        //$this->importOnglet1( $cells, $output );
+                        $this->importOnglet1( $cells );
+                        $this->em->flush();
 
 
                         $composterCount++;
@@ -77,7 +86,8 @@ class ImportComposter extends Command
                     if( $rkey > 2 ){
 
                         $cells = $row->getCells();
-                        $this->importOnglet2( $cells, $output );
+                        $this->importOnglet2( $cells );
+                        $this->em->flush();
                     }
                 }
             }
@@ -85,19 +95,18 @@ class ImportComposter extends Command
         $output->writeln( "Import de {$composterCount} compsteurs"  );
 
         $reader->close();
-        $this->em->flush();
 
 
     }
 
-    private function importOnglet2( $cells, OutputInterface $output )
+    private function importOnglet2( $cells )
     {
         $composterRepository                    = $this->em->getRepository(Composter::class);
         $approvisionnementBroyatRepository      = $this->em->getRepository(ApprovisionnementBroyat::class);
 
         $composter = $composterRepository->findOneBy( [ 'name' => (string) $cells[0] ] );
         if( ! $composter ){
-            $output->writeln( "Pas trouvé {$cells[0]}"  );
+            $this->output->writeln( "Pas trouvé le composter '{$cells[0]}'"  );
         } else {
 
             // approvisionnement Broyat
@@ -128,6 +137,23 @@ class ImportComposter extends Command
             $composter->setShortDescription( (string) $cells[5] );
             $composter->setCadena( (string) $cells[6] );
 
+            // Dates
+            $installation   =  ! $cells[7]->isEmpty() ? $this->getDateStringFromFile( $cells[7] ) : false;
+            $inauguration   =  ! $cells[8]->isEmpty() ? $this->getDateStringFromFile( $cells[8] ) : false;
+            $miseEnRoute    =  ! $cells[9]->isEmpty() ? $this->getDateStringFromFile( $cells[9] ) : false;
+
+            if( $installation instanceof DateTime) {
+                $composter->setDateInstallation($installation);
+            }
+            if( $inauguration instanceof DateTime) {
+                $composter->setDateInauguration($inauguration);
+            }
+            if( $miseEnRoute instanceof DateTime){
+                $composter->setDateMiseEnRoute($miseEnRoute);
+            } else {
+                $composter->setDateMiseEnRoute( new DateTime( "{$cells[1]->getValue()}-06-26" ));
+            }
+
             // Dynamisme
             $animation = is_numeric( (string) $cells[16] ) ? (int) (string) $cells[16] : false;
             $environnement = is_numeric( (string) $cells[17] ) ? (int) (string) $cells[17] : false;
@@ -141,7 +167,12 @@ class ImportComposter extends Command
 
         }
     }
-    private function importOnglet1( $cells, OutputInterface $output )
+
+    /**
+     * @param $cells
+     * @throws Exception
+     */
+    private function importOnglet1( $cells ): void
     {
 
         $composterRepository    = $this->em->getRepository(Composter::class);
@@ -159,8 +190,11 @@ class ImportComposter extends Command
             $composter = new Composter();
         }
 
-        $this->importOnglet1( $cells );
         $composter->setName( (string) $cells[1] );
+
+        // date d'installation
+        if( ! $cells[2]->isEmpty() ){ $composter->setDateMiseEnRoute( new DateTime( "{$cells[2]->getValue()}-06-26" ) ); }
+
         $composter->setAddress( (string) $cells[6] );
 
         // Commune
@@ -189,7 +223,7 @@ class ImportComposter extends Command
                 $pole->setName( $poleName );
                 $this->em->persist( $pole );
                 $this->em->flush();
-                $output->writeln( "Pole créé : {$pole->getName()}"  );
+                $this->output->writeln( "Pole créé : {$pole->getName()}"  );
             }
             $composter->setPole( $pole );
         }
@@ -215,7 +249,7 @@ class ImportComposter extends Command
                 $quartier->setName( $quartierName );
                 $this->em->persist( $quartier );
                 $this->em->flush();
-                $output->writeln( "Quartier créé : {$quartier->getName()}"  );
+                $this->output->writeln( "Quartier créé : {$quartier->getName()}"  );
             }
             $composter->setQuartier( $quartier );
         }
@@ -231,7 +265,7 @@ class ImportComposter extends Command
                 $pavilionVolume->setVolume( $volumeName );
                 $this->em->persist( $pavilionVolume );
                 $this->em->flush();
-                $output->writeln( "volume de pavillons créé : {$pavilionVolume->getVolume()}"  );
+                $this->output->writeln( "volume de pavillons créé : {$pavilionVolume->getVolume()}"  );
             }
             $composter->setPavilionsVolume( $pavilionVolume );
         }
@@ -250,7 +284,7 @@ class ImportComposter extends Command
                 $mc->setRoles( ['ROLE_MC'] );
                 $this->em->persist( $mc );
                 $this->em->flush();
-                $output->writeln( "Maitre composter créer : {$mc->getUsername()}"  );
+                $this->output->writeln( "Maitre composter créer : {$mc->getUsername()}"  );
             }
             $composter->setMc( $mc );
         }
@@ -267,10 +301,39 @@ class ImportComposter extends Command
             $composter->setLat( (float) $latlong[0]);
             $composter->setLng( (float) $latlong[1]);
         } else if ( count( $latlong ) > 1 ){
-            $output->writeln( "Erreur lors de l‘import de latLong ( composteur #{$importId}): {$cells[10]}"  );
+            $this->output->writeln( "Erreur lors de l‘import de latLong ( composteur #{$importId}): {$cells[10]}"  );
         }
 
         // Persist
         $this->em->persist( $composter );
+    }
+
+
+    /**
+     * @param Cell $date
+     * @return DateTime|null
+     * @throws Exception
+     */
+    private function getDateStringFromFile( Cell $date ) : ?DateTime
+    {
+
+        $dateFormated = null;
+
+        if( $date->isDate() ){
+
+            $dateFormated = $date->getValue();
+
+        } else {
+            $find = preg_match('/(\d\d\/\d\d\/\d\d\d\d)/', $date, $matches);
+
+            if( $find ){
+                $dateArray = explode( '/', $matches[1] );
+                $dateFormated = new DateTime( "{$dateArray[2]}-{$dateArray[1]}-{$dateArray[0]}");
+            } else {
+                $this->output->writeln( "Pas un bon format de date : {$date}"  );
+            }
+        }
+
+        return $dateFormated;
     }
 }

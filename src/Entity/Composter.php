@@ -143,6 +143,21 @@ class Composter
      */
     private $autonomie;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $DateMiseEnRoute;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $DateInauguration;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $DateInstallation;
+
 
     public function __construct()
     {
@@ -389,6 +404,42 @@ class Composter
     public function setAutonomie(?int $autonomie): self
     {
         $this->autonomie = $autonomie;
+
+        return $this;
+    }
+
+    public function getDateMiseEnRoute(): ?\DateTimeInterface
+    {
+        return $this->DateMiseEnRoute;
+    }
+
+    public function setDateMiseEnRoute(?\DateTimeInterface $DateMiseEnRoute): self
+    {
+        $this->DateMiseEnRoute = $DateMiseEnRoute;
+
+        return $this;
+    }
+
+    public function getDateInauguration(): ?\DateTimeInterface
+    {
+        return $this->DateInauguration;
+    }
+
+    public function setDateInauguration(?\DateTimeInterface $DateInauguration): self
+    {
+        $this->DateInauguration = $DateInauguration;
+
+        return $this;
+    }
+
+    public function getDateInstallation(): ?\DateTimeInterface
+    {
+        return $this->DateInstallation;
+    }
+
+    public function setDateInstallation(?\DateTimeInterface $DateInstallation): self
+    {
+        $this->DateInstallation = $DateInstallation;
 
         return $this;
     }
