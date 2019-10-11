@@ -11,6 +11,7 @@ use App\Entity\LivraisonBroyat;
 use App\Entity\PavilionsVolume;
 use App\Entity\Pole;
 use App\Entity\Quartier;
+use App\Entity\Reparation;
 use App\Entity\Suivi;
 use App\Entity\User;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
@@ -87,8 +88,19 @@ class ImportComposter extends Command
                     // Les deux premières lignes du doc sont des entête
                     if( $rkey > 2 ){
 
+//                        $cells = $row->getCells();
+//                        $this->importOnglet2( $cells );
+//                        $this->em->flush();
+                    }
+                }
+            } else if( 3 === $key ){
+                foreach ($sheet->getRowIterator() as $rkey => $row) {
+
+                    // Les deux premières lignes du doc sont des entête
+                    if( $rkey > 2 ){
+
                         $cells = $row->getCells();
-                        $this->importOnglet2( $cells );
+                        $this->importOnglet3( $cells );
                         $this->em->flush();
                     }
                 }
@@ -101,7 +113,77 @@ class ImportComposter extends Command
 
     }
 
-    private function importOnglet2( $cells )
+    /**
+     * @param $cells
+     * @throws Exception
+     */
+    private function importOnglet3( $cells ): void
+    {
+
+        $composterRepository = $this->em->getRepository(Composter::class);
+
+        $name = $cells[1]->getValue();
+        // Les noms modifier
+        if( $name === 'Barbonnerie'){
+            $name = 'Barbonnerie 2';
+        } else if( 'Place Emile Fritsch' ){
+            $name = 'Saint Pasquier';
+        } else if( 'La Renaudière' ){
+            $name = 'Renaudière';
+        } else if( 'Guinaudeau' ){
+            $name = 'Guinaudeau > 15 Lieux';
+        } else if( 'Waldeck Rousseau' ){
+            $name = 'Waldeck';
+        } else if( 'Lamour les forges' ){
+            $name = 'Venelles Lamour-Les Forges';
+        } else if( 'Crapaudine' ){
+            $name = 'Jardin de la Crapaudine';
+        }else if( 'St Pasquier – Émile Fritsh' ){
+            $name = 'Saint Pasquier';
+        }
+        $composter = $composterRepository->findOneBy( [ 'name' => $name ] );
+        if( ! $composter ){
+            $this->output->writeln( "Pas trouvé le composter '{$name}'"  );
+        } else {
+
+            $reparation = new Reparation();
+
+            $date = $this->getDateStringFromFile( $cells[0] );
+            if( ! $date ){
+                $date = $cells[8]->isEmpty() ? new DateTime( '2019-06-26' ) : new DateTime( '2018/06/26' );
+            }
+            $reparationDescription = ! $cells[8]->isEmpty() ? $cells[8]->getValue() : $cells[11]->getValue();
+            $refFacture = ! $cells[9]->isEmpty() ? $cells[9]->getValue() : $cells[12]->getValue();
+            $montant = ! $cells[10]->isEmpty() ? $cells[10]->getValue() : $cells[13]->getValue();
+            $montant = (float)str_replace(',', '.', $montant);
+
+            $nature = null;
+            if( ! $cells[5]->isEmpty() ){
+                $nature = 'Dégradation usuelle';
+            } else if( ! $cells[6]->isEmpty() ){
+                $nature = 'Dégradation vandalisme';
+            } else if( ! $cells[7]->isEmpty() ){
+                $nature = 'Aménagement';
+            }
+
+
+            $reparation->setDate( $date );
+            $reparation->setDescription( $reparationDescription );
+            $reparation->setRefFacture( $refFacture );
+            $reparation->setMontant( $montant !== 0 ? $montant : null  );
+            $reparation->setDone( true );
+            $reparation->setComposter( $composter );
+            $reparation->setNature( $nature );
+
+            $this->em->persist( $reparation );
+        }
+    }
+
+
+    /**
+     * @param $cells
+     */
+    private function importOnglet2( $cells ): void
     {
         $composterRepository                    = $this->em->getRepository(Composter::class);
         $approvisionnementBroyatRepository      = $this->em->getRepository(ApprovisionnementBroyat::class);
@@ -227,16 +309,29 @@ class ImportComposter extends Command
 //            }
 
             // Suivi
-            $suiviDescription = $cells[20]->getValue();
-            if( $suiviDescription ){
+//            $suiviDescription = $cells[20]->getValue();
+//            if( $suiviDescription ){
+//
+//                $suivi = new Suivi();
+//                $suivi->setDescription( $suiviDescription );
+//                $suivi->setComposter( $composter );
+//                $suivi->setDate( new DateTime( '2019-06-26' ) );
+//
+//                $this->em->persist( $suivi );
+//            }
+            // Reparation
+//            $reparationDescription = $cells[21]->getValue();
+//            if( $reparationDescription ){
+//
+//                $reparation = new Reparation();
+//                $reparation->setDescription( $reparationDescription );
+//                $reparation->setComposter( $composter );
+//                $reparation->setDone( false );
+//
+//                $this->em->persist( $reparation );
+//            }
 
-                $suivi = new Suivi();
-                $suivi->setDescription( $suiviDescription );
-                $suivi->setComposter( $composter );
-                $suivi->setDate( new DateTime( '2019-06-26' ) );
 
-                $this->em->persist( $suivi );
-            }
         }
     }
 
@@ -391,12 +486,14 @@ class ImportComposter extends Command
 
         $dateFormated = null;
 
+        if( $date->isEmpty() ) { return null; }
+
         if( $date->isDate() ){
 
             $dateFormated = $date->getValue();
 
         } else {
-            $find = preg_match('/(\d\d\/\d\d\/\d\d\d\d)/', $date, $matches);
+            $find = preg_match('/(\d\d\/\d\d\/\d\d\d\d)/', $date->getValue(), $matches);
 
             if( $find ){
                 $dateArray = explode( '/', $matches[1] );

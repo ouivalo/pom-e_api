@@ -168,12 +168,18 @@ class Composter
      */
     private $suivis;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Reparation", mappedBy="composter")
+     */
+    private $reparations;
+
 
     public function __construct()
     {
         $this->permanences = new ArrayCollection();
         $this->livraisonBroyats = new ArrayCollection();
         $this->suivis = new ArrayCollection();
+        $this->reparations = new ArrayCollection();
     }
 
     public function __toString() {
@@ -512,6 +518,37 @@ class Composter
             // set the owning side to null (unless already changed)
             if ($suivi->getComposter() === $this) {
                 $suivi->setComposter(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Reparation[]
+     */
+    public function getReparations(): Collection
+    {
+        return $this->reparations;
+    }
+
+    public function addReparation(Reparation $reparation): self
+    {
+        if (!$this->reparations->contains($reparation)) {
+            $this->reparations[] = $reparation;
+            $reparation->setComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReparation(Reparation $reparation): self
+    {
+        if ($this->reparations->contains($reparation)) {
+            $this->reparations->removeElement($reparation);
+            // set the owning side to null (unless already changed)
+            if ($reparation->getComposter() === $this) {
+                $reparation->setComposter(null);
             }
         }
 
