@@ -18,7 +18,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *     normalizationContext={"groups"={"composter"}}
  * )
- * @ApiFilter(SearchFilter::class, properties={"commune.id": "exact", "name" : "partial"})
+ * @ApiFilter(SearchFilter::class, properties={"commune": "exact","quartier": "exact","pole": "exact","pavilionsVolume": "exact","name" : "partial"})
  * @ApiFilter(OrderFilter::class, properties={"id", "DateMiseEnRoute"}, arguments={"orderParameterName"="order"})
  */
 class Composter
@@ -40,7 +40,7 @@ class Composter
      * @ORM\Column
      * @Groups({"composter"})
      */
-    public $name;
+    private $name;
 
     /**
      * @var string The short description of the composter to be shown on the composter page
@@ -48,7 +48,7 @@ class Composter
      * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
-    public $short_description;
+    private $shortDescription;
 
     /**
      * @var string The description of the composter to be shown on the composter page
@@ -56,7 +56,7 @@ class Composter
      * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
-    public $description;
+    private $description;
 
     /**
      * @var string The address of the composter to be shown on the composter page
@@ -64,7 +64,7 @@ class Composter
      * @ORM\Column(type="text")
      * @Groups({"composter"})
      */
-    public $address;
+    private $address;
 
     /**
      * @var float The latitude of the composter
@@ -72,7 +72,7 @@ class Composter
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"composter"})
      */
-    public $lat;
+    private $lat;
 
     /**
      * @var float The longitude of the composter
@@ -80,14 +80,14 @@ class Composter
      * @ORM\Column(type="float", nullable=true)
      * @Groups({"composter"})
      */
-    public $lng;
+    private $lng;
 
     /**
      * @var Permanence[] permancence of the composter
      *
      * @ORM\OneToMany(targetEntity="Permanence", mappedBy="composter")
      */
-    public $permanences;
+    private $permanences;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Commune", inversedBy="composters")
@@ -103,11 +103,13 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Quartier", inversedBy="composters")
+     * @Groups({"composter"})
      */
     private $quartier;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\PavilionsVolume", inversedBy="composters")
+     * @Groups({"composter"})
      */
     private $pavilionsVolume;
 
@@ -115,11 +117,13 @@ class Composter
      * Name of the Maitre Composter
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="mcComposters")
+     * @Groups({"composter"})
      */
     private $mc;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"composter"})
      */
     private $cadena;
 
@@ -160,11 +164,13 @@ class Composter
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"composter"})
      */
     private $DateInauguration;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"composter"})
      */
     private $DateInstallation;
 
@@ -218,7 +224,7 @@ class Composter
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -242,7 +248,7 @@ class Composter
         return $this->lat;
     }
 
-    public function setLat(float $lat): self
+    public function setLat(?float $lat): self
     {
         $this->lat = $lat;
 
@@ -254,7 +260,7 @@ class Composter
         return $this->lng;
     }
 
-    public function setLng(float $lng): self
+    public function setLng(?float $lng): self
     {
         $this->lng = $lng;
 
@@ -294,12 +300,12 @@ class Composter
 
     public function getShortDescription(): ?string
     {
-        return $this->short_description;
+        return $this->shortDescription;
     }
 
-    public function setShortDescription(string $short_description): self
+    public function setShortDescription(?string $short_description): self
     {
-        $this->short_description = $short_description;
+        $this->shortDescription = $short_description;
 
         return $this;
     }

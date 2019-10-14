@@ -23,19 +23,19 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"permanence"})
+     * @Groups({"permanence", "composter"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180)
-     * @Groups({"user","permanence"})
+     * @Groups({"user","permanence", "composter"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user","permanence"})
+     * @Groups({"user","permanence", "composter"})
      */
     private $email;
 
