@@ -1,6 +1,7 @@
 #!/bin/bash
-mkdir config/jwt
-echo $JWT_PRIVATE_KEY | base64 -d > config/jwt/private.pem
-echo $JWT_PUBLIC_KEY | base64 -d > config/jwt/public.pem
+echo 'Start copie jwt config file'
+mkdir config/jwtt
+echo $JWT_PRIVATE_KEY | base64 -D > config/jwtt/private.pem
+echo $JWT_PUBLIC_KEY | base64 -D > config/jwtt/public.pem
 # Start default script for PHP apps
 $HOME/bin/run
