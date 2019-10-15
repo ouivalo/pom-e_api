@@ -6,4 +6,5 @@ vendor/
 ###< symfony/framework-bundle ###
 
 .DS_Store
-/config/jwt
+/config/jwt/private.pem
+/config/jwt/public.pem
