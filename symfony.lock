@@ -315,13 +315,13 @@
         "version": "v4.2.8"
     },
     "symfony/security-csrf": {
-        "version": "v4.2.8"
+        "version": "v4.3.5"
     },
     "symfony/security-guard": {
-        "version": "v4.2.8"
+        "version": "v4.3.5"
     },
     "symfony/security-http": {
-        "version": "v4.2.8"
+        "version": "v4.3.5"
     },
     "symfony/serializer": {
         "version": "v4.1.6"
