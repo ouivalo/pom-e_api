@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"livraison"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\LivraisonBroyatRepository")
  */
 class LivraisonBroyat
@@ -15,32 +18,38 @@ class LivraisonBroyat
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"livraison"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"livraison"})
      */
     private $date;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"livraison"})
      */
     private $quantite;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"livraison"})
      */
     private $unite;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"livraison"})
      */
     private $livreur;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Composter", inversedBy="livraisonBroyats")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"livraison"})
      */
     private $composter;
 

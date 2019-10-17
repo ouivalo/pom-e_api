@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"reparation"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\ReparationRepository")
  */
 class Reparation
@@ -15,37 +18,44 @@ class Reparation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"reparation"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"reparation"})
      */
     private $date;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"reparation"})
      */
     private $done;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({"reparation"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"reparation"})
      */
     private $refFacture;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"reparation"})
      */
     private $montant;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Composter", inversedBy="reparations")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"reparation"})
      */
     private $composter;
 

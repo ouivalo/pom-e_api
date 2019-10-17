@@ -29,7 +29,7 @@ class Composter
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"composter"})
+     * @Groups({"composter", "suivis", "livraison"})
      */
     private $id;
 
@@ -38,7 +38,7 @@ class Composter
      * @var string The name of the composter
      *
      * @ORM\Column
-     * @Groups({"composter"})
+     * @Groups({"composter", "suivis", "livraison", "reparation"})
      */
     private $name;
 

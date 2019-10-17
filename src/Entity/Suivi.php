@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *      normalizationContext={"groups"={"suivis"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\SuiviRepository")
  */
 class Suivi
@@ -15,22 +18,26 @@ class Suivi
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"suivis"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"suivis"})
      */
     private $date;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({"suivis"})
      */
     private $description;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Composter", inversedBy="suivis")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"suivis"})
      */
     private $composter;
 
