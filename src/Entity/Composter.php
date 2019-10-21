@@ -189,6 +189,16 @@ class Composter
      */
     private $reparations;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Categorie", inversedBy="composteurs")
+     */
+    private $categorie;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $status;
+
 
     public function __construct()
     {
@@ -567,6 +577,30 @@ class Composter
                 $reparation->setComposter(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategorie(): ?Categorie
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?Categorie $categorie): self
+    {
+        $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

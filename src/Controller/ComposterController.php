@@ -35,8 +35,9 @@ class ComposterController extends AbstractController
                     'coordinates' => [$c->getLng(), $c->getLat()]
                 ),
                 'properties' => [
-                    'commune'   => $c->getCommune() ? $c->getCommune()->getId() : null,
-                    'id'        => $c->getId(),
+                    'commune'       => $c->getCommune() ? $c->getCommune()->getId() : null,
+                    'categorie'     => $c->getCategorie() ? $c->getCategorie()->getId() : null,
+                    'id'            => $c->getId(),
                 ]
             ];
         }
