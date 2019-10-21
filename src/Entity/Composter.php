@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * Composter. Lieux ou l'on transform les bio déchets en composte
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ComposterRepository")
  * @ApiResource(
  *     normalizationContext={"groups"={"composter"}}
  * )
