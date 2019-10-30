@@ -27,6 +27,7 @@ class ComposterController extends AbstractController
 
         // On prépare un GeoJSON de centre formater le l'affichage sur la carte
         $features = [];
+        /** @var Composter $c */
         foreach ( $composters as $c ){
             $features[] =[
                 'type'  => 'Feature',
@@ -38,6 +39,8 @@ class ComposterController extends AbstractController
                     'commune'       => $c->getCommune() ? $c->getCommune()->getId() : null,
                     'categorie'     => $c->getCategorie() ? $c->getCategorie()->getId() : null,
                     'id'            => $c->getId(),
+                    'name'          => $c->getName(),
+                    'status'        => $c->getStatus(),
                 ]
             ];
         }
