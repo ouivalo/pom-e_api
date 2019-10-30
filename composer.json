@@ -8,6 +8,7 @@
         "ext-json": "*",
         "api-platform/api-pack": "^1.0",
         "box/spout": "^3.0",
+        "fresh/doctrine-enum-bundle": "^6.5",
         "lexik/jwt-authentication-bundle": "^2.6",
         "mailjet/mailjet-apiv3-php": "^1.4",
         "symfony/apache-pack": "^1.0",

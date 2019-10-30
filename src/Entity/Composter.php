@@ -191,11 +191,13 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Categorie", inversedBy="composteurs")
+     * @Groups({"composter"})
      */
     private $categorie;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="enumstatus", options={"default":"Active"})
+     * @Groups({"composter"})
      */
     private $status;
 
@@ -206,6 +208,7 @@ class Composter
         $this->livraisonBroyats = new ArrayCollection();
         $this->suivis = new ArrayCollection();
         $this->reparations = new ArrayCollection();
+        $this->status = 'Active';
     }
 
     public function __toString() {
