@@ -62,11 +62,18 @@ class User implements UserInterface
      */
     private $mcComposters;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Composter", inversedBy="users")
+     * @Groups({"user"})
+     */
+    private $composters;
+
 
     public function __construct()
     {
         $this->permanences = new ArrayCollection();
         $this->mcComposters = new ArrayCollection();
+        $this->composters = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -93,7 +100,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string) $this->username;
     }
 
     /**
@@ -206,6 +213,32 @@ class User implements UserInterface
             if ($mcComposter->getMc() === $this) {
                 $mcComposter->setMc(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Composter[]
+     */
+    public function getComposters(): Collection
+    {
+        return $this->composters;
+    }
+
+    public function addComposter(Composter $composter): self
+    {
+        if (!$this->composters->contains($composter)) {
+            $this->composters[] = $composter;
+        }
+
+        return $this;
+    }
+
+    public function removeComposter(Composter $composter): self
+    {
+        if ($this->composters->contains($composter)) {
+            $this->composters->removeElement($composter);
         }
 
         return $this;

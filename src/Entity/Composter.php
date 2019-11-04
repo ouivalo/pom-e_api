@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,7 +10,6 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
-
 
 /**
  * Composter. Lieux ou l'on transform les bio déchets en composte
@@ -190,6 +190,11 @@ class Composter
     private $reparations;
 
     /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="composters")
+     */
+    private $users;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Categorie", inversedBy="composteurs")
      * @Groups({"composter"})
      */
@@ -209,9 +214,11 @@ class Composter
         $this->suivis = new ArrayCollection();
         $this->reparations = new ArrayCollection();
         $this->status = 'Active';
+        $this->users = new ArrayCollection();
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->getName();
     }
 
@@ -579,6 +586,32 @@ class Composter
             if ($reparation->getComposter() === $this) {
                 $reparation->setComposter(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addComposter($this);
+        }
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeComposter($this);
         }
 
         return $this;
