@@ -201,6 +201,11 @@ class Composter
      */
     private $status;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\UserComposter", mappedBy="composter", orphanRemoval=true)
+     */
+    private $userComposters;
+
 
     public function __construct()
     {
@@ -209,6 +214,7 @@ class Composter
         $this->suivis = new ArrayCollection();
         $this->reparations = new ArrayCollection();
         $this->status = 'Active';
+        $this->userComposters = new ArrayCollection();
     }
 
     public function __toString()
@@ -606,6 +612,37 @@ class Composter
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UserComposter[]
+     */
+    public function getUserComposters(): Collection
+    {
+        return $this->userComposters;
+    }
+
+    public function addUserComposter(UserComposter $userComposter): self
+    {
+        if (!$this->userComposters->contains($userComposter)) {
+            $this->userComposters[] = $userComposter;
+            $userComposter->setComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserComposter(UserComposter $userComposter): self
+    {
+        if ($this->userComposters->contains($userComposter)) {
+            $this->userComposters->removeElement($userComposter);
+            // set the owning side to null (unless already changed)
+            if ($userComposter->getComposter() === $this) {
+                $userComposter->setComposter(null);
+            }
+        }
 
         return $this;
     }

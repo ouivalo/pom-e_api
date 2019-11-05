@@ -62,11 +62,17 @@ class User implements UserInterface
      */
     private $mcComposters;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\UserComposter", mappedBy="user", orphanRemoval=true)
+     */
+    private $userComposters;
+
 
     public function __construct()
     {
         $this->permanences = new ArrayCollection();
         $this->mcComposters = new ArrayCollection();
+        $this->userComposters = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -205,6 +211,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($mcComposter->getMc() === $this) {
                 $mcComposter->setMc(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UserComposter[]
+     */
+    public function getUserComposters(): Collection
+    {
+        return $this->userComposters;
+    }
+
+    public function addUserComposter(UserComposter $userComposter): self
+    {
+        if (!$this->userComposters->contains($userComposter)) {
+            $this->userComposters[] = $userComposter;
+            $userComposter->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserComposter(UserComposter $userComposter): self
+    {
+        if ($this->userComposters->contains($userComposter)) {
+            $this->userComposters->removeElement($userComposter);
+            // set the owning side to null (unless already changed)
+            if ($userComposter->getUser() === $this) {
+                $userComposter->setUser(null);
             }
         }
 
