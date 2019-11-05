@@ -1,39 +1,43 @@
 security:
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
-    encoders:
-        App\Entity\User:
-            algorithm: auto
+  # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+  encoders:
+    App\Entity\User:
+      algorithm: auto
 
+  role_hierarchy:
+    ROLE_OUVREUR: ROLE_USER
+    ROLE_REFERENT: ROLE_OUVREUR
+    ROLE_MC: ROLE_REFERENT
+    ROLE_ADMIN: ROLE_MC
 
-    role_hierarchy:
-        ROLE_OUVREUR:       ROLE_USER
-        ROLE_REFERENT:      ROLE_OUVREUR
-        ROLE_MC:            ROLE_REFERENT
-        ROLE_ADMIN:         ROLE_MC
+  providers:
+    app_user_provider:
+      entity:
+        class: App\Entity\User
+        property: email
+    # used to reload user from session & other features (e.g. switch_user)
+  access_control:
+    - { path: ^/api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    refresh:
+      pattern: ^/api/token/refresh
+      stateless: true
+      anonymous: true
+    main:
+      stateless: true
+      anonymous: true
+      provider: app_user_provider
+      json_login:
+        check_path: /login_check
+        username_path: email
+        password_path: password
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        require_previous_session: false
 
-    providers:
-        app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
-        # used to reload user from session & other features (e.g. switch_user)
-
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-        main:
-            stateless: true
-            anonymous: true
-            provider: app_user_provider
-            json_login:
-                check_path: /login_check
-                username_path: email
-                password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-                require_previous_session: false
-
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
+      guard:
+        authenticators:
+          - lexik_jwt_authentication.jwt_token_authenticator

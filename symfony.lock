@@ -98,6 +98,9 @@
             "src/DBAL/Types/.gitignore"
         ]
     },
+    "gesdinet/jwt-refresh-token-bundle": {
+        "version": "v0.8.2"
+    },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
     },
