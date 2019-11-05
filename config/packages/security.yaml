@@ -11,6 +11,11 @@ security:
     ROLE_ADMIN: ROLE_MC
 
   providers:
+    user_provider:
+      entity:
+        class: App\Entity\User
+        property: email
+
     app_user_provider:
       entity:
         class: App\Entity\User
