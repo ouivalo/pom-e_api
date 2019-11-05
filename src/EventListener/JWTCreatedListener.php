@@ -34,7 +34,7 @@ class JWTCreatedListener
     $payload = $event->getData();
     $composters = [];
 
-    foreach ($user->getComposters() as $comp) {
+    foreach ($user->getUserComposters() as $comp) {
       $composters[] = $comp->getId();
     }
     $payload['composters'] = $composters;
