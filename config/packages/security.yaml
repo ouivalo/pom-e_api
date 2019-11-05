@@ -15,11 +15,6 @@ security:
       entity:
         class: App\Entity\User
         property: email
-
-    app_user_provider:
-      entity:
-        class: App\Entity\User
-        property: email
     # used to reload user from session & other features (e.g. switch_user)
   access_control:
     - { path: ^/api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
@@ -34,7 +29,7 @@ security:
     main:
       stateless: true
       anonymous: true
-      provider: app_user_provider
+      provider: user_provider
       json_login:
         check_path: /login_check
         username_path: email
