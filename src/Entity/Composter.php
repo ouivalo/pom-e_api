@@ -190,11 +190,6 @@ class Composter
     private $reparations;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="composters")
-     */
-    private $users;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Categorie", inversedBy="composteurs")
      * @Groups({"composter"})
      */
@@ -214,7 +209,6 @@ class Composter
         $this->suivis = new ArrayCollection();
         $this->reparations = new ArrayCollection();
         $this->status = 'Active';
-        $this->users = new ArrayCollection();
     }
 
     public function __toString()
@@ -591,31 +585,6 @@ class Composter
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(User $user): self
-    {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->addComposter($this);
-        }
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            $user->removeComposter($this);
-        }
-
-        return $this;
-    }
 
     public function getCategorie(): ?Categorie
     {
