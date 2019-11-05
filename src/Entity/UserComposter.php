@@ -29,9 +29,9 @@ class UserComposter
     private $composter;
 
     /**
-     * @ORM\Column(type="enumstatus")
+     * @ORM\Column(type="enumcapability")
      */
-    private $role;
+    private $capability;
 
     public function getId(): ?int
     {
@@ -62,14 +62,14 @@ class UserComposter
         return $this;
     }
 
-    public function getRole()
+    public function getCapability()
     {
-        return $this->role;
+        return $this->capability;
     }
 
-    public function setRole($role): self
+    public function setCapability($capability): self
     {
-        $this->role = $role;
+        $this->capability = $capability;
 
         return $this;
     }
