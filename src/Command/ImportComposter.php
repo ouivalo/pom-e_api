@@ -4,6 +4,7 @@
 namespace App\Command;
 
 
+use App\DBAL\Types\StatusEnumType;
 use App\Entity\ApprovisionnementBroyat;
 use App\Entity\Categorie;
 use App\Entity\Commune;
@@ -34,7 +35,7 @@ class ImportComposter extends Command
     private $em;
     private $output;
 
-    public function __construct(EntityManagerInterface $entityManager )
+    public function __construct(EntityManagerInterface $entityManager)
     {
         parent::__construct();
         $this->em = $entityManager;
@@ -50,8 +51,7 @@ class ImportComposter extends Command
             // the full command description shown when running the command with
             // the "--help" option
             ->setHelp('Import all composter from ods file')
-            ->addArgument('filePath', InputArgument::REQUIRED, 'path du fichier ODS a importer')
-        ;
+            ->addArgument('filePath', InputArgument::REQUIRED, 'path du fichier ODS a importer');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -61,59 +61,165 @@ class ImportComposter extends Command
         $filePath = $input->getArgument('filePath');
 
 
-
         $reader = ReaderEntityFactory::createODSReader();
 
-        $reader->open( $filePath);
+        $reader->open($filePath);
         $composterCount = 0;
         foreach ($reader->getSheetIterator() as $key => $sheet) {
 
 
-            if( 1 === $key ){
+            if (1 === $key) {
                 foreach ($sheet->getRowIterator() as $rkey => $row) {
 
                     // Les deux premières lignes du doc sont des entête
-                    if( $rkey > 2 ){
+                    if ($rkey > 2) {
 
-                        $cells = $row->getCells();
-                        $this->importOnglet1( $cells );
-                        $this->em->flush();
-
-
-                        $composterCount++;
+//                        $cells = $row->getCells();
+//                        $this->importOnglet1( $cells );
+//                        $this->em->flush();
+//
+//
+//                        $composterCount++;
                     }
                 }
-            } else if( 2 === $key ){
+            } else if (2 === $key) {
                 foreach ($sheet->getRowIterator() as $rkey => $row) {
 
                     // Les deux premières lignes du doc sont des entête
-                    if( $rkey > 2 ){
+                    if ($rkey > 2) {
 
 //                        $cells = $row->getCells();
 //                        $this->importOnglet2( $cells );
 //                        $this->em->flush();
                     }
                 }
-            } else if( 3 === $key ){
+            } else if (3 === $key) {
                 foreach ($sheet->getRowIterator() as $rkey => $row) {
 
                     // Les deux premières lignes du doc sont des entête
-                    if( $rkey > 2 ){
+                    if ($rkey > 2) {
 
 //                        $cells = $row->getCells();
 //                        $this->importOnglet3( $cells );
 //                        $this->em->flush();
                     }
                 }
+            } else if (5 === $key) {
+                foreach ($sheet->getRowIterator() as $rkey => $row) {
+
+                    // La première ligne du doc sont des entête
+                    if ($rkey > 1) {
+
+                        $cells = $row->getCells();
+                        $this->importOnglet5($cells);
+                        $this->em->flush();
+                    }
+                }
             }
         }
-        $output->writeln( "Import de {$composterCount} compsteurs"  );
+        $output->writeln("Import de {$composterCount} compsteurs");
 
         $reader->close();
 
 
     }
 
+    /**
+     * @param $cells
+     * @throws Exception
+     */
+    private function importOnglet5($cells): void
+    {
+
+        $composterRepository = $this->em->getRepository(Composter::class);
+        $pavillonsRepository = $this->em->getRepository(PavilionsVolume::class);
+        $communeRepository = $this->em->getRepository(Commune::class);
+        $catRepository = $this->em->getRepository(Categorie::class);
+
+
+        $name = $cells[1]->getValue();
+        if( empty( $name ) || 'NOM DU SITE' === $name ){
+            return;
+        }
+
+        $composter = $composterRepository->findOneBy( [ 'name' => $name ] );
+        if( ! $composter ){
+            $this->output->writeln( "Pas trouvé le composter '{$name}'"  );
+            $composter = new Composter();
+            $composter->setName( $name );
+            $composter->setAddress( '' );
+        }
+
+        // Status
+        $status = $cells[7]->getValue();
+        $cat = $catRepository->find( 1 );
+        switch ( $status ){
+            case 'déplacé';
+                $status = StatusEnumType::MOVED;
+                break;
+            case 'supprimé';
+            case 'existant réaffecté';
+                $status = StatusEnumType::DELETE;
+                break;
+            case 'à déplacer';
+            case 'à déplacer ?';
+                $status = StatusEnumType::TO_BE_MOVED;
+                break;
+            case 'en dormance';
+                $status = StatusEnumType::DORMANT;
+                break;
+            case 'composteur école et quartier en dormance';
+            case 'composteur école en dormance';
+                $status = StatusEnumType::DORMANT;
+                $cat = $catRepository->find( 3 );
+                break;
+        }
+
+        $composter->setCategorie( $cat );
+        $composter->setStatus( $status );
+
+        // PavilionsVolume
+        $volumeName = $cells[2]->getValue();
+        $pavillonsVolume = $pavillonsRepository->findOneBy( [ 'volume' => $volumeName]);
+        if( ! $pavillonsVolume ) {
+            $pavillonsVolume = new PavilionsVolume();
+            $pavillonsVolume->setVolume( $volumeName );
+            $this->em->persist( $pavillonsVolume );
+            $this->em->flush();
+            $this->output->writeln( "PavilionsVolume créée : '{$volumeName}'"  );
+        }
+        $composter->setPavilionsVolume( $pavillonsVolume );
+
+        // Commune
+        $communeName = $cells[3]->getValue();
+
+        $commune = $communeRepository->findOneBy( [ 'name' => $communeName ] );
+        if( ! $commune ){
+            $commune = new Commune();
+            $commune->setName( $communeName );
+            $this->em->persist( $commune );
+            $this->em->flush();
+        }
+        $composter->setCommune( $commune );
+
+        // Description
+        $oldDescription = $composter->getDescription();
+        $newDescription = $cells[4]->getValue();
+        if( $newDescription instanceof DateTime ){
+            $newDescription = $newDescription->format( 'd/m/Y');
+        }
+        $newDescription .= "\n{$cells[5]->getValue()}";
+        $newDescription .= "\n{$cells[6]->getValue()}";
+
+        if( $oldDescription ){
+            $newDescription = "{$oldDescription}\n{$newDescription}";
+        }
+
+        $composter->setDescription( $newDescription );
+
+        // Persist
+        $this->em->persist( $composter );
+    }
     /**
      * @param $cells
      * @throws Exception
