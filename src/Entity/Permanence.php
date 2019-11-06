@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: arnaudbanvillet
@@ -29,7 +30,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ApiResource(
  *     attributes={"security"="is_granted('ROLE_USER')"},
  *     collectionOperations={"get"},
- *     itemOperations={"get"},
+ *     itemOperations={
+ *         "get",
+ *         "put"={"security"="is_granted('Referent', object)"}
+ *     },
  *     normalizationContext={"groups"={"permanence"}}
  * )
  * @ApiFilter(OrderFilter::class, properties={"date":"ASC"})
@@ -128,11 +132,13 @@ class Permanence
     public $hasUsersBeenNotify;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->openers = new ArrayCollection();
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->getDate()->format('Y-m-d H:i:s');
     }
 
@@ -204,7 +210,7 @@ class Permanence
 
         return $this;
     }
-    
+
 
     public function getNbUsers()
     {
@@ -277,5 +283,4 @@ class Permanence
 
         return $this;
     }
-
 }

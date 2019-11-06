@@ -19,7 +19,7 @@ class ComposterController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function getCompostersGeojson(  Request $request ) : Response
+    public function getCompostersGeojson(Request $request): Response
     {
         $composters =  $this->getDoctrine()
             ->getRepository(Composter::class)
@@ -28,8 +28,8 @@ class ComposterController extends AbstractController
         // On prépare un GeoJSON de centre formater le l'affichage sur la carte
         $features = [];
         /** @var Composter $c */
-        foreach ( $composters as $c ){
-            $features[] =[
+        foreach ($composters as $c) {
+            $features[] = [
                 'type'  => 'Feature',
                 'geometry' => array(
                     'type' => 'Point',
@@ -49,6 +49,6 @@ class ComposterController extends AbstractController
             'features'  => $features,
         ];
 
-        return $this->json( $geojson );
+        return $this->json($geojson);
     }
 }
