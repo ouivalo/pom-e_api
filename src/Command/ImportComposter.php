@@ -21,6 +21,7 @@ use Box\Spout\Common\Entity\Cell;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use PhpParser\Node\Scalar\String_;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -104,15 +105,26 @@ class ImportComposter extends Command
 //                        $this->em->flush();
                     }
                 }
-            } else if (5 === $key) {
+            } else if ( 4 === $key) {
                 foreach ($sheet->getRowIterator() as $rkey => $row) {
 
                     // La première ligne du doc sont des entête
                     if ($rkey > 1) {
 
                         $cells = $row->getCells();
-                        $this->importOnglet5($cells);
+                        $this->importOnglet4($cells);
                         $this->em->flush();
+                    }
+                }
+            } else if (5 === $key) {
+                foreach ($sheet->getRowIterator() as $rkey => $row) {
+
+                    // La première ligne du doc sont des entête
+                    if ($rkey > 1) {
+
+//                        $cells = $row->getCells();
+//                        $this->importOnglet5($cells);
+//                        $this->em->flush();
                     }
                 }
             }
@@ -220,6 +232,63 @@ class ImportComposter extends Command
         // Persist
         $this->em->persist( $composter );
     }
+
+
+    /**
+     * @param $cells
+     * @throws Exception
+     */
+    private function importOnglet4($cells): void
+    {
+
+        $communeRepository = $this->em->getRepository(Commune::class);
+        $catRepository = $this->em->getRepository(Categorie::class);
+
+
+        $name = $cells[1]->getValue();
+        if( empty( $name ) ){
+            return;
+        }
+
+        $composter = $this->getComposterByName( $name );
+
+
+        // Status
+        $status = $cells[0]->getValue() === 'En dormance' ? StatusEnumType::DORMANT : StatusEnumType::IN_PROJECT;
+        $composter->setStatus( $status );
+
+        // Addresse
+        $composter->setAddress( $cells[2]->getValue() );
+
+        // Commune
+        $commune = $this->getCommuneByName( $cells[3]->getValue() );
+        $composter->setCommune( $commune );
+
+        // Quartier
+        $quartierName = $cells[4]->getValue();
+        if( ! empty($quartierName )){
+            $quartier = $this->getQuartierByName( $quartierName );
+            $composter->setQuartier( $quartier );
+        }
+
+        // TODO Import finnanceur
+
+        // Catégorie
+        $composter->setCategorie( $catRepository->find( 1) );
+
+        // PavilionsVolume
+        $pavillons = $this->getPavillonsByVolume( $cells[13]->getValue() );
+        if( $pavillons ){
+            $composter->setPavilionsVolume( $pavillons );
+        }
+
+        // Description
+        $composter->setDescription( $cells[31]->getValue() );
+
+        // Persist
+        $this->em->persist( $composter );
+    }
+
     /**
      * @param $cells
      * @throws Exception
@@ -629,4 +698,104 @@ class ImportComposter extends Command
 
         return $dateFormated;
     }
+
+    /**
+     * @param String $name
+     * @return Composter
+     */
+    private function getComposterByName( String $name ) : Composter
+    {
+
+        $composterRepository = $this->em->getRepository(Composter::class);
+
+        $composter = $composterRepository->findOneBy( [ 'name' => $name ] );
+        if( ! $composter ){
+            $composter = new Composter();
+            $composter->setName( $name );
+            $composter->setAddress( '' );
+            $this->output->writeln( "Composteur créée'{$name}'"  );
+        }
+
+        return $composter;
+    }
+
+
+    private function getCommuneByName( String $name ) : ? Commune
+    {
+        if( empty( $name ) ){
+            return null;
+        }
+
+        $communeRepository = $this->em->getRepository(Commune::class);
+
+        $commune = $communeRepository->findOneBy( [ 'name' => $name ] );
+        if( ! $commune ){
+            $commune = new Commune();
+            $commune->setName( $name );
+            $this->em->persist( $commune );
+            $this->em->flush();
+            $this->output->writeln( "Commune créé '{$name}'"  );
+        }
+
+        return $commune;
+    }
+
+
+    /**
+     * @param String $quartierName
+     * @return Quartier
+     */
+    private function getQuartierByName( String $quartierName ) : ? Quartier
+    {
+
+        if( empty( $quartierName ) ){
+            return null;
+        }
+
+        $quartierRepository     = $this->em->getRepository(Quartier::class);
+
+        if( $quartierName === 'Ile de Nantes' || $quartierName === 'Nantes Ile de Nantes'){
+            $quartierName =  'Nantes Île-de-Nantes';
+        } elseif ( $quartierName === 'Dervallières Zola') {
+            $quartierName =  'Nantes Dervallières-Zola';
+        } elseif ( $quartierName === 'Nantes Malakoff – Saint-Donatien') {
+            $quartierName =  'Nantes Malakoff - Saint-Donatien';
+        } elseif ( $quartierName === 'Breil Barberie') {
+            $quartierName =  'Nantes Breil-Barberie';
+        }
+
+        $quartier = $quartierRepository->findOneBy( [ 'name' => $quartierName ] );
+
+        if( ! $quartier ){
+            $quartier = new Quartier();
+            $quartier->setName( $quartierName );
+            $this->em->persist( $quartier );
+            $this->em->flush();
+            $this->output->writeln( "Quartier créé : {$quartier->getName()}"  );
+        }
+        return $quartier;
+    }
+
+
+    private function getPavillonsByVolume( String $volume ) : ? PavilionsVolume
+    {
+        if( empty( $volume ) ){
+            return null;
+        }
+
+        $pavillonsRepository = $this->em->getRepository(PavilionsVolume::class);
+
+        $pavillonsVolume = $pavillonsRepository->findOneBy( [ 'volume' => $volume]);
+
+        if( ! $pavillonsVolume ) {
+            $pavillonsVolume = new PavilionsVolume();
+            $pavillonsVolume->setVolume($volume);
+            $this->em->persist($pavillonsVolume);
+            $this->em->flush();
+            $this->output->writeln("PavilionsVolume créée : '{$volume}'");
+        }
+
+        return $pavillonsVolume;
+    }
+
 }
