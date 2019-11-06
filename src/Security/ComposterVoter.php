@@ -53,7 +53,5 @@ class ComposterVoter extends Voter
       }
     }
     return $grant;
-
-    throw new \LogicException('This code should not be reached!');
   }
 }
