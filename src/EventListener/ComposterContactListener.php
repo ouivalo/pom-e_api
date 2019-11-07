@@ -17,10 +17,19 @@ class ComposterContactListener
     {
         $composter = $composterContact->getComposter();
         $name = $composter->getName();
+        $mc = $composter->getMc();
 
-        // Send an email to all recipients of composter
-        // get recipients
         $recipients = [];
+
+        // On ajoute le maitre composteur à la liste des destinataires
+        if(isset($mc)) {
+            $recipients[] = [
+                'Email' => $mc->getEmail(),
+                'Name' => $mc->getUsername()
+            ];
+        }
+
+        // Plus tous les référents qui sont ok pour être destinataires
         foreach ($composter->getUserComposters() as $userC) {
             $user = $userC->getUser();
             $recipients[] = [
