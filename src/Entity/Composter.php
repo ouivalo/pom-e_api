@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,6 +11,7 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Composter. Lieux ou l'on transform les bio déchets en composte
@@ -30,6 +32,7 @@ class Composter
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"composter", "suivis", "livraison"})
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
@@ -41,6 +44,17 @@ class Composter
      * @Groups({"composter", "suivis", "livraison", "reparation"})
      */
     private $name;
+
+    /**
+     * @var string The slug of the composter
+     *
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @Gedmo\Slug(fields={"name"})
+     * @Groups({"composter", "suivis", "livraison"})
+     * @ApiProperty(identifier=true)
+     */
+    private $slug;
+
 
     /**
      * @var string The short description of the composter to be shown on the composter page
@@ -235,6 +249,18 @@ class Composter
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }
