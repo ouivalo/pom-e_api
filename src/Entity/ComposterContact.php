@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource()
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="App\Repository\ComposterContactRepository")
  */
 class ComposterContact
@@ -107,5 +108,13 @@ class ComposterContact
         $this->composter = $composter;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setInitialDate()
+    {
+        $this->creationDate = new \DateTime();
     }
 }
