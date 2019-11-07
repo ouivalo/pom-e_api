@@ -122,10 +122,10 @@ class Composter
     private $mc;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
-    private $cadena;
+    private $openingProcedures;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\ApprovisionnementBroyat", inversedBy="composters")
@@ -390,14 +390,14 @@ class Composter
         return $this;
     }
 
-    public function getCadena(): ?string
+    public function getOpeningProcedures(): ?string
     {
-        return $this->cadena;
+        return $this->openingProcedures;
     }
 
-    public function setCadena(?string $cadena): self
+    public function setOpeningProcedures(?string $openingProcedures): self
     {
-        $this->cadena = $cadena;
+        $this->openingProcedures = $openingProcedures;
 
         return $this;
     }
