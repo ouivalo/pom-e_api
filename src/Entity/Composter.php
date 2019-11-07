@@ -220,6 +220,11 @@ class Composter
      */
     private $userComposters;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\ComposterContact", mappedBy="composter", orphanRemoval=true)
+     */
+    private $composterContacts;
+
 
     public function __construct()
     {
@@ -229,6 +234,7 @@ class Composter
         $this->reparations = new ArrayCollection();
         $this->status = 'Active';
         $this->userComposters = new ArrayCollection();
+        $this->composterContacts = new ArrayCollection();
     }
 
     public function __toString()
@@ -667,6 +673,37 @@ class Composter
             // set the owning side to null (unless already changed)
             if ($userComposter->getComposter() === $this) {
                 $userComposter->setComposter(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ComposterContact[]
+     */
+    public function getComposterContacts(): Collection
+    {
+        return $this->composterContacts;
+    }
+
+    public function addComposterContact(ComposterContact $composterContact): self
+    {
+        if (!$this->composterContacts->contains($composterContact)) {
+            $this->composterContacts[] = $composterContact;
+            $composterContact->setComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComposterContact(ComposterContact $composterContact): self
+    {
+        if ($this->composterContacts->contains($composterContact)) {
+            $this->composterContacts->removeElement($composterContact);
+            // set the owning side to null (unless already changed)
+            if ($composterContact->getComposter() === $this) {
+                $composterContact->setComposter(null);
             }
         }
 
