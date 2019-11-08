@@ -225,6 +225,11 @@ class Composter
      */
     private $composterContacts;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default":true})
+     */
+    private $acceptNewMembers;
+
 
     public function __construct()
     {
@@ -706,6 +711,18 @@ class Composter
                 $composterContact->setComposter(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAcceptNewMembers(): ?bool
+    {
+        return $this->acceptNewMembers;
+    }
+
+    public function setAcceptNewMembers(bool $acceptNewMembers): self
+    {
+        $this->acceptNewMembers = $acceptNewMembers;
 
         return $this;
     }
