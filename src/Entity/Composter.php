@@ -226,7 +226,7 @@ class Composter
     private $composterContacts;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default":true})
      */
     private $acceptNewMembers;
 
