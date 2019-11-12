@@ -12,6 +12,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Composter. Lieux ou l'on transform les bio déchets en composte
@@ -229,6 +231,15 @@ class Composter
      * @ORM\Column(type="boolean", options={"default":true})
      */
     private $acceptNewMembers;
+
+    /**
+     * @var MediaObject|null
+     * 
+     * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject")
+     * @ORM\JoinColumn(nullable=true)
+     * @ApiProperty(iri="http://schema.org/image")
+     */
+    private $image;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -731,6 +742,16 @@ class Composter
         $this->acceptNewMembers = $acceptNewMembers;
 
         return $this;
+    }
+
+    public function getImage(): ?MediaObject
+    {
+        return $this->image;
+    }
+
+    public function setImage(?MediaObject $image): self
+    {
+        $this->image = $image;
     }
 
     public function getPermanencesRule(): ?string
