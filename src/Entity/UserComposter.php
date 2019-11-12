@@ -33,6 +33,21 @@ class UserComposter
      */
     private $capability;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default":true})
+     */
+    private $notif;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":false})
+     */
+    private $newsletter;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":false})
+     */
+    private $composterContactReceiver;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +85,42 @@ class UserComposter
     public function setCapability($capability): self
     {
         $this->capability = $capability;
+
+        return $this;
+    }
+
+    public function getNotif(): ?bool
+    {
+        return $this->notif;
+    }
+
+    public function setNotif(bool $notif): self
+    {
+        $this->notif = $notif;
+
+        return $this;
+    }
+
+    public function getNewsletter(): ?bool
+    {
+        return $this->newsletter;
+    }
+
+    public function setNewsletter(bool $newsletter): self
+    {
+        $this->newsletter = $newsletter;
+
+        return $this;
+    }
+
+    public function getComposterContactReceiver(): ?bool
+    {
+        return $this->composterContactReceiver;
+    }
+
+    public function setComposterContactReceiver(bool $composterContactReceiver): self
+    {
+        $this->composterContactReceiver = $composterContactReceiver;
 
         return $this;
     }
