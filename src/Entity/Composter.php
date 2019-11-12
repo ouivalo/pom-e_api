@@ -240,6 +240,8 @@ class Composter
      * @ApiProperty(iri="http://schema.org/image")
      */
     private $image;
+
+    /**
      * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
@@ -750,6 +752,8 @@ class Composter
     public function setImage(?MediaObject $image): self
     {
         $this->image = $image;
+    }
+
     public function getPermanencesRule(): ?string
     {
         return $this->permanencesRule;
