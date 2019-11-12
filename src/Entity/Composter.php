@@ -230,6 +230,12 @@ class Composter
      */
     private $acceptNewMembers;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"composter"})
+     */
+    private $permanencesRule;
+
 
     public function __construct()
     {
@@ -723,6 +729,18 @@ class Composter
     public function setAcceptNewMembers(bool $acceptNewMembers): self
     {
         $this->acceptNewMembers = $acceptNewMembers;
+
+        return $this;
+    }
+
+    public function getPermanencesRule(): ?string
+    {
+        return $this->permanencesRule;
+    }
+
+    public function setPermanencesRule(?string $permanencesRule): self
+    {
+        $this->permanencesRule = $permanencesRule;
 
         return $this;
     }
