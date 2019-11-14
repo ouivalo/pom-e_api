@@ -22,7 +22,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @ApiResource(
  *     normalizationContext={"groups"={"composter"}}
  * )
- * @ApiFilter(SearchFilter::class, properties={"commune": "exact","quartier": "exact","pole": "exact","pavilionsVolume": "exact","name" : "partial"})
+ * @ApiFilter(SearchFilter::class, properties={"commune": "exact","quartier": "exact","pole": "exact","pavilionsVolume": "exact","categorie": "exact","name" : "partial"})
  * @ApiFilter(OrderFilter::class, properties={"id", "DateMiseEnRoute"}, arguments={"orderParameterName"="order"})
  */
 class Composter
