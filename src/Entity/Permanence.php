@@ -29,10 +29,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *
  * @ApiResource(
  *     attributes={"security"="is_granted('ROLE_USER')"},
- *     collectionOperations={"get"},
+ *     collectionOperations={
+ *          "get",
+ *          "post"={"security"="is_granted('Opener', object)"}
+ *     },
  *     itemOperations={
  *         "get",
- *         "put"={"security"="is_granted('Referent', object)"}
+ *         "put"={"security"="is_granted('Opener', object)"},
+ *         "delete"={"security"="is_granted('Referent', object)"}
  *     },
  *     normalizationContext={"groups"={"permanence"}}
  * )
@@ -63,7 +67,7 @@ class Permanence
     /**
      * @var \Boolean Permanence is canceled
      *
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default" : false})
      * @Groups({"permanence"})
      */
     public $canceled;
@@ -135,6 +139,8 @@ class Permanence
     public function __construct()
     {
         $this->openers = new ArrayCollection();
+        $this->canceled = false;
+        $this->hasUsersBeenNotify = false;
     }
 
     public function __toString()

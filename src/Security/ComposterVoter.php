@@ -3,55 +3,134 @@
 namespace App\Security;
 
 use App\Entity\Composter;
+use App\Entity\Permanence;
 use App\Entity\User;
+use App\Repository\ComposterRepository;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ComposterVoter extends Voter
 {
-  // these strings are just invented: you can use anything
-  const OPENER = 'Opener';
-  const REFERENT = 'Referent';
+    // these strings are just invented: you can use anything
+    const OPENER = 'Opener';
+    const REFERENT = 'Referent';
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
 
-  protected function supports($attribute, $subject)
-  {
-    // if the attribute isn't one we support, return false
-    if (!in_array($attribute, [self::OPENER, self::REFERENT])) {
-      return false;
+    /**
+     * @var ComposterRepository
+     */
+    private $composterRepository;
+
+
+    public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager )
+    {
+        $this->requestStack = $requestStack;
+        $this->composterRepository = $entityManager->getRepository(Composter::class);
     }
 
-    // only vote on Post objects inside this voter
-    if (!$subject instanceof Composter) {
-      return false;
+    protected function supports($attribute, $subject) : bool
+    {
+
+        $supports = in_array($attribute, [self::OPENER, self::REFERENT], true) &&
+            ( $subject instanceof Composter || $subject instanceof Permanence);
+
+        if( ! $supports ) {
+            // Si $subject est null on est peut être sur une création
+            $currentRequest = $this->requestStack->getCurrentRequest();
+            $supports = $subject === null && $currentRequest instanceof Request && $currentRequest->getMethod() === 'POST';
+        }
+        return $supports;
+
     }
 
-    return true;
-  }
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token) : bool
+    {
+        $grant = false;
 
-  protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
-  {
-    $user = $token->getUser();
+        $roles = $token->getRoleNames();
+        $user = $token->getUser();
+        if ( in_array( 'ROLE_ADMIN', $roles, true )) {
+          return true;
+        }
 
-    if (!$user instanceof User) {
-      // the user must be logged in; if not, deny access
-      return false;
+        $currentRequest = $this->requestStack->getCurrentRequest();
+
+        // $subject is a Composter or Permanence or null if POST method
+        $composter = null;
+        if( $subject instanceof Composter ){
+            $composter = $subject;
+        } elseif ( $subject instanceof Permanence ){
+            $composter = $subject->getComposter();
+        } else {
+            // On est sur la création d'une entité
+            if( $currentRequest && $currentRequest->getPathInfo() === '/permanences'){
+                // On tente de créer une permanence
+                $request_body = json_decode($currentRequest->getContent(), false);
+                $composter_string = $request_body->composter;
+                $composter_url_array = explode( '/', $composter_string);
+                $composter_slug = end($composter_url_array );
+                $composter = $this->composterRepository->findOneBy(['slug' => $composter_slug]);
+            }
+        }
+
+        if( ! $composter instanceof Composter ){
+            return false;
+        }
+
+        // Les référents on les même droit que les ouvreurs
+        $attribute_array = $attribute === $this::OPENER ? [ $this::OPENER, $this::REFERENT ] : $attribute;
+
+        // On vérifie que le user est bien rattaché au composteur
+        foreach ($user->getUserComposters() as $userComposter) {
+          if ( in_array($userComposter->getCapability(), $attribute_array, true) &&
+            $userComposter->getComposter()->getId() === $composter->getId() ) {
+            $grant = true;
+          }
+        }
+
+        // Dans le cas d'un ouvreur on vérifie qu'il modifie ou supprime uniquement une permance ou il est inscrit
+        if( $grant && $attribute === $this::OPENER && $subject instanceof Permanence ){
+            $grant = false;
+            if( $currentRequest && $currentRequest->getMethod() === 'PUT' ){
+                // On récupére les ids des ouvreurs de la permanence
+                $openers = $subject->getOpeners();
+                $openers_ids = array_map( static function( User $opener ){ return $opener->getId(); }, $openers->toArray() );
+
+                // On récupérer les ids des ouvreurs de la requette
+                $request_body = json_decode($currentRequest->getContent(), false);
+
+                // Si il modifie la liste des ouveurs
+                if( property_exists( $request_body, 'openers') ){
+
+                    $request_openers = $request_body->openers;
+                    $openers_request_ids = array_map(
+                        static function( string $opener ){ $opener_a = explode( '/', $opener); return (int) end( $opener_a ); },
+                        $request_openers );
+
+                    // On vérifie qu'il n'y a que le user comme différence
+                    $diff = null;
+                    if( count( $openers_ids ) > count( $openers_request_ids ) ){
+                        $diff = array_diff( $openers_ids, $openers_request_ids );
+                    } else {
+                        $diff = array_diff( $openers_request_ids, $openers_ids );
+                    }
+
+                    $grant = count( $diff ) === 1 && array_shift( $diff) === $user->getID();
+                } else {
+
+                    // TODO peut être vérifier ici qu'il ne modifie que les données des stats
+                    $grant = true;
+                }
+
+            }
+        }
+
+        return $grant;
     }
-
-    if (in_array('ROLE_ADMIN', $user->getRoles())) {
-      return true;
-    }
-
-
-
-    // you know $subject is a Composter object, thanks to supports
-    /** @var Composter $composter */
-    $composter = $subject;
-    $grant = false;
-    foreach ($user->getUserComposters() as $comp) {
-      if ($comp->getComposter()->getId() === $composter->getId() && $comp->getCapability() === $attribute) {
-        $grant = true;
-      }
-    }
-    return $grant;
-  }
 }
