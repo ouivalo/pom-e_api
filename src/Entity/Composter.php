@@ -43,7 +43,7 @@ class Composter
      * @var string The name of the composter
      *
      * @ORM\Column
-     * @Groups({"composter", "suivis", "livraison", "reparation"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence"})
      */
     private $name;
 
@@ -52,7 +52,7 @@ class Composter
      *
      * @ORM\Column(type="string", length=255, unique=true)
      * @Gedmo\Slug(fields={"name"})
-     * @Groups({"composter", "suivis", "livraison"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence"})
      * @ApiProperty(identifier=true)
      */
     private $slug;

@@ -84,6 +84,7 @@ class Permanence
      * @var Composter of the permanence
      *
      * @ORM\ManyToOne(targetEntity="Composter", inversedBy="permanences")
+     * @Groups({"permanence"})
      */
     public $composter;
 
