@@ -68,6 +68,7 @@ class User implements UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\UserComposter", mappedBy="user", orphanRemoval=true)
+     * @Groups({"user:read"})
      */
     private $userComposters;
 

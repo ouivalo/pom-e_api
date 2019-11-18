@@ -27,12 +27,13 @@ class UserComposter
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Composter", inversedBy="userComposters")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"user:read"})
      */
     private $composter;
 
     /**
      * @ORM\Column(type="enumcapability")
-     * @Groups({"composter"})
+     * @Groups({"composter", "user:read"})
      */
     private $capability;
 
