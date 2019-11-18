@@ -39,6 +39,7 @@ class JWTCreatedListener
     }
     $payload['composters'] = $composters;
     $payload['username'] = $user->getUsername();
+    $payload['userId'] = $user->getId();
 
     $event->setData($payload);
 

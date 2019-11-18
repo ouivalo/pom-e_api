@@ -73,11 +73,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, nullable=true)
+     * @Groups({"user"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=180, nullable=true)
+     * @Groups({"user"})
      */
     private $firstname;
 
