@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserComposterRepository")
@@ -19,6 +20,7 @@ class UserComposter
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userComposters")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"composter"})
      */
     private $user;
 
@@ -30,6 +32,7 @@ class UserComposter
 
     /**
      * @ORM\Column(type="enumcapability")
+     * @Groups({"composter"})
      */
     private $capability;
 

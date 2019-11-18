@@ -219,6 +219,7 @@ class Composter
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\UserComposter", mappedBy="composter", orphanRemoval=true)
+     * @Groups({"composter"})
      */
     private $userComposters;
 
