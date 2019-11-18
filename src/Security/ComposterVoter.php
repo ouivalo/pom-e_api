@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\Composter;
 use App\Entity\Permanence;
+use App\Entity\User;
 use App\Repository\ComposterRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,14 +59,16 @@ class ComposterVoter extends Voter
           return true;
         }
 
-        // $subject is a Composter or Permanence
+        $currentRequest = $this->requestStack->getCurrentRequest();
+
+        // $subject is a Composter or Permanence or null if POST method
+        $composter = null;
         if( $subject instanceof Composter ){
             $composter = $subject;
         } elseif ( $subject instanceof Permanence ){
             $composter = $subject->getComposter();
         } else {
             // On est sur la création d'une entité
-            $currentRequest = $this->requestStack->getCurrentRequest();
             if( $currentRequest && $currentRequest->getPathInfo() === '/permanences'){
                 // On tente de créer une permanence
                 $request_body = json_decode($currentRequest->getContent(), false);
@@ -73,8 +76,6 @@ class ComposterVoter extends Voter
                 $composter_url_array = explode( '/', $composter_string);
                 $composter_slug = end($composter_url_array );
                 $composter = $this->composterRepository->findOneBy(['slug' => $composter_slug]);
-            } else {
-                return false;
             }
         }
 
@@ -82,12 +83,54 @@ class ComposterVoter extends Voter
             return false;
         }
 
+        // Les référents on les même droit que les ouvreurs
+        $attribute_array = $attribute === $this::OPENER ? [ $this::OPENER, $this::REFERENT ] : $attribute;
+
+        // On vérifie que le user est bien rattaché au composteur
         foreach ($user->getUserComposters() as $userComposter) {
-          if ( $userComposter->getCapability() === $attribute  &&
+          if ( in_array($userComposter->getCapability(), $attribute_array, true) &&
             $userComposter->getComposter()->getId() === $composter->getId() ) {
             $grant = true;
           }
         }
+
+        // Dans le cas d'un ouvreur on vérifie qu'il modifie ou supprime uniquement une permance ou il est inscrit
+        if( $grant && $attribute === $this::OPENER && $subject instanceof Permanence ){
+            $grant = false;
+            if( $currentRequest && $currentRequest->getMethod() === 'PUT' ){
+                // On récupére les ids des ouvreurs de la permanence
+                $openers = $subject->getOpeners();
+                $openers_ids = array_map( static function( User $opener ){ return $opener->getId(); }, $openers->toArray() );
+
+                // On récupérer les ids des ouvreurs de la requette
+                $request_body = json_decode($currentRequest->getContent(), false);
+
+                // Si il modifie la liste des ouveurs
+                if( property_exists( $request_body, 'openers') ){
+
+                    $request_openers = $request_body->openers;
+                    $openers_request_ids = array_map(
+                        static function( string $opener ){ $opener_a = explode( '/', $opener); return (int) end( $opener_a ); },
+                        $request_openers );
+
+                    // On vérifie qu'il n'y a que le user comme différence
+                    $diff = null;
+                    if( count( $openers_ids ) > count( $openers_request_ids ) ){
+                        $diff = array_diff( $openers_ids, $openers_request_ids );
+                    } else {
+                        $diff = array_diff( $openers_request_ids, $openers_ids );
+                    }
+
+                    $grant = count( $diff ) === 1 && array_shift( $diff) === $user->getID();
+                } else {
+
+                    // TODO peut être vérifier ici qu'il ne modifie que les données des stats
+                    $grant = true;
+                }
+
+            }
+        }
+
         return $grant;
     }
 }
