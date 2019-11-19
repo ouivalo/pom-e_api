@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -63,6 +65,16 @@ class Reparation
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $nature;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\MediaObject")
+     */
+    private $gallery;
+
+    public function __construct()
+    {
+        $this->gallery = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -149,6 +161,32 @@ class Reparation
     public function setNature(?string $nature): self
     {
         $this->nature = $nature;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MediaObject[]
+     */
+    public function getGallery(): Collection
+    {
+        return $this->gallery;
+    }
+
+    public function addGallery(MediaObject $gallery): self
+    {
+        if (!$this->gallery->contains($gallery)) {
+            $this->gallery[] = $gallery;
+        }
+
+        return $this;
+    }
+
+    public function removeGallery(MediaObject $gallery): self
+    {
+        if ($this->gallery->contains($gallery)) {
+            $this->gallery->removeElement($gallery);
+        }
 
         return $this;
     }
