@@ -38,7 +38,7 @@ class JWTCreatedListener
       $composters[] = [
           'slug'        => $comp->getComposter()->getSlug(),
           'name'        => $comp->getComposter()->getName(),
-          'capability'  => $comp->capability()
+          'capability'  => $comp->getCapability()
       ];
     }
     $payload['composters'] = $composters;
