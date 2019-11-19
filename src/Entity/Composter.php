@@ -236,7 +236,7 @@ class Composter
     private $composterContacts;
 
     /**
-     * @ORM\Column(type="boolean", options={"default":true})
+     * @ORM\Column(type="enumbroyat", options={"default":"Full"})
      * @Groups({"composter"})
      */
     private $acceptNewMembers;
