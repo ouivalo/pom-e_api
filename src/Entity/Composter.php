@@ -237,6 +237,7 @@ class Composter
 
     /**
      * @ORM\Column(type="boolean", options={"default":true})
+     * @Groups({"composter"})
      */
     private $acceptNewMembers;
 
@@ -245,6 +246,7 @@ class Composter
      * 
      * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"composter"})
      * @ApiProperty(iri="http://schema.org/image")
      */
     private $image;
@@ -760,6 +762,7 @@ class Composter
     public function setImage(?MediaObject $image): self
     {
         $this->image = $image;
+        return $this;
     }
 
     public function getPermanencesRule(): ?string

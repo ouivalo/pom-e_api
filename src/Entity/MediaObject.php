@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 
 /**
  * @ORM\Entity
@@ -66,7 +68,7 @@ class MediaObject
    * @var string|null
    *
    * @ApiProperty(iri="http://schema.org/contentUrl")
-   * @Groups({"media_object_read"})
+   * @Groups({"media_object_read", "composter"})
    */
   public $contentUrl;
 
@@ -84,6 +86,17 @@ class MediaObject
    * @ORM\Column(nullable=true)
    */
   public $filePath;
+
+  public function __construct(StorageInterface $storage)
+  {
+    $this->storage = $storage;
+  }
+
+  // L'event preserialize ne fonctionne pas sur les composter, je renvoie donc toujours la valeur en dur
+  public function getContentUrl()
+  {
+    return '/media/' . $this->filePath;
+  }
 
   public function getId(): ?int
   {
