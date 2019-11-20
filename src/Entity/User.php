@@ -33,13 +33,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180)
-     * @Groups({"user","permanence", "composter"})
+     * @Groups({"user","permanence", "composter", "userComposter"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"user","permanence", "composter"})
+     * @Groups({"user","permanence", "composter", "userComposter"})
      */
     private $email;
 
@@ -74,13 +74,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, nullable=true)
-     * @Groups({"user"})
+     * @Groups({"user", "userComposter"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=180, nullable=true)
-     * @Groups({"user"})
+     * @Groups({"user", "userComposter"})
      */
     private $firstname;
 

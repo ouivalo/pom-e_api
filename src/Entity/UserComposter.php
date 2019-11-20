@@ -2,11 +2,22 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
+ * @ApiResource(
+ *     attributes={"security"="is_granted('ROLE_USER')"},
+ *     normalizationContext={"groups"={"userComposter"}}
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\UserComposterRepository")
+ * @ApiFilter(SearchFilter::class, properties={
+ *
+ *     "composter"    : "exact"
+ * })
  */
 class UserComposter
 {
@@ -20,20 +31,20 @@ class UserComposter
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userComposters")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"composter"})
+     * @Groups({"userComposter"})
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Composter", inversedBy="userComposters")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"user:read"})
+     * @Groups({"user:read", "userComposter"})
      */
     private $composter;
 
     /**
      * @ORM\Column(type="enumcapability")
-     * @Groups({"composter", "user:read"})
+     * @Groups({"user:read", "userComposter"})
      */
     private $capability;
 

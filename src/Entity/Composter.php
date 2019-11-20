@@ -40,11 +40,15 @@ class Composter
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"composter", "suivis", "livraison"})
      * @ApiProperty(identifier=false)
      */
     private $id;
 
+    /**
+     * @var int The id of the composter for the backoffice
+     * @Groups({"composter", "suivis", "livraison"})
+     */
+    private $rid;
 
     /**
      * @var string The name of the composter
@@ -199,16 +203,19 @@ class Composter
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\LivraisonBroyat", mappedBy="composter", orphanRemoval=true)
+     * @Groups({"composter"})
      */
     private $livraisonBroyats;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Suivi", mappedBy="composter", orphanRemoval=true)
+     * @Groups({"composter"})
      */
     private $suivis;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Reparation", mappedBy="composter")
+     * @Groups({"composter"})
      */
     private $reparations;
 
@@ -226,7 +233,6 @@ class Composter
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\UserComposter", mappedBy="composter", orphanRemoval=true)
-     * @Groups({"composter"})
      */
     private $userComposters;
 
@@ -284,7 +290,13 @@ class Composter
         return $this->getName();
     }
 
+
     public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getRid(): ?int
     {
         return $this->id;
     }
