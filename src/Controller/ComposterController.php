@@ -37,11 +37,14 @@ class ComposterController extends AbstractController
                 ),
                 'properties' => [
                     'commune'       => $c->getCommune() ? $c->getCommune()->getId() : null,
+                    'communeName'   => $c->getCommune() ? $c->getCommune()->getName() : null,
                     'categorie'     => $c->getCategorie() ? $c->getCategorie()->getId() : null,
+                    'categorieName' => $c->getCategorie() ? $c->getCategorie()->getName() : null,
                     'id'            => $c->getId(),
                     'slug'          => $c->getSlug(),
                     'name'          => $c->getName(),
                     'status'        => $c->getStatus(),
+                    'acceptNewMembers' => $c->getAcceptNewMembers()
                 ]
             ];
         }
