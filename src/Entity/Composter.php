@@ -236,10 +236,12 @@ class Composter
     private $composterContacts;
 
     /**
-     * @ORM\Column(type="enumbroyat", options={"default":"Full"})
+     * @ORM\Column(type="boolean")
      * @Groups({"composter"})
      */
     private $acceptNewMembers;
+
+
 
     /**
      * @var MediaObject|null
@@ -256,6 +258,12 @@ class Composter
      * @Groups({"composter"})
      */
     private $permanencesRule;
+
+    /**
+     * @ORM\Column(type="enumbroyat")
+     * @Groups({"composter"})
+     */
+    private $broyatLevel;
 
 
     public function __construct()
@@ -773,6 +781,18 @@ class Composter
     public function setPermanencesRule(?string $permanencesRule): self
     {
         $this->permanencesRule = $permanencesRule;
+
+        return $this;
+    }
+
+    public function getBroyatLevel()
+    {
+        return $this->broyatLevel;
+    }
+
+    public function setBroyatLevel($broyatLevel): self
+    {
+        $this->broyatLevel = $broyatLevel;
 
         return $this;
     }

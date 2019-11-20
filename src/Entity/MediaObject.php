@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 
 /**
@@ -48,7 +47,10 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  *         "get"
  *     },
  *     itemOperations={
- *         "get"
+ *         "get",
+ *         "delete"={
+ *             "access_control"="is_granted('ROLE_USER')"
+ *         },
  *     }
  * )
  * @Vich\Uploadable
@@ -61,6 +63,7 @@ class MediaObject
    * @ORM\Column(type="integer")
    * @ORM\GeneratedValue
    * @ORM\Id
+   * @Groups({"media_object_read", "composter"})
    */
   protected $id;
 
@@ -86,11 +89,6 @@ class MediaObject
    * @ORM\Column(nullable=true)
    */
   public $filePath;
-
-  public function __construct(StorageInterface $storage)
-  {
-    $this->storage = $storage;
-  }
 
   // L'event preserialize ne fonctionne pas sur les composter, je renvoie donc toujours la valeur en dur
   public function getContentUrl()
