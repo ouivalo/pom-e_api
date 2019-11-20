@@ -252,8 +252,8 @@ class Composter
     /**
      * @var MediaObject|null
      * 
-     * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject", inversedBy="composteurs")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      * @Groups({"composter"})
      * @ApiProperty(iri="http://schema.org/image")
      */
