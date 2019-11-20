@@ -236,7 +236,7 @@ class Composter
     private $composterContacts;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default":1})
      * @Groups({"composter"})
      */
     private $acceptNewMembers;
@@ -260,7 +260,7 @@ class Composter
     private $permanencesRule;
 
     /**
-     * @ORM\Column(type="enumbroyat")
+     * @ORM\Column(type="enumbroyat", options={"default":"Full"})
      * @Groups({"composter"})
      */
     private $broyatLevel;
@@ -275,6 +275,8 @@ class Composter
         $this->status = 'Active';
         $this->userComposters = new ArrayCollection();
         $this->composterContacts = new ArrayCollection();
+        $this->acceptNewMembers = true;
+        $this->broyatLevel = 'Full';
     }
 
     public function __toString()

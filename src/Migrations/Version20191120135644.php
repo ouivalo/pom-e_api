@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20191120134809 extends AbstractMigration
+final class Version20191120135644 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,7 +22,7 @@ final class Version20191120134809 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE composter ADD broyat_level ENUM(\'Empty\', \'Reserve\', \'Full\') NOT NULL COMMENT \'(DC2Type:enumbroyat)\', CHANGE accept_new_members accept_new_members TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE composter ADD broyat_level ENUM(\'Empty\', \'Reserve\', \'Full\') DEFAULT \'Full\' NOT NULL COMMENT \'(DC2Type:enumbroyat)\', CHANGE accept_new_members accept_new_members TINYINT(1) DEFAULT \'1\' NOT NULL');
     }
 
     public function down(Schema $schema) : void
