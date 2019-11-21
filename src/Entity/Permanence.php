@@ -28,7 +28,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Repository\PermanenceRepository")
  *
  * @ApiResource(
- *     attributes={"security"="is_granted('ROLE_USER')"},
  *     collectionOperations={
  *          "get",
  *          "post"={"security"="is_granted('Opener', object)"}
