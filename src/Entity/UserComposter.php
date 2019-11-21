@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
  * @ApiResource(
@@ -14,8 +15,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *     normalizationContext={"groups"={"userComposter"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserComposterRepository")
+ * @ApiFilter(BooleanFilter::class, properties={"composterContactReceiver"})
  * @ApiFilter(SearchFilter::class, properties={
- *
  *     "composter"    : "exact"
  * })
  */
