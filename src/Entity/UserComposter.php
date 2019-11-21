@@ -7,7 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 
 /**
  * @ApiResource(
@@ -15,7 +14,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
  *     normalizationContext={"groups"={"userComposter"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserComposterRepository")
- * @ApiFilter(BooleanFilter::class, properties={"composterContactReceiver"})
  * @ApiFilter(SearchFilter::class, properties={
  *     "composter"    : "exact"
  * })
@@ -26,6 +24,7 @@ class UserComposter
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"userComposter"})
      */
     private $id;
 
@@ -51,11 +50,13 @@ class UserComposter
 
     /**
      * @ORM\Column(type="boolean", options={"default":true})
+     * @Groups({"user:read","userComposter"})
      */
     private $notif;
 
     /**
      * @ORM\Column(type="boolean", options={"default":false})
+     * @Groups({"user:read","userComposter"})
      */
     private $newsletter;
 
