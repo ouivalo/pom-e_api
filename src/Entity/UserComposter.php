@@ -62,6 +62,7 @@ class UserComposter
 
     /**
      * @ORM\Column(type="boolean", options={"default":false})
+     * @Groups({"user:read","userComposter"})
      */
     private $composterContactReceiver;
 
