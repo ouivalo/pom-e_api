@@ -17,7 +17,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @ORM\Entity(repositoryClass="App\Repository\UserComposterRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="user_composter_unique", columns={"user_id", "composter_id"})})
  * @ApiFilter(SearchFilter::class, properties={
- *     "composter"    : "exact"
+ *     "composter"  : "exact",
+ *     "user"       : "exact",
  * })
  */
 class UserComposter
