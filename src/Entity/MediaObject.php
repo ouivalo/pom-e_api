@@ -90,12 +90,6 @@ class MediaObject
    */
   public $filePath;
 
-  // L'event preserialize ne fonctionne pas sur les composter, je renvoie donc toujours la valeur en dur
-  public function getContentUrl()
-  {
-    return '/media/' . $this->filePath;
-  }
-
   public function getId(): ?int
   {
     return $this->id;
