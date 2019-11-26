@@ -56,7 +56,7 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @Groups({"user:write"})
+     * @Groups({"user:write", "userComposter:write"})
      */
     private $plainPassword;
 
@@ -91,6 +91,7 @@ class User implements UserInterface
 
     public function __construct()
     {
+        $this->roles = ['ROLE_USER'];
         $this->permanences = new ArrayCollection();
         $this->mcComposters = new ArrayCollection();
         $this->userComposters = new ArrayCollection();

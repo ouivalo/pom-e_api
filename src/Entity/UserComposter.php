@@ -12,7 +12,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ApiResource(
  *     attributes={"security"="is_granted('ROLE_USER')"},
- *     normalizationContext={"groups"={"userComposter"}}
+ *     normalizationContext={"groups"={"userComposter"}},
+ *     denormalizationContext={"groups"={"userComposter", "userComposter:write"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserComposterRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="user_composter_unique", columns={"user_id", "composter_id"})})
@@ -32,7 +33,7 @@ class UserComposter
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userComposters")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userComposters", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"userComposter"})
      */
@@ -46,7 +47,7 @@ class UserComposter
     private $composter;
 
     /**
-     * @ORM\Column(type="enumcapability")
+     * @ORM\Column(type="enumcapability", options={"default":"Opener"})
      * @Groups({"user:read", "userComposter"})
      */
     private $capability;
@@ -68,6 +69,14 @@ class UserComposter
      * @Groups({"user:read","userComposter"})
      */
     private $composterContactReceiver;
+
+    public function __construct()
+    {
+        $this->capability = "Opener";
+        $this->notif = true;
+        $this->newsletter = false;
+        $this->composterContactReceiver = false;
+    }
 
     public function getId(): ?int
     {
