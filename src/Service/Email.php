@@ -6,6 +6,7 @@ namespace App\Service;
 
 use Mailjet\Client;
 use Mailjet\Resources;
+use Mailjet\Response;
 
 class Email
 {
@@ -28,28 +29,29 @@ class Email
 
     /**
      * @param array $messages   Tableau de tableau [[ 'To' => [], 'Subject' => '', 'TemplateID' => int,  'Variables' => []]]
-     * @return array
+     * @return Response
      */
-    public function send( array $messages ): ? array
+    public function send( array $messages ): Response
     {
 
         $body = [ 'Messages' => []];
 
         foreach ( $messages as $message ){
 
-            $from = $message['From'] ?? ['Email' => getenv('MAILJET_FROM_EMAIL'), 'Name' => getenv('MAILJET_FROM_NAME')];
-            $body['Messages'][] =
-                [
-                    'From'              => $from,
-                    'To'                => $message['To'],
-                    'Subject'           => $message['Subject'],
-                    'TemplateID'        => $message['TemplateID'],
-                    'TemplateLanguage'  => true,
-                    'Variables'         => $message['Variables']
-                ];
+            $m = $message;
+
+            // On a defaut pour le From
+            if( ! isset(  $m['From'] ) ){
+                $m['From'] = ['Email' => getenv('MAILJET_FROM_EMAIL'), 'Name' => getenv('MAILJET_FROM_NAME')];
+            }
+
+            $m['TemplateLanguage'] = true;
+
+            $body['Messages'][] = $m;
+
 
         }
-        $response = $this->mj->post(Resources::$Email, ['body' => $body]);
-        return $response->getData();
+
+        return $this->mj->post(Resources::$Email, ['body' => $body]);
     }
 }
