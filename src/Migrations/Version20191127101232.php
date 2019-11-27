@@ -23,7 +23,7 @@ final class Version20191127101232 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE user ADD enabled TINYINT(1) DEFAULT \'0\' NOT NULL');
-        $this->addSql('UPDATE USER SET enabled = 1');
+        $this->addSql('UPDATE user SET enabled = 1');
     }
 
     public function down(Schema $schema) : void
