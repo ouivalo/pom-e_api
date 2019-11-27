@@ -93,6 +93,21 @@ class User implements UserInterface
      */
     private $resetToken;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default":false})
+     * @Groups({"user"})
+     */
+    private $enabled;
+
+    /**
+     * @var string userConfirmedAccountURL Url pour gérer la confirmation du compte.
+     *      Un liens sera créer et envoyer a cette URL de type {userConfirmedAccountURL}?token=token
+     *      Il faudra utiliser le endpoint `user_password_changes` et renvoyer un mot de passe et le token
+     *      Cela aura pour effet de vérifier le compte ( passer enabled a true )
+     * @Groups({"user:write", "userComposter"})
+     */
+    private $userConfirmedAccountURL;
+
 
     public function __construct()
     {
@@ -100,6 +115,7 @@ class User implements UserInterface
         $this->permanences = new ArrayCollection();
         $this->mcComposters = new ArrayCollection();
         $this->userComposters = new ArrayCollection();
+        $this->enabled = false;
     }
 
     public function getId(): ?int
@@ -323,5 +339,33 @@ class User implements UserInterface
         $this->resetToken = $resetToken;
 
         return $this;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserConfirmedAccountURL(): ?string
+    {
+        return $this->userConfirmedAccountURL;
+    }
+
+    /**
+     * @param string $userConfirmedAccountURL
+     */
+    public function setUserConfirmedAccountURL(string $userConfirmedAccountURL): void
+    {
+        $this->userConfirmedAccountURL = $userConfirmedAccountURL;
     }
 }

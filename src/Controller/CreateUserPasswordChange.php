@@ -26,6 +26,7 @@ class CreateUserPasswordChange extends AbstractController
 
         $user->setPlainPassword( $data->getNewPassword() );
         $user->setResetToken( null );
+        $user->setEnabled( true );
         $em->persist( $user );
         $em->flush();
 
