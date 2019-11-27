@@ -98,12 +98,12 @@ class ComposterContact
         return $this;
     }
 
-    public function getComposter(): ?Composter
+    public function getComposter(): Composter
     {
         return $this->composter;
     }
 
-    public function setComposter(?Composter $composter): self
+    public function setComposter(Composter $composter): self
     {
         $this->composter = $composter;
 
