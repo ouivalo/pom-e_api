@@ -523,10 +523,20 @@ class ImportComposter extends Command
 
         if( empty( $financeurInitiales ) || strlen( $financeurInitiales ) > 5  ){
 
-            $this->output->writeln( "Financeur pas compatible : {$financeurInitiales}"  );
+            if( $financeurInitiales === 'Supprimé'){
+                $composter->setStatus( StatusEnumType::DELETE );
+            } elseif ( $financeurInitiales === 'Remplacé' ){
+                $composter->setStatus( StatusEnumType::MOVED );
+            } elseif (strpos($financeurInitiales, 'Supprimé/Déplacé') === 0){
+                $composter->setStatus( StatusEnumType::MOVED );
+            } elseif ($financeurInitiales === 'Déplacé à Babhoneur'){
+                $composter->setStatus( StatusEnumType::MOVED );
+            } else {
+                $this->output->writeln( "Financeur pas compatible : {$financeurInitiales}"  );
+            }
 
         } else {
-
+            $composter->setStatus( StatusEnumType::ACTIVE );
             $financeur = $financeurRepository->findOneBy(['initials' => $financeurInitiales ]);
 
             if( ! $financeur ){
