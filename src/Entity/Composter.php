@@ -12,8 +12,6 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Composter. Lieux ou l'on transform les bio déchets en composte
@@ -26,7 +24,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  *     "commune"    : "exact",
  *     "quartier"   : "exact",
  *     "pole"       : "exact",
- *     "pavilionsVolume": "exact",
+ *     "equipement": "exact",
  *     "categorie"  : "exact",
  *     "name"       : "partial"
  * })
@@ -135,10 +133,11 @@ class Composter
     private $quartier;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\PavilionsVolume", inversedBy="composters")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Equipement", inversedBy="composters")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      * @Groups({"composter"})
      */
-    private $pavilionsVolume;
+    private $equipement;
 
     /**
      * Name of the Maitre Composter
@@ -270,6 +269,18 @@ class Composter
      * @Groups({"composter"})
      */
     private $broyatLevel;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Financeur", inversedBy="composters")
+     * @Groups({"composter"})
+     */
+    private $financeur;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"composter"})
+     */
+    private $serialNumber;
 
 
     public function __construct()
@@ -452,14 +463,14 @@ class Composter
         return $this;
     }
 
-    public function getPavilionsVolume(): ?PavilionsVolume
+    public function getEquipement(): ?Equipement
     {
-        return $this->pavilionsVolume;
+        return $this->equipement;
     }
 
-    public function setPavilionsVolume(?PavilionsVolume $pavilionsVolume): self
+    public function setEquipement(?Equipement $equipement): self
     {
-        $this->pavilionsVolume = $pavilionsVolume;
+        $this->equipement = $equipement;
 
         return $this;
     }
@@ -807,6 +818,30 @@ class Composter
     public function setBroyatLevel($broyatLevel): self
     {
         $this->broyatLevel = $broyatLevel;
+
+        return $this;
+    }
+
+    public function getFinanceur(): ?Financeur
+    {
+        return $this->financeur;
+    }
+
+    public function setFinanceur(?Financeur $financeur): self
+    {
+        $this->financeur = $financeur;
+
+        return $this;
+    }
+
+    public function getSerialNumber(): ?string
+    {
+        return $this->serialNumber;
+    }
+
+    public function setSerialNumber(?string $serialNumber): self
+    {
+        $this->serialNumber = $serialNumber;
 
         return $this;
     }

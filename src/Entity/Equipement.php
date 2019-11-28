@@ -6,6 +6,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -13,8 +14,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     normalizationContext={"groups"={"pavilion"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\PavilionsVolumeRepository")
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="equipement", columns={"type", "capacite"})})
  */
-class PavilionsVolume
+class Equipement
 {
     /**
      * @ORM\Id()
@@ -24,16 +26,21 @@ class PavilionsVolume
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"composter", "pavilion"})
-     */
-    private $volume;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Composter", mappedBy="pavilionsVolume")
      */
     private $composters;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $capacite;
 
     public function __construct()
     {
@@ -44,18 +51,7 @@ class PavilionsVolume
     {
         return $this->id;
     }
-
-    public function getVolume(): ?string
-    {
-        return $this->volume;
-    }
-
-    public function setVolume(string $volume): self
-    {
-        $this->volume = $volume;
-
-        return $this;
-    }
+    
 
     /**
      * @return Collection|Composter[]
@@ -84,6 +80,30 @@ class PavilionsVolume
                 $composter->setPavilionsVolume(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getCapacite(): ?string
+    {
+        return $this->capacite;
+    }
+
+    public function setCapacite(string $capacite): self
+    {
+        $this->capacite = $capacite;
 
         return $this;
     }

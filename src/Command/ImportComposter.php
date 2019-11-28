@@ -9,8 +9,9 @@ use App\Entity\ApprovisionnementBroyat;
 use App\Entity\Categorie;
 use App\Entity\Commune;
 use App\Entity\Composter;
+use App\Entity\Financeur;
 use App\Entity\LivraisonBroyat;
-use App\Entity\PavilionsVolume;
+use App\Entity\Equipement;
 use App\Entity\Pole;
 use App\Entity\Quartier;
 use App\Entity\Reparation;
@@ -72,8 +73,8 @@ class ImportComposter extends Command
             if (1 === $key) {
                 foreach ($sheet->getRowIterator() as $rkey => $row) {
 
-                    // Les deux premières lignes du doc sont des entête
-                    if ($rkey > 2) {
+                    // Les trois premières lignes du doc sont des entête
+                    if ($rkey > 3) {
 
                         $cells = $row->getCells();
                         $this->importOnglet1( $cells );
@@ -84,52 +85,30 @@ class ImportComposter extends Command
                     }
                 }
             } else if (2 === $key) {
-                foreach ($sheet->getRowIterator() as $rkey => $row) {
-
-                    // Les deux premières lignes du doc sont des entête
-                    if ($rkey > 2) {
-
-                        $cells = $row->getCells();
-                        $this->importOnglet2( $cells );
-                        $this->em->flush();
-                    }
-                }
+//                foreach ($sheet->getRowIterator() as $rkey => $row) {
+//
+//                    // Les deux premières lignes du doc sont des entête
+//                    if ($rkey > 2) {
+//
+//                        $cells = $row->getCells();
+//                        $this->importOnglet2( $cells );
+//                        $this->em->flush();
+//                    }
+//                }
             } else if (3 === $key) {
-                foreach ($sheet->getRowIterator() as $rkey => $row) {
-
-                    // Les deux premières lignes du doc sont des entête
-                    if ($rkey > 2) {
-
-                        $cells = $row->getCells();
-                        $this->importOnglet3( $cells );
-                        $this->em->flush();
-                    }
-                }
-            } else if ( 4 === $key) {
-                foreach ($sheet->getRowIterator() as $rkey => $row) {
-
-                    // La première ligne du doc sont des entête
-                    if ($rkey > 1) {
-
-                        $cells = $row->getCells();
-                        $this->importOnglet4($cells);
-                        $this->em->flush();
-                    }
-                }
-            } else if (5 === $key) {
-                foreach ($sheet->getRowIterator() as $rkey => $row) {
-
-                    // La première ligne du doc sont des entête
-                    if ($rkey > 1) {
-
-                        $cells = $row->getCells();
-                        $this->importOnglet5($cells);
-                        $this->em->flush();
-                    }
-                }
+//                foreach ($sheet->getRowIterator() as $rkey => $row) {
+//
+//                    // Les deux premières lignes du doc sont des entête
+//                    if ($rkey > 2) {
+//
+//                        $cells = $row->getCells();
+//                        $this->importOnglet3( $cells );
+//                        $this->em->flush();
+//                    }
+//                }
             }
         }
-        $output->writeln("Import de {$composterCount} compsteurs");
+        $output->writeln("Import de {$composterCount} composteurs");
 
         $reader->close();
 
@@ -144,7 +123,7 @@ class ImportComposter extends Command
     {
 
         $composterRepository = $this->em->getRepository(Composter::class);
-        $pavillonsRepository = $this->em->getRepository(PavilionsVolume::class);
+        $pavillonsRepository = $this->em->getRepository(Equipement::class);
         $communeRepository = $this->em->getRepository(Commune::class);
         $catRepository = $this->em->getRepository(Categorie::class);
 
@@ -190,15 +169,15 @@ class ImportComposter extends Command
         $composter->setCategorie( $cat );
         $composter->setStatus( $status );
 
-        // PavilionsVolume
+        // Equipement
         $volumeName = $cells[2]->getValue();
         $pavillonsVolume = $pavillonsRepository->findOneBy( [ 'volume' => $volumeName]);
         if( ! $pavillonsVolume ) {
-            $pavillonsVolume = new PavilionsVolume();
+            $pavillonsVolume = new Equipement();
             $pavillonsVolume->setVolume( $volumeName );
             $this->em->persist( $pavillonsVolume );
             $this->em->flush();
-            $this->output->writeln( "PavilionsVolume créée : '{$volumeName}'"  );
+            $this->output->writeln( "Equipement créée : '{$volumeName}'"  );
         }
         $composter->setPavilionsVolume( $pavillonsVolume );
 
@@ -275,7 +254,7 @@ class ImportComposter extends Command
         // Catégorie
         $composter->setCategorie( $catRepository->find( 1) );
 
-        // PavilionsVolume
+        // Equipement
         $pavillons = $this->getPavillonsByVolume( $cells[13]->getValue() );
         if( $pavillons ){
             $composter->setPavilionsVolume( $pavillons );
@@ -519,36 +498,58 @@ class ImportComposter extends Command
 
         $composterRepository    = $this->em->getRepository(Composter::class);
         $categorieRepository    = $this->em->getRepository(Categorie::class);
-        $communeRepository      = $this->em->getRepository(Commune::class);
         $poleRepository         = $this->em->getRepository(Pole::class);
-        $quartierRepository     = $this->em->getRepository(Quartier::class);
-        $volumeRepository       = $this->em->getRepository(PavilionsVolume::class);
         $userRepository         = $this->em->getRepository(User::class);
+        $financeurRepository         = $this->em->getRepository(Financeur::class);
 
 
-        $importId = $cells[0]->getValue();
-        $composter = $composterRepository->find( $importId);
+        // On crée ou récupére un composter par serialNumber ou name
+        $serialNumber = $cells[2]->getValue();
+        $name = $cells[3]->getValue();
+        $composter = $composterRepository->findOneBy(['serialNumber' => $serialNumber ] );
 
         if( ! $composter ){
-            $composter = new Composter();
+            // Au cas ou on essaie de retrouver le composteur par son nom
+            $composter = $this->getComposterByName( $name );
+            $composter->setSerialNumber( $serialNumber );
         }
 
-        $composter->setName( $cells[1]->getValue() );
+        // Financeur
+        $financeurInitiales = $cells[0]->getValue();
+
+        if( empty( $financeurInitiales ) || strlen( $financeurInitiales ) > 5  ){
+
+            $this->output->writeln( "Financeur pas compatible : {$financeurInitiales}"  );
+
+        } else {
+
+            $financeur = $financeurRepository->findOneBy(['initials' => $financeurInitiales ]);
+
+            if( ! $financeur ){
+                $financeur = new Financeur();
+                $financeur->setInitials( $financeurInitiales );
+                $financeur->setName( $financeurInitiales );
+                $this->em->persist( $financeur );
+                $this->em->flush();
+                $this->output->writeln( "Financeur créé : {$financeurInitiales}"  );
+            }
+            $composter->setFinanceur( $financeur );
+        }
 
        // date d'installation
-        if( ! $cells[2]->isEmpty() ){ $composter->setDateMiseEnRoute( new DateTime( "{$cells[2]->getValue()}-06-26" ) ); }
+        if( ! $cells[1]->isEmpty() ){ $composter->setDateMiseEnRoute( new DateTime( "{$cells[1]->getValue()}-06-26" ) ); }
 
-        $composter->setAddress( $cells[6]->getValue() );
+        // Addresse
+        $composter->setAddress( $cells[8]->getValue() );
 
         // Commune
-        $commune = $this->getCommuneByName( $cells[3]->getValue());
+        $commune = $this->getCommuneByName( $cells[5]->getValue());
         if( $commune ){
-
             $composter->setCommune( $commune );
         }
 
         // Pole
-        $poleName = trim( $cells[4]->getValue() );
+        $poleName = trim( $cells[6]->getValue() );
 
         if( $poleName !== '' ){
             if( $poleName === 'LSV' || strpos( $poleName, 'ignoble' ) ){
@@ -567,20 +568,20 @@ class ImportComposter extends Command
         }
 
         // Quartier
-        $quartier = $this->getQuartierByName( $cells[5]->getValue() );
+        $quartier = $this->getQuartierByName( $cells[7]->getValue() );
         if( $quartier ){
             $composter->setQuartier( $quartier );
         }
 
         // Volume des pavillons
-        $pavilionVolume = $this->getPavillonsByVolume( trim( $cells[7]->getValue() ) );
-        if( $pavilionVolume ){
+        $equipement = $this->getEquipement( $cells[15]->getValue(), $cells[16]->getValue() );
+        if( $equipement ){
 
-            $composter->setPavilionsVolume( $pavilionVolume );
+            $composter->setEquipement( $equipement );
         }
 
         // MC
-        $mcName = trim( (string) $cells[11] );
+        $mcName = $cells[17]->getValue();
         if( $mcName !== '' ){
 
             $mc = $userRepository->findOneBy( [ 'username' => $mcName ] );
@@ -590,6 +591,7 @@ class ImportComposter extends Command
                 $mc->setUsername( $mcName );
                 $mc->setEmail( mb_strtolower( $mcName ) . '@compostri.fr' );
                 $mc->setPassword( $mcName );
+                $mc->setEnabled( true );
                 $mc->setRoles( ['ROLE_ADMIN'] );
                 $this->em->persist( $mc );
                 $this->em->flush();
@@ -599,7 +601,7 @@ class ImportComposter extends Command
         }
 
         // Lat Long
-        $latlong = trim( (string) $cells[10] );
+        $latlong = trim( $cells[9]->getValue() );
         $latlong = str_replace(PHP_EOL, ' ', $latlong);
         $latlong = str_replace('  ', ' ', $latlong);
         $hasCommat = strpos( $latlong, ','  );
@@ -610,21 +612,21 @@ class ImportComposter extends Command
             $composter->setLat( (float) $latlong[0]);
             $composter->setLng( (float) $latlong[1]);
         } else if ( count( $latlong ) > 1 ){
-            $this->output->writeln( "Erreur lors de l‘import de latLong ( composteur #{$importId}): {$cells[10]}"  );
+            $this->output->writeln( "Erreur lors de l‘import de latLong ( composteur #{$name}): " . print_r( $latlong, true)  );
         }
 
         // Catégorie
-        // 16 Copropriété
-        // 18 Quartier
-        // 19 Jardins
-        // 20 Ecole
-        if( ! empty( $cells[16]->getValue() ) ){
+        // 12 Copropriété
+        // 13 Quartier
+        // 14 Jardins
+        // 15 Ecole
+        if( ! empty( $cells[12]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 2) );
-        } else if( ! empty( $cells[18]->getValue() ) ){
+        } else if( ! empty( $cells[13]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 1) );
-        } else if( ! empty( $cells[19]->getValue() ) ){
+        } else if( ! empty( $cells[14]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 4) );
-        } else if( ! empty( $cells[20]->getValue() ) ){
+        } else if( ! empty( $cells[15]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 3) );
         }
 
@@ -742,25 +744,26 @@ class ImportComposter extends Command
     }
 
 
-    private function getPavillonsByVolume( String $volume ) : ? PavilionsVolume
+    private function getEquipement( string $type, string $capacite) : ? Equipement
     {
-        if( empty( $volume ) ){
+        if( empty( $type ) || empty( $capacite ) ){
             return null;
         }
 
-        $pavillonsRepository = $this->em->getRepository(PavilionsVolume::class);
+        $equipementRepository = $this->em->getRepository(Equipement::class);
 
-        $pavillonsVolume = $pavillonsRepository->findOneBy( [ 'volume' => $volume]);
+        $equipement = $equipementRepository->findOneBy( [ 'type' => $type, 'capacite' => $capacite ]);
 
-        if( ! $pavillonsVolume ) {
-            $pavillonsVolume = new PavilionsVolume();
-            $pavillonsVolume->setVolume($volume);
-            $this->em->persist($pavillonsVolume);
+        if( ! $equipement ) {
+            $equipement = new Equipement();
+            $equipement->setType($type);
+            $equipement->setCapacite($capacite);
+            $this->em->persist($equipement);
             $this->em->flush();
-            $this->output->writeln("PavilionsVolume créée : '{$volume}'");
+            $this->output->writeln("Equipement créée : '{$type}/{$capacite}'");
         }
 
-        return $pavillonsVolume;
+        return $equipement;
     }
 
 }
