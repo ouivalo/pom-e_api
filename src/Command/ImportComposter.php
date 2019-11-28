@@ -4,11 +4,14 @@
 namespace App\Command;
 
 
+use App\DBAL\Types\CapabilityEnumType;
+use App\DBAL\Types\ContactEnumType;
 use App\DBAL\Types\StatusEnumType;
 use App\Entity\ApprovisionnementBroyat;
 use App\Entity\Categorie;
 use App\Entity\Commune;
 use App\Entity\Composter;
+use App\Entity\Contact;
 use App\Entity\Financeur;
 use App\Entity\LivraisonBroyat;
 use App\Entity\Equipement;
@@ -17,6 +20,7 @@ use App\Entity\Quartier;
 use App\Entity\Reparation;
 use App\Entity\Suivi;
 use App\Entity\User;
+use App\Entity\UserComposter;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Box\Spout\Common\Entity\Cell;
 use DateTime;
@@ -526,9 +530,30 @@ class ImportComposter extends Command
             $financeur = $financeurRepository->findOneBy(['initials' => $financeurInitiales ]);
 
             if( ! $financeur ){
+                switch ( $financeurInitiales ){
+                    case 'NM' :
+                        $financeurName = 'Nantes Métropole';
+                        break;
+                    case 'VDSH' :
+                        $financeurName = 'Ville de Saint Herblain';
+                        break;
+                    case 'VDN' :
+                        $financeurName = 'Ville de Nantes';
+                        break;
+                    case 'NMH' :
+                        $financeurName = 'Nantes Métropole Habitat';
+                        break;
+                    case 'VDSS' :
+                        $financeurName = 'Ville de Saint Sébastien';
+                        break;
+                    default :
+                        $financeurName = $financeurInitiales;
+                }
+
+
                 $financeur = new Financeur();
                 $financeur->setInitials( $financeurInitiales );
-                $financeur->setName( $financeurInitiales );
+                $financeur->setName( $financeurName );
                 $this->em->persist( $financeur );
                 $this->em->flush();
                 $this->output->writeln( "Financeur créé : {$financeurInitiales}"  );
@@ -590,7 +615,7 @@ class ImportComposter extends Command
                 $mc = new User();
                 $mc->setUsername( $mcName );
                 $mc->setEmail( mb_strtolower( $mcName ) . '@compostri.fr' );
-                $mc->setPassword( $mcName );
+                $mc->setPlainPassword( $mcName );
                 $mc->setEnabled( true );
                 $mc->setRoles( ['ROLE_ADMIN'] );
                 $this->em->persist( $mc );
@@ -629,6 +654,130 @@ class ImportComposter extends Command
         } else if( ! empty( $cells[15]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 3) );
         }
+
+        // Référent
+        $rName = trim( $cells[19]->getValue() );
+        $rFirstName = trim( $cells[20]->getValue() );
+        $rTel = $cells[21]->getValue();
+        $rMail = trim( $cells[22]->getValue() );
+        $rDescription = $cells[23]->getValue();
+
+        $rMail = str_replace(PHP_EOL, ' ', $rMail);
+        $rMail = explode( ' ', $rMail);
+        $rMail = $rMail[0];
+
+        if( ! empty( $rName ) || ! empty( $rMail ) ){
+
+            if( empty( $rMail ) || ! filter_var( $rMail, FILTER_VALIDATE_EMAIL) ){
+                $rMail = strtolower($rName ) . '@tobechange.com';
+            }
+
+            $newReferent = false;
+            $referent = $userRepository->findOneBy( [ 'email'  => $rMail ] );
+            if( ! $referent ){
+                $referent = new User();
+                $referent->setEmail( $rMail );
+                $newReferent = true;
+            }
+
+            if( empty( $rName ) ){
+                $rName = $rMail;
+            }
+
+            $referent->setFirstname( $rFirstName ?? $rName );
+            $referent->setLastname( $rName );
+            $referent->setUsername( $rFirstName ?? $rName );
+            $referent->setPlainPassword( random_bytes( 24 ) );
+            $referent->setPhone( $rTel );
+            $referent->setRole( $rDescription );
+            $referent->setEnabled( true );
+
+            $this->em->persist( $referent );
+
+            if( $newReferent ){
+                $userComposter = new UserComposter();
+                $userComposter->setUser( $referent );
+                $userComposter->setComposter( $composter );
+                $userComposter->setNewsletter( true );
+                $userComposter->setCapability( CapabilityEnumType::REFERENT );
+
+                $this->em->persist( $userComposter );
+            }
+        }
+
+        // Contact
+        $syndicLastname = trim( $cells[26]->getValue() );
+        $syndicFirstname = trim( $cells[27]->getValue() );
+        $syndicPhone = trim( $cells[28]->getValue() );
+        $syndicMail = trim( $cells[29]->getValue() );
+        $syndicRole = trim( $cells[30]->getValue() );
+
+
+        if( ! empty( $syndicMail ) ){
+
+            $contact = $this->getContactByEmail( $syndicMail );
+
+            if( $contact ){
+
+                $contact->setLastName( $syndicLastname );
+                $contact->setFirstName( $syndicFirstname );
+                $contact->setPhone( $syndicPhone );
+                $contact->setRole( $syndicRole );
+                $contact->setContactType( ContactEnumType::SYNDIC );
+                $contact->addComposter( $composter );
+
+                $this->em->persist( $contact );
+            }
+
+        }
+
+        $institutionLastname = trim( $cells[31]->getValue() );
+        $institutionFirstname = trim( $cells[32]->getValue() );
+        $institutionPhone = trim( $cells[33]->getValue() );
+        $institutionMail = trim( $cells[34]->getValue() );
+        $institutionRole = trim( $cells[35]->getValue() );
+
+        if( ! empty( $institutionMail ) ){
+
+            $contact = $this->getContactByEmail( $institutionMail );
+
+            if( $contact ){
+
+                $contact->setLastName( $institutionLastname );
+                $contact->setFirstName( $institutionFirstname );
+                $contact->setPhone( $institutionPhone );
+                $contact->setRole( $institutionRole );
+                $contact->setContactType( ContactEnumType::INSTITUTION );
+                $contact->addComposter( $composter );
+
+                $this->em->persist( $contact );
+            }
+        }
+
+
+        $scolaireLastname = trim( $cells[36]->getValue() );
+        $scolaireFirstname = trim( $cells[37]->getValue() );
+        $scolairePhone = trim( $cells[38]->getValue() );
+        $scolaireMail = trim( $cells[39]->getValue() );
+        $scolaireRole = trim( $cells[40]->getValue() );
+
+        if( ! empty( $scolaireMail ) ){
+
+            $contact = $this->getContactByEmail( $institutionMail );
+
+            if( $contact ){
+
+                $contact->setLastName( $scolaireLastname );
+                $contact->setFirstName( $scolaireFirstname );
+                $contact->setPhone( $scolairePhone );
+                $contact->setRole( $scolaireRole );
+                $contact->setContactType( ContactEnumType::SCOLAIRE );
+                $contact->addComposter( $composter );
+
+                $this->em->persist( $contact );
+            }
+        }
+
 
 
         // Persist
@@ -766,4 +915,26 @@ class ImportComposter extends Command
         return $equipement;
     }
 
+
+    /**
+     * @param string $email
+     * @return Contact|null
+     */
+    private function getContactByEmail( string $email ) : ?Contact
+    {
+
+        if( empty( $email) || ! filter_var( $email, FILTER_VALIDATE_EMAIL)){
+            return null;
+        }
+
+        $contactRepository = $this->em->getRepository(Contact::class);
+        $contact = $contactRepository->findOneBy( ['email' => $email ] );
+
+        if( ! $contact ){
+            $contact = new Contact();
+            $contact->setEmail( $email );
+        }
+
+        return $contact;
+    }
 }

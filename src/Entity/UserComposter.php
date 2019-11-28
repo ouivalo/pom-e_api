@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\DBAL\Types\CapabilityEnumType;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
@@ -72,7 +73,7 @@ class UserComposter
 
     public function __construct()
     {
-        $this->capability = "Opener";
+        $this->capability = CapabilityEnumType::OPENER;
         $this->notif = true;
         $this->newsletter = false;
         $this->composterContactReceiver = false;

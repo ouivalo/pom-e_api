@@ -47,7 +47,7 @@ class User implements UserInterface
      * @ORM\Column(type="json")
      * @Groups({"user:write"})
      */
-    private $roles = [];
+    private $roles;
 
     /**
      * @var string The hashed password
@@ -107,6 +107,16 @@ class User implements UserInterface
      * @Groups({"user:write", "userComposter"})
      */
     private $userConfirmedAccountURL;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $phone;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $role;
 
 
     public function __construct()
@@ -367,5 +377,29 @@ class User implements UserInterface
     public function setUserConfirmedAccountURL(string $userConfirmedAccountURL): void
     {
         $this->userConfirmedAccountURL = $userConfirmedAccountURL;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    public function setRole(?string $role): self
+    {
+        $this->role = $role;
+
+        return $this;
     }
 }
