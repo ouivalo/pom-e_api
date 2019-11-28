@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\PavilionsVolume;
+use App\Entity\Equipement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @method PavilionsVolume|null find($id, $lockMode = null, $lockVersion = null)
- * @method PavilionsVolume|null findOneBy(array $criteria, array $orderBy = null)
- * @method PavilionsVolume[]    findAll()
- * @method PavilionsVolume[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Equipement|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Equipement|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Equipement[]    findAll()
+ * @method Equipement[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class PavilionsVolumeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, PavilionsVolume::class);
+        parent::__construct($registry, Equipement::class);
     }
 
     // /**
-    //  * @return PavilionsVolume[] Returns an array of PavilionsVolume objects
+    //  * @return Equipement[] Returns an array of Equipement objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class PavilionsVolumeRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?PavilionsVolume
+    public function findOneBySomeField($value): ?Equipement
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.exampleField = :val')
