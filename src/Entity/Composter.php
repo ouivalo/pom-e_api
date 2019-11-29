@@ -74,7 +74,7 @@ class Composter
      * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
-    private $shortDescription;
+    private $permanencesDescription;
 
     /**
      * @var string The description of the composter to be shown on the composter page
@@ -264,6 +264,11 @@ class Composter
      */
     private $contacts;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $publicDescription;
+
 
     public function __construct()
     {
@@ -398,14 +403,14 @@ class Composter
         return $this;
     }
 
-    public function getShortDescription(): ?string
+    public function getPermanencesDescription(): ?string
     {
-        return $this->shortDescription;
+        return $this->permanencesDescription;
     }
 
-    public function setShortDescription(?string $short_description): self
+    public function setPermanencesDescription(?string $permanencesDescription): self
     {
-        $this->shortDescription = $short_description;
+        $this->permanencesDescription = $permanencesDescription;
 
         return $this;
     }
@@ -805,6 +810,18 @@ class Composter
             $this->contacts->removeElement($contact);
             $contact->removeComposter($this);
         }
+
+        return $this;
+    }
+
+    public function getPublicDescription(): ?string
+    {
+        return $this->publicDescription;
+    }
+
+    public function setPublicDescription(?string $publicDescription): self
+    {
+        $this->publicDescription = $publicDescription;
 
         return $this;
     }
