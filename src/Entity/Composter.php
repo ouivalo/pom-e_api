@@ -266,6 +266,7 @@ class Composter
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({"composter"})
      */
     private $publicDescription;
 
