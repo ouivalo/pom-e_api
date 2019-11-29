@@ -27,7 +27,8 @@ use ApiPlatform\Core\Action\NotFoundAction;
  *     collectionOperations={
  *         "post"={
  *             "controller"=CreateUserPasswordRecovery::class
- *          }
+ *          },
+ *          "get"
  *     }
  * )
  */

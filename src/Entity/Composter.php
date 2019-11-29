@@ -24,7 +24,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     "commune"    : "exact",
  *     "quartier"   : "exact",
  *     "pole"       : "exact",
- *     "equipement": "exact",
  *     "categorie"  : "exact",
  *     "name"       : "partial"
  * })
@@ -52,7 +51,7 @@ class Composter
      * @var string The name of the composter
      *
      * @ORM\Column
-     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence","userComposter"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence","userComposter", "contact"})
      */
     private $name;
 
@@ -258,6 +257,11 @@ class Composter
      */
     private $serialNumber;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Contact", mappedBy="composters")
+     */
+    private $contacts;
+
 
     public function __construct()
     {
@@ -270,6 +274,7 @@ class Composter
         $this->composterContacts = new ArrayCollection();
         $this->acceptNewMembers = true;
         $this->broyatLevel = 'Full';
+        $this->contacts = new ArrayCollection();
     }
 
     public function __toString()
@@ -770,6 +775,34 @@ class Composter
     public function setSerialNumber(?string $serialNumber): self
     {
         $this->serialNumber = $serialNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Contact[]
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(Contact $contact): self
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts[] = $contact;
+            $contact->addComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(Contact $contact): self
+    {
+        if ($this->contacts->contains($contact)) {
+            $this->contacts->removeElement($contact);
+            $contact->removeComposter($this);
+        }
 
         return $this;
     }

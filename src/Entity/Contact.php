@@ -2,15 +2,22 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\DBAL\Types\ContactEnumType;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     attributes={"security"="is_granted('ROLE_ADMIN')"},
+ *     normalizationContext={"groups"={"contact"}}
+ *     )
  * @ORM\Entity(repositoryClass="App\Repository\ContactRepository")
+ * @ApiFilter(SearchFilter::class, properties={"composters": "exact"})
  */
 class Contact
 {
@@ -18,43 +25,52 @@ class Contact
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"contact"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"contact"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"contact"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"contact"})
      */
     private $phone;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false, unique=true)
+     * @Groups({"contact"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"contact"})
      */
     private $role;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Composter", inversedBy="contacts")
-     */
-    private $composters;
 
     /**
      * @ORM\Column(type="enumcontacttype")
+     * @Groups({"contact"})
      */
     private $contactType;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Composter", inversedBy="contacts")
+     * @Groups({"contact"})
+     */
+    private $composters;
 
     public function __construct()
     {
@@ -126,6 +142,19 @@ class Contact
 
         return $this;
     }
+    
+
+    public function getContactType(): ?string
+    {
+        return $this->contactType;
+    }
+
+    public function setContactType(string $contactType): self
+    {
+        $this->contactType = $contactType;
+
+        return $this;
+    }
 
     /**
      * @return Collection|Composter[]
@@ -149,18 +178,6 @@ class Contact
         if ($this->composters->contains($composter)) {
             $this->composters->removeElement($composter);
         }
-
-        return $this;
-    }
-
-    public function getContactType(): ?string
-    {
-        return $this->contactType;
-    }
-
-    public function setContactType(string $contactType): self
-    {
-        $this->contactType = $contactType;
 
         return $this;
     }

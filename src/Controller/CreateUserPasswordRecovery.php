@@ -20,13 +20,13 @@ class CreateUserPasswordRecovery extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $user =  $this->getDoctrine()
             ->getRepository(User::class)
-            ->findOneBy( [ 'email' => $data->getEmail() ]);
-
-        $newPasswordUrl = $data->getNewPasswordUrl();
+            ->findOneBy( [ 'email' => $data->getEmail(), 'enabled' => true ]);
 
         if( ! $user ){
             throw new BadRequestHttpException('Aucun utilisateur trouvé');
         }
+
+        $newPasswordUrl = $data->getNewPasswordUrl();
 
         $resetToken = $tokenGenerator->generateToken();
         $user->setResetToken( $resetToken );

@@ -34,11 +34,13 @@ class Equipement
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"composter"})
      */
     private $type;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"composter"})
      */
     private $capacite;
 
