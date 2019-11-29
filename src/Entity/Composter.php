@@ -24,7 +24,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     "commune"    : "exact",
  *     "quartier"   : "exact",
  *     "pole"       : "exact",
+ *     "equipement" : "exact",
  *     "categorie"  : "exact",
+ *     "financeur"  : "exact",
  *     "name"       : "partial"
  * })
  * @ApiFilter(OrderFilter::class, properties={"id", "DateMiseEnRoute"}, arguments={"orderParameterName"="order"})

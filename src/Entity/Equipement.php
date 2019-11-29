@@ -11,9 +11,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"pavilion"}}
+ *     normalizationContext={"groups"={"equipement"}}
  * )
- * @ORM\Entity(repositoryClass="App\Repository\PavilionsVolumeRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\EquipementRepository")
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="equipement", columns={"type", "capacite"})})
  */
 class Equipement
@@ -22,7 +22,7 @@ class Equipement
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"composter", "pavilion"})
+     * @Groups({"composter", "equipement"})
      */
     private $id;
 
@@ -34,13 +34,13 @@ class Equipement
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter"})
+     * @Groups({"composter", "equipement"})
      */
     private $type;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter"})
+     * @Groups({"composter", "equipement"})
      */
     private $capacite;
 
