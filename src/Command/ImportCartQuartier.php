@@ -19,7 +19,6 @@ class ImportCartQuartier extends Command
     protected static $defaultName = 'compost:import-carto-quartier';
 
     private $em;
-    private $output;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
