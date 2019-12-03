@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "ext-zip": "*",
         "api-platform/api-pack": "^1.0",
         "box/spout": "^3.0",
         "doctrine/doctrine-bundle": "^2.0",
