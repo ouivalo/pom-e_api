@@ -28,7 +28,6 @@
         "symfony/templating": "*",
         "symfony/twig-bundle": "*",
         "symfony/yaml": "*",
-        "vich/uploader-bundle": "^1.10",
         "ext-fileinfo": "*"
     },
     "require-dev": {
