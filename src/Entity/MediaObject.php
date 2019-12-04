@@ -7,12 +7,12 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Controller\CreateMediaObjectAction;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
+use Exception;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Vich\UploaderBundle\Entity\File as EmbeddedFile;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+
 
 
 /**
@@ -25,26 +25,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *     collectionOperations={
  *         "post"={
  *             "controller"=CreateMediaObjectAction::class,
- *             "deserialize"=false,
  *             "access_control"="is_granted('ROLE_USER')",
  *             "validation_groups"={"Default", "media_object_create"},
- *             "openapi_context"={
- *                 "requestBody"={
- *                     "content"={
- *                         "multipart/form-data"={
- *                             "schema"={
- *                                 "type"="object",
- *                                 "properties"={
- *                                     "file"={
- *                                         "type"="string",
- *                                         "format"="binary"
- *                                     }
- *                                 }
- *                             }
- *                         }
- *                     }
- *                 }
- *             }
  *         },
  *         "get"
  *     },
@@ -55,7 +37,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  *         },
  *     }
  * )
- * @Vich\Uploadable
  */
 class MediaObject
 {
@@ -70,6 +51,38 @@ class MediaObject
     protected $id;
 
     /**
+     * @ORM\Column(type="datetime")
+     *
+     * @var DateTime
+     * @Groups({"media_object_read", "composter"})
+     */
+    private $updatedAt;
+
+    /**
+     * @ORM\Column(type="string", length=255 )
+     * @Groups({"media_object_read", "composter"})
+     */
+    private $imageName;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"media_object_read", "composter"})
+     */
+    private $imageSize;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     * @Groups({"media_object_read", "composter"})
+     */
+    private $imageDimensions = [];
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"media_object_read", "composter"})
+     */
+    private $imageMimeType;
+
+    /**
      * @var string|null
      *
      * @ApiProperty(iri="http://schema.org/contentUrl")
@@ -77,78 +90,62 @@ class MediaObject
      */
     public $contentUrl;
 
+
     /**
-     * @var File|null
+     * @var string|null base64 image
      *
-     * @Assert\NotNull(groups={"media_object_create"})
-     * @Vich\UploadableField(mapping="media_object",fileNameProperty="image.name", size="image.size", mimeType="image.mimeType", originalName="image.originalName", dimensions="image.dimensions")
-     *
-     * @Groups({"media_object_read"})
+     * @Groups({"media_object_create"})
      */
-    public $file;
+    private $data;
 
 
     /**
-     * @ORM\Embedded(class="Vich\UploaderBundle\Entity\File")
+     * @var File|null Fichier image
      *
-     * @var EmbeddedFile
-     * @Groups({"media_object_read"})
      */
-    private $image;
+    private $file;
 
-    /**
-     * @ORM\Column(type="datetime")
-     *
-     * @var \DateTime
-     */
-    private $updatedAt;
 
-  public function getId(): ?int
-  {
-    return $this->id;
-  }
 
-    /**
-     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
-     * of 'UploadedFile' is injected into this setter to trigger the  update. If this
-     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
-     * must be able to accept an instance of 'File' as the bundle will inject one here
-     * during Doctrine hydration.
-     *
-     * @param File|UploadedFile $imageFile
-     * @throws \Exception
-     */
-    public function setFile(?File $imageFile = null): void
+
+    public function getId(): ?int
     {
-        $this->file = $imageFile;
+        return $this->id;
+    }
 
-        if (null !== $imageFile) {
+
+    /**
+     * @param File|null $file
+     * @throws Exception
+     */
+    public function setFile(?File $file): void
+    {
+        $this->file = $file;
+
+        if ( $file instanceof File ) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             $this->updatedAt = new \DateTimeImmutable();
+            $this->imageSize = $file->getSize();
+            $this->imageMimeType = $file->getMimeType();
+            $this->imageName = $file->getFilename();
+            $this->imageDimensions = getimagesize($file->getRealPath()) ;
         }
     }
 
-    public function getFile(): ?File
+    /**
+     * @param string $data
+     */
+    public function setData(?string $data = null): void
     {
-        return $this->file;
+        $this->data = $data;
     }
 
-    public function setImage(EmbeddedFile $image)
+    public function getData(): ?string
     {
-        $this->image = $image;
-
-        if (null !== $image) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
-            $this->updatedAt = new \DateTimeImmutable();
-        }
+        return $this->data;
     }
 
-    public function getImage(): ?EmbeddedFile
-    {
-        return $this->image;
-    }
 
     public function getUpdatedAt(): ?\DateTimeInterface
     {
@@ -158,6 +155,54 @@ class MediaObject
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(?string $imageName): self
+    {
+        $this->imageName = $imageName;
+
+        return $this;
+    }
+
+    public function getImageSize(): ?int
+    {
+        return $this->imageSize;
+    }
+
+    public function setImageSize(?int $imageSize): self
+    {
+        $this->imageSize = $imageSize;
+
+        return $this;
+    }
+
+    public function getImageDimensions(): ?array
+    {
+        return $this->imageDimensions;
+    }
+
+    public function setImageDimensions(?array $imageDimensions): self
+    {
+        $this->imageDimensions = $imageDimensions;
+
+        return $this;
+    }
+
+    public function getImageMimeType(): ?string
+    {
+        return $this->imageMimeType;
+    }
+
+    public function setImageMimeType(?string $imageMimeType): self
+    {
+        $this->imageMimeType = $imageMimeType;
 
         return $this;
     }

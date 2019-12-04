@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Vich\UploaderBundle\Entity\File as EmbeddedFile;
+use Symfony\Component\HttpFoundation\File\File;
 
 class ImportWordPress extends Command
 {
@@ -97,7 +97,7 @@ class ImportWordPress extends Command
                                 $imageName = explode( '/', $imageUrl);
                                 $imageName = end( $imageName );
 
-                                $imagePath = $this->parameterBag->get('kernel.project_dir') . '/public/media/' . $imageName;
+                                $imagePath = $this->parameterBag->get('upload_destination') . $imageName;
                                 if($imageName && !file_exists($imagePath)) {
                                     $output->writeln( "import de l‘image {$imageUrl}" );
                                     $imageUrl = urlencode($imageUrl);
@@ -109,18 +109,10 @@ class ImportWordPress extends Command
 
                                         if( $fileSize ){
 
-                                            $file = new EmbeddedFile();
-                                            $file->setName($imageName);
-                                            $file->setMimeType(mime_content_type($imagePath));
-                                            $file->setSize( $fileSize);
-
-                                            $imageSize = getimagesize( $imagePath);
-                                            if( $imageSize ){
-                                                $file->setDimensions( [ $imageSize[0], $imageSize[1]] );
-                                            }
+                                            $file = new File( $imagePath );
 
                                             $mediaObject = new MediaObject();
-                                            $mediaObject->setImage( $file );
+                                            $mediaObject->setFile( $file );
 
                                             $this->em->persist( $mediaObject );
                                             $this->em->flush();

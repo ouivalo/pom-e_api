@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60649e7ab92a9520e4c516c84cb4e270",
+    "content-hash": "bb6e8915750feaefce680e5cac229746",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -1493,16 +1493,16 @@
         },
         {
             "name": "fresh/doctrine-enum-bundle",
-            "version": "v6.6.0",
+            "version": "v6.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fre5h/DoctrineEnumBundle.git",
-                "reference": "24d0cf6ae1fcd9b4c205ea287de42c774dfe969d"
+                "reference": "087b27b7b43db6a4808659ef7a0811fbfad85f1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fre5h/DoctrineEnumBundle/zipball/24d0cf6ae1fcd9b4c205ea287de42c774dfe969d",
-                "reference": "24d0cf6ae1fcd9b4c205ea287de42c774dfe969d",
+                "url": "https://api.github.com/repos/fre5h/DoctrineEnumBundle/zipball/087b27b7b43db6a4808659ef7a0811fbfad85f1b",
+                "reference": "087b27b7b43db6a4808659ef7a0811fbfad85f1b",
                 "shasum": ""
             },
             "require": {
@@ -1572,7 +1572,7 @@
                 "symfony",
                 "type"
             ],
-            "time": "2019-11-25T16:12:54+00:00"
+            "time": "2019-12-03T12:31:58+00:00"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1946,63 +1946,6 @@
                 "sql"
             ],
             "time": "2014-01-12T16:20:24+00:00"
-        },
-        {
-            "name": "jms/metadata",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/schmittjoh/metadata.git",
-                "reference": "8d8958103485c2cbdd9a9684c3869312ebdaf73a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/metadata/zipball/8d8958103485c2cbdd9a9684c3869312ebdaf73a",
-                "reference": "8d8958103485c2cbdd9a9684c3869312ebdaf73a",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2"
-            },
-            "require-dev": {
-                "doctrine/cache": "^1.0",
-                "doctrine/coding-standard": "^4.0",
-                "phpunit/phpunit": "^7.0",
-                "symfony/cache": "^3.1|^4.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Metadata\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Johannes M. Schmitt",
-                    "email": "schmittjoh@gmail.com"
-                },
-                {
-                    "name": "Asmir Mustafic",
-                    "email": "goetas@gmail.com"
-                }
-            ],
-            "description": "Class/method/property metadata management in PHP",
-            "keywords": [
-                "annotations",
-                "metadata",
-                "xml",
-                "yaml"
-            ],
-            "time": "2019-09-17T15:30:40+00:00"
         },
         {
             "name": "lcobucci/jwt",
@@ -6470,101 +6413,6 @@
                 "templating"
             ],
             "time": "2019-11-11T16:52:09+00:00"
-        },
-        {
-            "name": "vich/uploader-bundle",
-            "version": "1.12.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/dustin10/VichUploaderBundle.git",
-                "reference": "6cecc13be467886dad2c4353935392d571e79371"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/dustin10/VichUploaderBundle/zipball/6cecc13be467886dad2c4353935392d571e79371",
-                "reference": "6cecc13be467886dad2c4353935392d571e79371",
-                "shasum": ""
-            },
-            "require": {
-                "behat/transliterator": "^1.2",
-                "ext-simplexml": "*",
-                "jms/metadata": "^2.1",
-                "php": "^7.2",
-                "symfony/config": "^4.4 || ^5.0",
-                "symfony/dependency-injection": "^4.4 || ^5.0",
-                "symfony/event-dispatcher": "^4.4 || ^5.0",
-                "symfony/form": "^4.4 || ^5.0",
-                "symfony/http-foundation": "^4.4 || ^5.0",
-                "symfony/http-kernel": "^4.4 || ^5.0",
-                "symfony/property-access": "^4.4 || ^5.0",
-                "symfony/templating": "^4.4 || ^5.0"
-            },
-            "require-dev": {
-                "alcaeus/mongo-php-adapter": "^1.1",
-                "doctrine/doctrine-bundle": "^2.0",
-                "doctrine/mongodb-odm": "^1.2",
-                "doctrine/orm": "^2.7",
-                "ext-sqlite3": "*",
-                "knplabs/knp-gaufrette-bundle": "^0.6",
-                "matthiasnoback/symfony-dependency-injection-test": "^4.0",
-                "mikey179/vfsstream": "^1.6",
-                "oneup/flysystem-bundle": "^3.0",
-                "phpunit/phpunit": "^8.4",
-                "symfony/asset": "^4.4 || ^5.0",
-                "symfony/browser-kit": "^4.4 || ^5.0",
-                "symfony/css-selector": "^4.4 || ^5.0",
-                "symfony/doctrine-bridge": "^4.4 || ^5.0",
-                "symfony/dom-crawler": "^4.4 || ^5.0",
-                "symfony/framework-bundle": "^3.4.23 || ^4.2.4",
-                "symfony/phpunit-bridge": "^4.3",
-                "symfony/security-csrf": "^4.4 || ^5.0",
-                "symfony/translation": "^4.4 || ^5.0",
-                "symfony/twig-bridge": "^4.4 || ^5.0",
-                "symfony/twig-bundle": "^4.4 || ^5.0",
-                "symfony/validator": "^4.4 || ^5.0",
-                "symfony/var-dumper": "^4.4 || ^5.0",
-                "symfony/yaml": "^4.4 || ^5.0"
-            },
-            "suggest": {
-                "doctrine/doctrine-bundle": "For integration with Doctrine",
-                "doctrine/mongodb-odm-bundle": "For integration with Doctrine ODM",
-                "doctrine/orm": "For integration with Doctrine ORM",
-                "doctrine/phpcr-odm": "For integration with Doctrine PHPCR",
-                "knplabs/knp-gaufrette-bundle": "For integration with Gaufrette",
-                "liip/imagine-bundle": "To generate image thumbnails",
-                "ocramius/proxy-manager": "To use lazy services",
-                "oneup/flysystem-bundle": "For integration with Flysystem",
-                "symfony/asset": "To generate better links",
-                "symfony/yaml": "To use YAML mapping"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.13.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Vich\\UploaderBundle\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dustin Dobervich",
-                    "email": "ddobervich@gmail.com"
-                }
-            ],
-            "description": "Ease file uploads attached to entities",
-            "homepage": "https://github.com/dustin10/VichUploaderBundle",
-            "keywords": [
-                "file uploads",
-                "upload"
-            ],
-            "time": "2019-12-02T10:12:40+00:00"
         },
         {
             "name": "webmozart/assert",
