@@ -224,7 +224,7 @@ class Permanence
         return $this->nbUsers;
     }
 
-    public function setNbUsers($nbUsers): self
+    public function setNbUsers(?int $nbUsers): self
     {
         $this->nbUsers = $nbUsers;
 
@@ -236,7 +236,7 @@ class Permanence
         return $this->nbBuckets;
     }
 
-    public function setNbBuckets(float $nbBuckets): self
+    public function setNbBuckets(?float $nbBuckets): self
     {
         $this->nbBuckets = $nbBuckets;
 
@@ -248,7 +248,7 @@ class Permanence
         return $this->temperature;
     }
 
-    public function setTemperature(float $temperature): self
+    public function setTemperature(?float $temperature): self
     {
         $this->temperature = $temperature;
 
