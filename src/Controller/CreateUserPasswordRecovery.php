@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\UserPasswordRecovery;
-use App\Service\Email;
+use App\Service\Mailjet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 class CreateUserPasswordRecovery extends AbstractController
 {
 
-    public function __invoke(UserPasswordRecovery $data, TokenGeneratorInterface $tokenGenerator, Email $email ): UserPasswordRecovery
+    public function __invoke(UserPasswordRecovery $data, TokenGeneratorInterface $tokenGenerator, Mailjet $email ): UserPasswordRecovery
     {
 
         $em = $this->getDoctrine()->getManager();

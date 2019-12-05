@@ -5,7 +5,7 @@ namespace App\EventListener;
 
 
 use App\Entity\User;
-use App\Service\Email;
+use App\Service\Mailjet;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -25,9 +25,9 @@ class UserListener
      * @param UserPasswordEncoderInterface $encoder
      * @param EntityManagerInterface $entityManager
      * @param TokenGeneratorInterface $tokenGenerator
-     * @param Email $email
+     * @param Mailjet $email
      */
-    public function __construct( UserPasswordEncoderInterface $encoder, EntityManagerInterface $entityManager, TokenGeneratorInterface $tokenGenerator, Email $email)
+    public function __construct(UserPasswordEncoderInterface $encoder, EntityManagerInterface $entityManager, TokenGeneratorInterface $tokenGenerator, Mailjet $email)
     {
         $this->encoder          = $encoder;
         $this->em               = $entityManager;

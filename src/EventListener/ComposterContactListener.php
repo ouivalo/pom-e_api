@@ -3,7 +3,7 @@
 
 namespace App\EventListener;
 
-use App\Service\Email;
+use App\Service\Mailjet;
 use Mailjet\Client;
 use Mailjet\Resources;
 use App\Entity\ComposterContact;
@@ -12,11 +12,11 @@ class ComposterContactListener
 {
 
     /**
-     * @var Email
+     * @var Mailjet
      */
     private $email;
 
-    public function __construct( Email $email )
+    public function __construct(Mailjet $email )
     {
 
         $this->email = $email;
