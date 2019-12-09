@@ -4,6 +4,7 @@
 namespace App\Service;
 
 
+use App\Entity\Composter;
 use App\Entity\Consumer;
 use App\Entity\User;
 use Mailjet\Client;
@@ -259,6 +260,41 @@ class Mailjet
 
 
         return $campaignDraftId;
+    }
+
+
+    /**
+     * @param Composter $composter
+     * @return Composter
+     */
+    public function createComposterContactList( Composter $composter ) : Composter
+    {
+
+        $contactListId = $composter->getMailjetListID();
+
+        if( ! $contactListId ) {
+
+            $slug = $composter->getSlug();
+
+            $body = [
+                'Name' => $slug
+            ];
+            $response = $this->mj->post(Resources::$Contactslist, ['body' => $body]);
+
+            if( $response->getStatus() === 400 ){
+                // La liste existe déja
+                $response = $this->mj->get(Resources::$Contactslist, [ 'filters' => ['Name' => $slug]]);
+            }
+
+            if( in_array($response->getStatus(), [200, 201], true) ){
+                $responseData = $response->getData();
+                $contactListId = $responseData[0]['ID'];
+
+                $composter->setMailjetListID( $contactListId );
+            }
+        }
+
+        return $composter;
     }
 
     /**

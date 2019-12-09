@@ -29,6 +29,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     "financeur"  : "exact",
  *     "name"       : "partial"
  * })
+ * @ORM\EntityListeners({"App\EventListener\ComposterListener"})
  * @ApiFilter(OrderFilter::class, properties={"id", "DateMiseEnRoute"}, arguments={"orderParameterName"="order"})
  */
 class Composter
