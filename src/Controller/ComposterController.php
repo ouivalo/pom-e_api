@@ -9,10 +9,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\UrlHelper;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ComposterController extends AbstractController
 {
+
+    private $urlHelper;
+
+    public function __construct(UrlHelper $urlHelper)
+    {
+        $this->urlHelper = $urlHelper;
+    }
 
     /**
      * @Route("/composters.geojson", name="composters-geojson")
@@ -44,7 +52,8 @@ class ComposterController extends AbstractController
                     'slug'          => $c->getSlug(),
                     'name'          => $c->getName(),
                     'status'        => $c->getStatus(),
-                    'acceptNewMembers' => $c->getAcceptNewMembers()
+                    'acceptNewMembers' => $c->getAcceptNewMembers(),
+                    'image'         => $c->getImage() ? $this->getImageUrl( $c->getImage()->getImageName() ) : null
                 ]
             ];
         }
@@ -54,5 +63,12 @@ class ComposterController extends AbstractController
         ];
 
         return $this->json($geojson);
+    }
+
+    private function getImageUrl( string $imageName ) : string
+    {
+
+        $dir = str_replace( $this->getParameter('kernel.project_dir') . '/public', '',  $this->getParameter('upload_destination') );
+        return $this->urlHelper->getAbsoluteUrl( $dir . $imageName  );
     }
 }
