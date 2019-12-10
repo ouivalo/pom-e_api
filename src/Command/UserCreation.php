@@ -47,9 +47,10 @@ class UserCreation extends Command
 
         $user = new User();
         $user->setEmail( $email )
-            ->setPassword( $password )
+            ->setPlainPassword( $password )
             ->setUsername( $username )
-            ->setRoles( ['ROLE_ADMIN']);
+            ->setRoles( ['ROLE_ADMIN'])
+            ->setEnabled( true);
 
         $this->em->persist( $user );
         $this->em->flush();

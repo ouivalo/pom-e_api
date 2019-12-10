@@ -651,17 +651,17 @@ class ImportComposter extends Command
         }
 
         // Catégorie
-        // 12 Copropriété
-        // 13 Quartier
-        // 14 Jardins
-        // 15 Ecole
-        if( ! empty( $cells[12]->getValue() ) ){
+        // 11 Copropriété
+        // 12 Quartier
+        // 13 Jardins
+        // 14 Ecole
+        if( ! empty( $cells[11]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 2) );
-        } else if( ! empty( $cells[13]->getValue() ) ){
+        } else if( ! empty( $cells[12]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 1) );
-        } else if( ! empty( $cells[14]->getValue() ) ){
+        } else if( ! empty( $cells[13]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 4) );
-        } else if( ! empty( $cells[15]->getValue() ) ){
+        } else if( ! empty( $cells[14]->getValue() ) ){
             $composter->setCategorie( $categorieRepository->find( 3) );
         }
 
