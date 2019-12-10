@@ -95,7 +95,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean", options={"default":false})
-     * @Groups({"user"})
+     * @Groups({"user", "userComposter"})
      */
     private $enabled;
 
