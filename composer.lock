@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00861f369c80f24ddf3de072cffb6290",
+    "content-hash": "cf1a5ff05a5e38e3afc66b760a4db1b3",
     "packages": [
         {
             "name": "api-platform/api-pack",
@@ -236,16 +236,16 @@
         },
         {
             "name": "box/spout",
-            "version": "v3.0.1",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/box/spout.git",
-                "reference": "6c4086cf97b36f0ca87d19f051902ce8004ee6b0"
+                "reference": "7964dadc2128f3a00ffa393395b618ea115c8032"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/box/spout/zipball/6c4086cf97b36f0ca87d19f051902ce8004ee6b0",
-                "reference": "6c4086cf97b36f0ca87d19f051902ce8004ee6b0",
+                "url": "https://api.github.com/repos/box/spout/zipball/7964dadc2128f3a00ffa393395b618ea115c8032",
+                "reference": "7964dadc2128f3a00ffa393395b618ea115c8032",
                 "shasum": ""
             },
             "require": {
@@ -301,7 +301,7 @@
                 "write",
                 "xlsx"
             ],
-            "time": "2019-06-04T07:36:51+00:00"
+            "time": "2019-12-02T21:21:41+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1493,16 +1493,16 @@
         },
         {
             "name": "fresh/doctrine-enum-bundle",
-            "version": "v6.6.1",
+            "version": "v6.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fre5h/DoctrineEnumBundle.git",
-                "reference": "087b27b7b43db6a4808659ef7a0811fbfad85f1b"
+                "reference": "0ca57c8ba1f710a4823ed8535493049347a8d85a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fre5h/DoctrineEnumBundle/zipball/087b27b7b43db6a4808659ef7a0811fbfad85f1b",
-                "reference": "087b27b7b43db6a4808659ef7a0811fbfad85f1b",
+                "url": "https://api.github.com/repos/fre5h/DoctrineEnumBundle/zipball/0ca57c8ba1f710a4823ed8535493049347a8d85a",
+                "reference": "0ca57c8ba1f710a4823ed8535493049347a8d85a",
                 "shasum": ""
             },
             "require": {
@@ -1516,15 +1516,16 @@
                 "symfony/framework-bundle": "^4.3",
                 "symfony/http-kernel": "^4.3",
                 "symfony/validator": "^4.3",
-                "twig/twig": "~2.11"
+                "twig/twig": "~2.11 || ^3.0"
             },
             "require-dev": {
-                "escapestudios/symfony2-coding-standard": "^3.9",
-                "phpstan/phpstan": "^0.11",
-                "phpstan/phpstan-doctrine": "^0.11",
-                "phpstan/phpstan-phpunit": "^0.11",
+                "escapestudios/symfony2-coding-standard": "^3.10",
+                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan-doctrine": "^0.12",
+                "phpstan/phpstan-phpunit": "^0.12",
                 "phpunit/phpunit": "^7.5",
                 "symfony/form": "^4.3",
+                "symfony/phpunit-bridge": "^4.3",
                 "symfony/yaml": "^4.3"
             },
             "type": "symfony-bundle",
@@ -1572,7 +1573,7 @@
                 "symfony",
                 "type"
             ],
-            "time": "2019-12-03T12:31:58+00:00"
+            "time": "2019-12-04T10:38:28+00:00"
         },
         {
             "name": "gedmo/doctrine-extensions",
@@ -1658,29 +1659,29 @@
         },
         {
             "name": "gesdinet/jwt-refresh-token-bundle",
-            "version": "v0.8.3",
+            "version": "v0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/markitosgv/JWTRefreshTokenBundle.git",
-                "reference": "e3b2db2563982629a77ed4521df60a0e8ac2df64"
+                "reference": "fd0e4290ff74d545149d389976a9027b1a5baf66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/markitosgv/JWTRefreshTokenBundle/zipball/e3b2db2563982629a77ed4521df60a0e8ac2df64",
-                "reference": "e3b2db2563982629a77ed4521df60a0e8ac2df64",
+                "url": "https://api.github.com/repos/markitosgv/JWTRefreshTokenBundle/zipball/fd0e4290ff74d545149d389976a9027b1a5baf66",
+                "reference": "fd0e4290ff74d545149d389976a9027b1a5baf66",
                 "shasum": ""
             },
             "require": {
                 "lexik/jwt-authentication-bundle": "^1.1|^2.0@dev",
                 "php": "^5.5.9|>=7.0.8",
-                "symfony/framework-bundle": "~3.4|~4.0",
-                "symfony/validator": "~3.4|~4.0"
+                "symfony/framework-bundle": "~3.4|~4.0|~5.0",
+                "symfony/validator": "~3.4|~4.0|~5.0"
             },
             "require-dev": {
-                "doctrine/doctrine-bundle": "~1.4",
+                "doctrine/doctrine-bundle": "~1.4|~2.0",
                 "doctrine/mongodb-odm-bundle": "^3.4|^4.0",
                 "doctrine/orm": "^2.4.8",
-                "phpspec/phpspec": "^3.0|^4.0"
+                "phpspec/phpspec": "^3.0|^4.0|^5.0|^6.0"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -1707,20 +1708,20 @@
             "keywords": [
                 "jwt refresh token bundle symfony json web"
             ],
-            "time": "2019-11-12T16:03:22+00:00"
+            "time": "2019-12-05T09:07:22+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.4.1",
+            "version": "6.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "0895c932405407fd3a7368b6910c09a24d26db11"
+                "reference": "dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0895c932405407fd3a7368b6910c09a24d26db11",
-                "reference": "0895c932405407fd3a7368b6910c09a24d26db11",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5",
+                "reference": "dbc2bc3a293ed6b1ae08a3651e2bfd213d19b6a5",
                 "shasum": ""
             },
             "require": {
@@ -1735,12 +1736,13 @@
                 "psr/log": "^1.1"
             },
             "suggest": {
+                "ext-intl": "Required for Internationalized Domain Name (IDN) support",
                 "psr/log": "Required for using the Log middleware"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.3-dev"
+                    "dev-master": "6.5-dev"
                 }
             },
             "autoload": {
@@ -1773,7 +1775,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2019-10-23T15:58:00+00:00"
+            "time": "2019-12-07T18:20:45+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -6586,38 +6588,35 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.12.2",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "d761fd1f1c6b867ae09a7d8119a6d95d06dc44ed"
+                "reference": "9b58bb8ac7a41d72fbb5a7dc643e07923e5ccc26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d761fd1f1c6b867ae09a7d8119a6d95d06dc44ed",
-                "reference": "d761fd1f1c6b867ae09a7d8119a6d95d06dc44ed",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/9b58bb8ac7a41d72fbb5a7dc643e07923e5ccc26",
+                "reference": "9b58bb8ac7a41d72fbb5a7dc643e07923e5ccc26",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0",
+                "php": "^7.2.9",
                 "symfony/polyfill-ctype": "^1.8",
                 "symfony/polyfill-mbstring": "^1.3"
             },
             "require-dev": {
                 "psr/container": "^1.0",
-                "symfony/debug": "^3.4|^4.2",
+                "symfony/debug": "^3.4|^4.2|^5.0",
                 "symfony/phpunit-bridge": "^4.4@dev|^5.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.12-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Twig_": "lib/"
-                },
                 "psr-4": {
                     "Twig\\": "src/"
                 }
@@ -6649,7 +6648,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-11-11T16:52:09+00:00"
+            "time": "2019-11-15T20:38:32+00:00"
         },
         {
             "name": "webmozart/assert",
