@@ -59,10 +59,16 @@ class Consumer
      */
     private $mailjetContactsLists;
 
+    /**
+     * @var boolean
+     */
+    private $subscribeToCompostriNewsletter;
+
     public function __construct()
     {
         $this->composters = new ArrayCollection();
         $this->mailjetContactsLists = new ArrayCollection();
+        $this->subscribeToCompostriNewsletter = false;
     }
 
     public function getId(): ?int
@@ -146,5 +152,24 @@ class Consumer
     public function setMailjetContactsLists(array $mailjetContactsLists): void
     {
         $this->mailjetContactsLists = $mailjetContactsLists;
+    }
+
+    /**
+     * @param bool $subscribeToCompostriNewsletter
+     * @return Consumer
+     */
+    public function setSubscribeToCompostriNewsletter(bool $subscribeToCompostriNewsletter): self
+    {
+        $this->subscribeToCompostriNewsletter = $subscribeToCompostriNewsletter;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getSubscribeToCompostriNewsletter(): bool
+    {
+        return $this->subscribeToCompostriNewsletter;
     }
 }

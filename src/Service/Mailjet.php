@@ -159,10 +159,15 @@ class Mailjet
                     $compostersMailjetListId[] = $mailjetListId;
                 }
             }
+            // On l'ajoute à la newsletter de compostri
+            if( $consumer->getSubscribeToCompostriNewsletter() ){
+                $compostersMailjetListId[] = getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID');
+            }
 
             if( count( $compostersMailjetListId ) > 0 ){
                 $response = $this->addToList( $consumer->getMailjetId(), $compostersMailjetListId );
             }
+
 
         }
 

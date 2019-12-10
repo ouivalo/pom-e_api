@@ -25,12 +25,14 @@ class CreateConsumerAction extends AbstractController
         if( $consumer instanceof Consumer ){
             $composters = $data->getComposters();
             $username = $data->getUsername();
+            $subscribeToCompostriNewsletter = $data->getSubscribeToCompostriNewsletter();
 
             $data = $consumer;
             foreach ( $composters as $c ){
                 $data->addComposter( $c );
             }
             $data->setUsername( $username );
+            $data->setSubscribeToCompostriNewsletter( $subscribeToCompostriNewsletter );
         }
 
         return $data;
