@@ -9,7 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"categorie"}}
+ *  )
  * @ORM\Entity(repositoryClass="App\Repository\CategorieRepository")
  */
 class Categorie
@@ -18,13 +20,13 @@ class Categorie
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"composter"})
+     * @Groups({"composter", "categorie"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter"})
+     * @Groups({"composter", "categorie"})
      */
     private $name;
 
