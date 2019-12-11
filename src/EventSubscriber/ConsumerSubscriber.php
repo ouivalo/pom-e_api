@@ -49,14 +49,19 @@ class ConsumerSubscriber implements EventSubscriberInterface
 
             foreach ($controllerResult as $currentObject) {
 
-                if ($currentObject instanceof Consumer) {
+                if ($currentObject instanceof Consumer ){
+
+                    $currentObject->setMailjetContactsLists([]);
+                    $currentObject->setSubscribeToCompostriNewsletter(false);
+
+                    if( $currentObject->getMailjetId()) {
 
                     $mjResponse = $this->mailjet->getContactContactsLists( $currentObject->getMailjetId() );
 
                     if( $mjResponse->success() ){
                         $currentObject->setMailjetContactsLists( $mjResponse->getData() );
                     }
-
+                }
                 }
             }
         }
