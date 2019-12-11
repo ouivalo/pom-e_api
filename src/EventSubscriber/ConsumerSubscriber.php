@@ -60,6 +60,13 @@ class ConsumerSubscriber implements EventSubscriberInterface
 
                     if( $mjResponse->success() ){
                         $currentObject->setMailjetContactsLists( $mjResponse->getData() );
+                        $subscribeToCompostriNewsletter = false;
+                        foreach ( $mjResponse->getData() as $data ){
+                            if( ! $data['IsUnsub'] && $data['ListID'] === (int) getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID') ){
+                                $subscribeToCompostriNewsletter = true;
+                            }
+                        }
+                        $currentObject->setSubscribeToCompostriNewsletter( $subscribeToCompostriNewsletter );
                     }
                 }
                 }
