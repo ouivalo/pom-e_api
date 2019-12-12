@@ -1,8 +1,8 @@
 # api/config/routes.yaml
 authentication_token:
   path: /login_check
-  methods: ['POST']
+  methods: ["POST"]
 
 gesdinet_jwt_refresh_token:
-  path: /api/token/refresh
+  path: /token/refresh
   controller: gesdinet.jwtrefreshtoken::refresh
