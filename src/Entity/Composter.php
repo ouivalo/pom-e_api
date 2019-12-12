@@ -21,16 +21,17 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     normalizationContext={"groups"={"composter"}}
  * )
  * @ApiFilter(SearchFilter::class, properties={
- *     "commune"    : "exact",
- *     "quartier"   : "exact",
- *     "pole"       : "exact",
- *     "equipement" : "exact",
- *     "categorie"  : "exact",
- *     "financeur"  : "exact",
- *     "name"       : "partial"
+ *     "commune"     : "exact",
+ *     "quartier"    : "exact",
+ *     "pole"        : "exact",
+ *     "equipement"  : "exact",
+ *     "categorie"   : "exact",
+ *     "financeur"   : "exact",
+ *     "name"        : "partial",
+ *     "broyatLevel" : "exact",
  * })
  * @ORM\EntityListeners({"App\EventListener\ComposterListener"})
- * @ApiFilter(OrderFilter::class, properties={"id", "DateMiseEnRoute"}, arguments={"orderParameterName"="order"})
+ * @ApiFilter(OrderFilter::class, properties={"DateMiseEnRoute", "status"}, arguments={"orderParameterName"="order"})
  */
 class Composter
 {
