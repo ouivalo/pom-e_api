@@ -510,6 +510,7 @@ class ImportComposter extends Command
         // On crée ou récupére un composter par serialNumber ou name
         $serialNumber = $cells[2]->getValue();
         $name = $cells[3]->getValue();
+        $name = str_replace( '’', '\'', $name );
         $composter = $composterRepository->findOneBy(['serialNumber' => $serialNumber ] );
 
         if( ! $composter ){
