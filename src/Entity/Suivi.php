@@ -41,6 +41,26 @@ class Suivi
      */
     private $composter;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $animation;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $environnement;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $technique;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $autonomie;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,6 +98,54 @@ class Suivi
     public function setComposter(?Composter $composter): self
     {
         $this->composter = $composter;
+
+        return $this;
+    }
+
+    public function getAnimation(): ?int
+    {
+        return $this->animation;
+    }
+
+    public function setAnimation(?int $animation): self
+    {
+        $this->animation = $animation;
+
+        return $this;
+    }
+
+    public function getEnvironnement(): ?int
+    {
+        return $this->environnement;
+    }
+
+    public function setEnvironnement(?int $environnement): self
+    {
+        $this->environnement = $environnement;
+
+        return $this;
+    }
+
+    public function getTechnique(): ?int
+    {
+        return $this->technique;
+    }
+
+    public function setTechnique(?int $technique): self
+    {
+        $this->technique = $technique;
+
+        return $this;
+    }
+
+    public function getAutonomie(): ?int
+    {
+        return $this->autonomie;
+    }
+
+    public function setAutonomie(?int $autonomie): self
+    {
+        $this->autonomie = $autonomie;
 
         return $this;
     }
