@@ -158,6 +158,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\ApprovisionnementBroyat", inversedBy="composters")
+     * @Groups({"composter"})
      */
     private $approvisionnementBroyat;
 

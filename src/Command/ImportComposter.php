@@ -360,52 +360,57 @@ class ImportComposter extends Command
         }
 
         // Procédure d'ouverture
-        $apport     = $cells[12]->getValue();
-        $maturation = $cells[13]->getValue();
-        $broyat     = $cells[14]->getValue();
-        $openingProcedures = "Bac d’apport : {$apport}, bac de maturation : $maturation, bac de broyat : {$broyat}";
-        $composter->setOpeningProcedures( $openingProcedures );
+//        $apport     = $cells[12]->getValue();
+//        $maturation = $cells[13]->getValue();
+//        $broyat     = $cells[14]->getValue();
+//        $openingProcedures = "Bac d’apport : {$apport}, bac de maturation : $maturation, bac de broyat : {$broyat}";
+//        $composter->setOpeningProcedures( $openingProcedures );
 
 
         // Suivi
-        $suiviDescription = $cells[33]->getValue();
-        if( $suiviDescription ){
-
-            $suiviDate = $cells[21]->getValue();
-            if( ! $suiviDate instanceof DateTime ){
-                $suiviDate = new DateTime();
-            }
-
-            // Dynamisme
-            $animation      = $cells[29]->getValue();
-            $environnement  = $cells[30]->getValue();
-            $technique	    = $cells[31]->getValue();
-            $autonomie      = $cells[32]->getValue();
-
-            $suivi = new Suivi();
-            $suivi->setDescription( $suiviDescription );
-            $suivi->setComposter( $composter );
-            $suivi->setDate( $suiviDate );
-            if( is_numeric( $animation ) ) { $suivi->setAnimation( (int) $animation ); }
-            if( is_numeric( $environnement ) ) { $suivi->setEnvironnement( (int) $environnement ); }
-            if( is_numeric( $technique ) ) { $suivi->setTechnique( (int) $technique ); }
-            if( is_numeric( $autonomie ) ) { $suivi->setAutonomie( (int) $autonomie ); }
-
-            $this->em->persist( $suivi );
-        }
+//        $suiviDescription = $cells[33]->getValue();
+//        if( $suiviDescription ){
+//
+//            $suiviDate = $cells[21]->getValue();
+//            if( ! $suiviDate instanceof DateTime ){
+//                $suiviDate = new DateTime();
+//            }
+//
+//            // Dynamisme
+//            $animation      = $cells[29]->getValue();
+//            $environnement  = $cells[30]->getValue();
+//            $technique	    = $cells[31]->getValue();
+//            $autonomie      = $cells[32]->getValue();
+//
+//            $suivi = new Suivi();
+//            $suivi->setDescription( $suiviDescription );
+//            $suivi->setComposter( $composter );
+//            $suivi->setDate( $suiviDate );
+//            if( is_numeric( $animation ) ) { $suivi->setAnimation( (int) $animation ); }
+//            if( is_numeric( $environnement ) ) { $suivi->setEnvironnement( (int) $environnement ); }
+//            if( is_numeric( $technique ) ) { $suivi->setTechnique( (int) $technique ); }
+//            if( is_numeric( $autonomie ) ) { $suivi->setAutonomie( (int) $autonomie ); }
+//
+//            $this->em->persist( $suivi );
+//        }
 
 
 //        // approvisionnement Broyat
-//        $appBroyatName = (string) $cells[4];
+//        $appBroyatName = false;
+//        if( $cells[43]->getValue() === 'X' ){
+//            $appBroyatName = 'Autonomie';
+//        } else if( $cells[44]->getValue() === 'X' ){
+//            $appBroyatName = 'Compostri';
+//        } else if( $cells[45]->getValue() === 'X' ){
+//            $appBroyatName = 'Alisé';
+//        } else if( $cells[46]->getValue() === 'X' ){
+//            $appBroyatName = 'Ville';
+//        } else if( $cells[47]->getValue() === 'X' ){
+//            $appBroyatName = 'Séquoïa';
+//        }
 //
-//        if( ! empty( $appBroyatName ) ){
+//        if( $appBroyatName ){
 //
-//            if( 'Compostri (libre service)' === $appBroyatName ){
-//
-//                $appBroyatName = 'Libre service Compostri';
-//            } elseif ( 'Autonome + Compostri' === $appBroyatName ){
-//                $appBroyatName = 'Compostri + Autonome';
-//            }
 //
 //            $approvisionnementBroyat = $approvisionnementBroyatRepository->findOneBy( [ 'name' => $appBroyatName ] );
 //
@@ -420,97 +425,18 @@ class ImportComposter extends Command
 //        }
 //
 //
-//        $composter->setShortDescription( $cells[5]->getValue() );
-//        $composter->setOpeningProcedures ( $cells[6]->getValue() );
-//
-//        // Dates
-//        $installation   =  ! $cells[7]->isEmpty() ? $this->getDateStringFromFile( $cells[7] ) : false;
-//        $inauguration   =  ! $cells[8]->isEmpty() ? $this->getDateStringFromFile( $cells[8] ) : false;
-//        $miseEnRoute    =  ! $cells[9]->isEmpty() ? $this->getDateStringFromFile( $cells[9] ) : false;
-//
-//        if( $installation instanceof DateTime) {
-//            $composter->setDateInstallation($installation);
-//        }
-//        if( $inauguration instanceof DateTime) {
-//            $composter->setDateInauguration($inauguration);
-//        }
-//        if( $miseEnRoute instanceof DateTime){
-//            $composter->setDateMiseEnRoute($miseEnRoute);
-//        } else {
-//            $composter->setDateMiseEnRoute( new DateTime( "{$cells[1]->getValue()}-06-26" ));
-//        }
-//
-//
-//        // Livraison de Broyat
-//        // 2018
-//        $livraison2018 = $cells[13]->getValue();
-//        if( $livraison2018 ){
-//            $find = preg_match('/([\d]+)( *bacs)*/', $livraison2018, $matches);
-//            if( $find ){
-//                $quantity = (int) $matches[1];
-//                $livraisonBroyat = new LivraisonBroyat();
-//                $livraisonBroyat->setQuantite( $quantity );
-//                $livraisonBroyat->setUnite( $quantity < 100 ? 'bacs' : 'L');
-//                $livraisonBroyat->setLivreur( 'compostri' );
-//                $livraisonBroyat->setComposter( $composter );
-//                $livraisonBroyat->setDate( new DateTime( '2018-06-26' ) );
-//
-//                $this->em->persist( $livraisonBroyat );
-//            } else {
-//                $this->output->writeln( "Pas gérable : '{$livraison2018}'"  );
-//            }
-//        }
-//
-//        // 2019
-//        $livraison2019 = $cells[14]->getValue();
-//        if( $livraison2019 ){
-//            $find = preg_match('/([\d]+)( *bacs)*/', $livraison2019, $matches);
-//            if( $find ){
-//                $quantity = (int) $matches[1];
-//                $livraisonBroyat = new LivraisonBroyat();
-//                $livraisonBroyat->setQuantite( $quantity );
-//                $livraisonBroyat->setUnite( $quantity < 100 ? 'bacs' : 'L');
-//                $livraisonBroyat->setLivreur( 'compostri' );
-//                $livraisonBroyat->setComposter( $composter );
-//                $livraisonBroyat->setDate( new DateTime( '2019-06-26' ) );
-//
-//                $this->em->persist( $livraisonBroyat );
-//            } else {
-//                $this->output->writeln( "Pas gérable : '{$livraison2019}'"  );
-//            }
-//        }
-//
-//        // 2019 ALISE
-//        $livraisonAlise = $cells[15]->getValue();
-//        if( $livraisonAlise ){
-//            $find = preg_match('/([\d]+)( *poubelles)*/', $livraisonAlise, $matches);
-//            if( $find ){
-//                $quantity = (int) $matches[1];
-//                $livraisonBroyat = new LivraisonBroyat();
-//                $livraisonBroyat->setQuantite( $quantity );
-//                $livraisonBroyat->setUnite( 'poubelles');
-//                $livraisonBroyat->setLivreur( 'alise' );
-//                $livraisonBroyat->setComposter( $composter );
-//                $livraisonBroyat->setDate( new DateTime( '2019-06-26' ) );
-//
-//                $this->em->persist( $livraisonBroyat );
-//            } else {
-//                $this->output->writeln( "Pas gérable : '{$livraisonAlise}'"  );
-//            }
-//        }
-//
 
-//        // Reparation
-//        $reparationDescription = $cells[21]->getValue();
-//        if( $reparationDescription ){
-//
-//            $reparation = new Reparation();
-//            $reparation->setDescription( $reparationDescription );
-//            $reparation->setComposter( $composter );
-//            $reparation->setDone( false );
-//
-//            $this->em->persist( $reparation );
-//        }
+        // Reparation
+        $reparationDescription = $cells[59]->getValue();
+        if( $reparationDescription && ! empty( $reparationDescription )){
+
+            $reparation = new Reparation();
+            $reparation->setDescription( $reparationDescription );
+            $reparation->setComposter( $composter );
+            $reparation->setDone( false );
+
+            $this->em->persist( $reparation );
+        }
 
 
 

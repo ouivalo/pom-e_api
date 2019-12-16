@@ -43,21 +43,25 @@ class Suivi
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"suivis"})
      */
     private $animation;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"suivis"})
      */
     private $environnement;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"suivis"})
      */
     private $technique;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"suivis"})
      */
     private $autonomie;
 
