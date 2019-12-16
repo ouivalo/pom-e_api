@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
+ *     attributes={"security"="is_granted('ROLE_ADMIN')"},
  *     normalizationContext={"groups"={"approvisionnementBroyat"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\ApprovisionnementBroyatRepository")

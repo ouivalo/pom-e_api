@@ -366,6 +366,13 @@ class ImportComposter extends Command
 //        $openingProcedures = "Bac d’apport : {$apport}, bac de maturation : $maturation, bac de broyat : {$broyat}";
 //        $composter->setOpeningProcedures( $openingProcedures );
 
+        // Fréquentation / Capacité
+        $nbFoyersPotentiels = $cells['26']->getValue();
+        $nbInscrit          = $cells['27']->getValue();
+        $nbDeposant         = $cells['28']->getValue();
+        if( is_numeric( $nbFoyersPotentiels ) ) { $composter->setNbFoyersPotentiels( (int) $nbFoyersPotentiels ); }
+        if( is_numeric( $nbInscrit ) ) { $composter->setNbInscrit( (int) $nbInscrit ); }
+        if( is_numeric( $nbDeposant ) ) { $composter->setNbDeposant( (int) $nbDeposant ); }
 
         // Suivi
 //        $suiviDescription = $cells[33]->getValue();
@@ -426,17 +433,17 @@ class ImportComposter extends Command
 //
 //
 
-        // Reparation
-        $reparationDescription = $cells[59]->getValue();
-        if( $reparationDescription && ! empty( $reparationDescription )){
-
-            $reparation = new Reparation();
-            $reparation->setDescription( $reparationDescription );
-            $reparation->setComposter( $composter );
-            $reparation->setDone( false );
-
-            $this->em->persist( $reparation );
-        }
+//        // Reparation
+//        $reparationDescription = $cells[59]->getValue();
+//        if( $reparationDescription && ! empty( $reparationDescription )){
+//
+//            $reparation = new Reparation();
+//            $reparation->setDescription( $reparationDescription );
+//            $reparation->setComposter( $composter );
+//            $reparation->setDone( false );
+//
+//            $this->em->persist( $reparation );
+//        }
 
 
 

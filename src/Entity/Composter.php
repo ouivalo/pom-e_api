@@ -138,7 +138,7 @@ class Composter
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Equipement", inversedBy="composters")
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $equipement;
 
@@ -182,19 +182,19 @@ class Composter
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\LivraisonBroyat", mappedBy="composter", orphanRemoval=true)
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $livraisonBroyats;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Suivi", mappedBy="composter", orphanRemoval=true)
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $suivis;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Reparation", mappedBy="composter")
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $reparations;
 
@@ -227,7 +227,6 @@ class Composter
     private $acceptNewMembers;
 
 
-
     /**
      * @var MediaObject|null
      * 
@@ -252,7 +251,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Financeur", inversedBy="composters")
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $financeur;
 
@@ -283,6 +282,66 @@ class Composter
      * @Groups({"composter"})
      */
     private $mailjetListID;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $nbFoyersPotentiels;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $nbInscrit;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $nbDeposant;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $signaletiqueRond;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $signaletiquePanneau;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasCroc;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasCadenas;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasFourche;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasThermometre;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasPeson;
 
 
     public function __construct()
@@ -878,6 +937,126 @@ class Composter
     public function setMailjetListID(?string $mailjetListID): self
     {
         $this->mailjetListID = $mailjetListID;
+
+        return $this;
+    }
+
+    public function getNbFoyersPotentiels(): ?int
+    {
+        return $this->nbFoyersPotentiels;
+    }
+
+    public function setNbFoyersPotentiels(?int $nbFoyersPotentiels): self
+    {
+        $this->nbFoyersPotentiels = $nbFoyersPotentiels;
+
+        return $this;
+    }
+
+    public function getNbInscrit(): ?int
+    {
+        return $this->nbInscrit;
+    }
+
+    public function setNbInscrit(?int $nbInscrit): self
+    {
+        $this->nbInscrit = $nbInscrit;
+
+        return $this;
+    }
+
+    public function getNbDeposant(): ?int
+    {
+        return $this->nbDeposant;
+    }
+
+    public function setNbDeposant(?int $nbDeposant): self
+    {
+        $this->nbDeposant = $nbDeposant;
+
+        return $this;
+    }
+
+    public function getSignaletiqueRond(): ?bool
+    {
+        return $this->signaletiqueRond;
+    }
+
+    public function setSignaletiqueRond(?bool $signaletiqueRond): self
+    {
+        $this->signaletiqueRond = $signaletiqueRond;
+
+        return $this;
+    }
+
+    public function getSignaletiquePanneau(): ?bool
+    {
+        return $this->signaletiquePanneau;
+    }
+
+    public function setSignaletiquePanneau(?bool $signaletiquePanneau): self
+    {
+        $this->signaletiquePanneau = $signaletiquePanneau;
+
+        return $this;
+    }
+
+    public function getHasCroc(): ?bool
+    {
+        return $this->hasCroc;
+    }
+
+    public function setHasCroc(bool $croc): self
+    {
+        $this->hasCroc = $croc;
+
+        return $this;
+    }
+
+    public function getHasCadenas(): ?bool
+    {
+        return $this->hasCadenas;
+    }
+
+    public function setHasCadenas(?bool $hasCadenas): self
+    {
+        $this->hasCadenas = $hasCadenas;
+
+        return $this;
+    }
+
+    public function getHasFourche(): ?bool
+    {
+        return $this->hasFourche;
+    }
+
+    public function setHasFourche(?bool $hasFourche): self
+    {
+        $this->hasFourche = $hasFourche;
+
+        return $this;
+    }
+
+    public function getHasThermometre(): ?bool
+    {
+        return $this->hasThermometre;
+    }
+
+    public function setHasThermometre(?bool $hasThermometre): self
+    {
+        $this->hasThermometre = $hasThermometre;
+
+        return $this;
+    }
+
+    public function getHasPeson(): ?bool
+    {
+        return $this->hasPeson;
+    }
+
+    public function setHasPeson(?bool $hasPeson): self
+    {
+        $this->hasPeson = $hasPeson;
 
         return $this;
     }
