@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
@@ -19,7 +20,14 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *     denormalizationContext={"groups"={"user", "user:write"}}
  *
  * )
- * @ApiFilter(SearchFilter::class, properties={"email" : "partial"})
+ * @ApiFilter(SearchFilter::class, properties={
+ *   "username": "partial",
+ *   "email": "partial",
+ *   "firstname": "partial",
+ *   "lastname": "partial",
+ *   "phone": "partial"
+ * })
+ * @ApiFilter(BooleanFilter::class, properties={"enabled"})
  */
 class User implements UserInterface
 {
@@ -101,7 +109,7 @@ class User implements UserInterface
 
     /**
      * @var string userConfirmedAccountURL Url pour gérer la confirmation du compte.
-     *      Un liens sera créer et envoyer a cette URL de type {userConfirmedAccountURL}?token=token
+     *      Un lien sera créé et envoyé à cette URL de type {userConfirmedAccountURL}?token=token
      *      Il faudra utiliser le endpoint `user_password_changes` et renvoyer un mot de passe et le token
      *      Cela aura pour effet de vérifier le compte ( passer enabled a true )
      * @Groups({"user:write", "userComposter"})
