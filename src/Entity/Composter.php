@@ -343,6 +343,11 @@ class Composter
      */
     private $hasPeson;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Financeur")
+     */
+    private $financeurSuivi;
+
 
     public function __construct()
     {
@@ -1057,6 +1062,18 @@ class Composter
     public function setHasPeson(?bool $hasPeson): self
     {
         $this->hasPeson = $hasPeson;
+
+        return $this;
+    }
+
+    public function getFinanceurSuivi(): ?Financeur
+    {
+        return $this->financeurSuivi;
+    }
+
+    public function setFinanceurSuivi(?Financeur $financeurSuivi): self
+    {
+        $this->financeurSuivi = $financeurSuivi;
 
         return $this;
     }

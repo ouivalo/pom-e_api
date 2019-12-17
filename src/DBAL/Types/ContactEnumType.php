@@ -14,7 +14,7 @@ class ContactEnumType extends AbstractEnumType
 
     protected static $choices = [
         self::SYNDIC       => 'Syndic',
-        self::INSTITUTION  => 'Ouvreur',
+        self::INSTITUTION  => 'Institution',
         self::SCOLAIRE     => 'Établissement scolaire',
     ];
 }
