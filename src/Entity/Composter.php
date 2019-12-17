@@ -345,6 +345,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Financeur")
+     * @Groups({"composter:admin"})
      */
     private $financeurSuivi;
 
