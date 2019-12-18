@@ -35,17 +35,6 @@ class LivraisonBroyat
      */
     private $quantite;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"livraison"})
-     */
-    private $unite;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"livraison"})
-     */
-    private $livreur;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Composter", inversedBy="livraisonBroyats")
@@ -53,6 +42,12 @@ class LivraisonBroyat
      * @Groups({"livraison"})
      */
     private $composter;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ApprovisionnementBroyat", inversedBy="livraisonBroyats")
+     * @Groups({"livraison"})
+     */
+    private $livreur;
 
     public function getId(): ?int
     {
@@ -83,30 +78,6 @@ class LivraisonBroyat
         return $this;
     }
 
-    public function getUnite(): ?string
-    {
-        return $this->unite;
-    }
-
-    public function setUnite(string $unite): self
-    {
-        $this->unite = $unite;
-
-        return $this;
-    }
-
-    public function getLivreur(): ?string
-    {
-        return $this->livreur;
-    }
-
-    public function setLivreur(string $livreur): self
-    {
-        $this->livreur = $livreur;
-
-        return $this;
-    }
-
     public function getComposter(): ?Composter
     {
         return $this->composter;
@@ -115,6 +86,18 @@ class LivraisonBroyat
     public function setComposter(?Composter $composter): self
     {
         $this->composter = $composter;
+
+        return $this;
+    }
+
+    public function getLivreur(): ?ApprovisionnementBroyat
+    {
+        return $this->livreur;
+    }
+
+    public function setLivreur(?ApprovisionnementBroyat $livreur): self
+    {
+        $this->livreur = $livreur;
 
         return $this;
     }
