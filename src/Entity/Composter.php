@@ -31,7 +31,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     "broyatLevel" : "exact",
  * })
  * @ORM\EntityListeners({"App\EventListener\ComposterListener"})
- * @ApiFilter(OrderFilter::class, properties={"DateMiseEnRoute", "status"}, arguments={"orderParameterName"="order"})
+ * @ApiFilter(OrderFilter::class, properties={"DateMiseEnRoute", "status", "name"}, arguments={"orderParameterName"="order"})
  */
 class Composter
 {
