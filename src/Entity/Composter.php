@@ -349,6 +349,12 @@ class Composter
      */
     private $financeurSuivi;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $plateNumber;
+
 
     public function __construct()
     {
@@ -1075,6 +1081,18 @@ class Composter
     public function setFinanceurSuivi(?Financeur $financeurSuivi): self
     {
         $this->financeurSuivi = $financeurSuivi;
+
+        return $this;
+    }
+
+    public function getPlateNumber(): ?string
+    {
+        return $this->plateNumber;
+    }
+
+    public function setPlateNumber(?string $plateNumber): self
+    {
+        $this->plateNumber = $plateNumber;
 
         return $this;
     }
