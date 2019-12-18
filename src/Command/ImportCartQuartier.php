@@ -42,9 +42,10 @@ class ImportCartQuartier extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filePath = $input->getArgument('filePath');
+        $composterRepository = $this->em->getRepository(Composter::class);
 
         $reader = ReaderEntityFactory::createCSVReader();
-        $reader->setFieldDelimiter(';');
+        $reader->setFieldDelimiter(',');
 
         $reader->open($filePath);
         $composterCount = 0;
@@ -58,31 +59,75 @@ class ImportCartQuartier extends Command
 
                     // do stuff with the row
                     $cells = $row->getCells();
+                    $composter = false;
 
                     if( ! $cells[10]->isEmpty() ){
 
-                        $composterSerialNumber = $cells[10]->getValue();
-                        $composterRepository = $this->em->getRepository(Composter::class);
+                        $composterSerialNumber = (int) $cells[10]->getValue();
+
+                        $serailNumberRef = [
+                            23  => 243,
+                            105 => 97,
+                            130 => 120,
+                            185 => 186,
+                            186 => 187,
+                            187 => 188,
+                            188 => 189,
+                            195 => 196,
+                            200 => 201,
+                            201 => 202,
+                            202 => 203,
+                            203 => 204,
+                            207 => 208,
+                            208 => 209,
+                            211 => 212,
+                            212 => 213,
+                            213 => 214,
+                            217 => 65,
+                            218 => 219,
+                            219 => 220,
+                            221 => 222,
+                            222 => 223,
+                            229 => 230,
+                            233 => 234,
+                            232 => 233,
+                        ];
+
+                        if( array_key_exists($composterSerialNumber, $serailNumberRef)){
+                            $composterSerialNumber = $serailNumberRef[ $composterSerialNumber ];
+                        }
 
                         $composter = $composterRepository->findOneBy( [ 'serialNumber' => $composterSerialNumber ]);
 
-                        if( ! $composter instanceof  Composter ){
-                            $output->writeln( "{$cells[1]->getValue()} - {$composterSerialNumber} : pas trouvé" );
-                        } else {
 
-                            // Composteur dont le numéro de série récupérer par Carto Quartier ne semble pas correspondre
-                            if( in_array($composterSerialNumber, [171, 164, 31, 212, 186, 130, 185, 213, 201, 105, 158, 211, 202, 203, 188, 187, 217, 219, 221, 222, 229, 233, 144, 195, 200, 207, 218, 23, 232, 208], true) ){
+                    } else if( ! $cells[1]->isEmpty() ) {
 
-                                $output->writeln( "{$composterSerialNumber} : {$composter->getName()} - {$cells[1]->getValue()}" );
-
-                            } else {
-
-                                $composter->setPublicDescription( $cells[2]->getValue() );
-                                $composter->setPermanencesDescription( $cells[8]->getValue() );
-                                $this->em->persist( $composter );
-                                $composterCount++;
-                            }
+                        $name = str_replace( 'Composteur ', '', $cells[1]->getValue() );
+                        switch ( $name ){
+                            case 'Place de village Espace du Fort':
+                                $name = 'Place de Village Le Fort';
+                                break;
+                            case 'Trait d\'oignon':
+                                $name = 'Le Trait d\'Oignon';
+                                break;
+                            case 'de la Cholière':
+                                $name = 'Cholière';
+                                break;
+                            case 'Val du Cens':
+                                $name = 'Val de Cens';
+                                break;
                         }
+                        $composter = $composterRepository->findOneBy( [ 'name' => $name ]);
+                    }
+
+                    if( ! $composter instanceof  Composter ){
+                        $output->writeln( "{$cells[1]->getValue()} : pas trouvé" );
+                    } else {
+
+                        $composter->setPublicDescription( $cells[2]->getValue() );
+                        $composter->setPermanencesDescription( $cells[8]->getValue() );
+                        $this->em->persist( $composter );
+                        $composterCount++;
 
                     }
                 }
