@@ -1018,7 +1018,7 @@ class Composter
         return $this->hasCroc;
     }
 
-    public function setHasCroc(bool $croc): self
+    public function setHasCroc(?bool $croc): self
     {
         $this->hasCroc = $croc;
 
