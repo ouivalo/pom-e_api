@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\MediaObject;
+use Intervention\Image\ImageManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -31,6 +32,15 @@ final class CreateMediaObjectAction extends AbstractController
         }
         $content = strpos( $data->getData(), 'data' ) === 0 ? file_get_contents( $data->getData() ) : base64_decode( $data->getData() );
         file_put_contents($webPath, $content );
+
+        // On retaille l'image
+        $manager = new ImageManager(array('driver' => 'imagick'));
+
+        $manager->make($webPath)
+            ->widen(942, function ($constraint) {
+                $constraint->upsize();
+            })
+            ->save($webPath);
 
         $uploadedFile = new File($webPath);
         $data->setFile( $uploadedFile);
