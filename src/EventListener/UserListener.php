@@ -40,6 +40,14 @@ class UserListener
      */
     public function prePersist(User $user): void
     {
+
+        // On vérifie que l'utilisateur n'héxiste pas déja
+        $oldUser = $this->em->getRepository( User::class )->findOneBy(['email' => $user->getEmail()] );
+
+        if( $oldUser instanceof User ){
+            throw new BadRequestHttpException('Un utilisateur possédant le même email existe déja');
+        }
+
         $this->encodePassword($user);
 
     }
