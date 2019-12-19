@@ -14,6 +14,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\EntityListeners({"App\EventListener\UserListener"})
+ *
  * @ApiResource(
  *     attributes={"security"="is_granted('ROLE_USER')"},
  *     normalizationContext={"groups"={"user", "user:read"}},
@@ -67,6 +69,12 @@ class User implements UserInterface
      * @Groups({"user:write", "userComposter:write"})
      */
     private $plainPassword;
+
+
+    /**
+     * @Groups({"user:write"})
+     */
+    private $oldPassword;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Permanence", inversedBy="users")
@@ -128,6 +136,11 @@ class User implements UserInterface
      */
     private $role;
 
+    /**
+     * @ORM\Column(type="datetime", options={"default":"CURRENT_TIMESTAMP"})
+     */
+    private $lastUpdateDate;
+
 
     public function __construct()
     {
@@ -136,6 +149,7 @@ class User implements UserInterface
         $this->mcComposters = new ArrayCollection();
         $this->userComposters = new ArrayCollection();
         $this->enabled = false;
+        $this->lastUpdateDate = new \DateTime();
     }
 
     public function getId(): ?int
@@ -199,12 +213,24 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getOldPassword(): ?string
+    {
+        return $this->oldPassword;
+    }
+
+    public function setOldPassword(string $oldPassword): self
+    {
+        $this->oldPassword = $oldPassword;
+
+        return $this;
+    }
+
     public function setPlainPassword(string $plainPassword): self
     {
         $this->plainPassword = $plainPassword;
         // forces the object to look "dirty" to Doctrine. Avoids
         // Doctrine *not* saving this entity, if only plainPassword changes
-        $this->password = null;
+        $this->setLastUpdateDate( new \DateTime() );
         return $this;
     }
 
@@ -409,6 +435,18 @@ class User implements UserInterface
     public function setRole(?string $role): self
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    public function getLastUpdateDate(): ?\DateTimeInterface
+    {
+        return $this->lastUpdateDate;
+    }
+
+    public function setLastUpdateDate(\DateTimeInterface $lastUpdateDate): self
+    {
+        $this->lastUpdateDate = $lastUpdateDate;
 
         return $this;
     }

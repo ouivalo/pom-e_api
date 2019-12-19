@@ -42,6 +42,11 @@ class UserListener
     {
         $this->encodePassword($user);
 
+    }
+
+    public function postPersist( User $user ): void
+    {
+
         /**
          * Pour les utilisateur nouvellement créer qui sont en enabled = false :
          *  1. On crée un token
@@ -67,15 +72,22 @@ class UserListener
                 throw new BadRequestHttpException('"userConfirmedAccountURL" champs obligatoire pour la création d‘utilisateur');
             }
         }
+
     }
 
 
     /**
      * @param User $user
+     * @throws \Exception
      */
-    public function preUpdate( User $user ){
+    public function preUpdate( User $user ) : void
+    {
 
+        if( $user->getOldPassword() && ! $this->encoder->isPasswordValid( $user, $user->getOldPassword() )){
+            throw new BadRequestHttpException('L’ancien mot de passe n’ai pas le bon');
+        }
 
+        $user->setLastUpdateDate( new \DateTime() );
         $this->encodePassword( $user );
 
         // necessary to force the update to see the change
