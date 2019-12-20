@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,6 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     )
  * @ORM\Entity(repositoryClass="App\Repository\ContactRepository")
  * @ApiFilter(SearchFilter::class, properties={"composters": "exact"})
+ * @ApiFilter(OrderFilter::class, properties={"firstName", "lastName", "email", "contactType"}, arguments={"orderParameterName"="order"})
  */
 class Contact
 {
