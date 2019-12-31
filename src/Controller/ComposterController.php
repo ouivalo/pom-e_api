@@ -1,12 +1,9 @@
 <?php
 
-
 namespace App\Controller;
-
 
 use App\Entity\Composter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\UrlHelper;
@@ -29,7 +26,7 @@ class ComposterController extends AbstractController
      */
     public function getCompostersGeojson(Request $request): Response
     {
-        $composters =  $this->getDoctrine()
+        $composters = $this->getDoctrine()
             ->getRepository(Composter::class)
             ->findAllForFrontMap();
 
@@ -38,41 +35,41 @@ class ComposterController extends AbstractController
         /** @var Composter $c */
         foreach ($composters as $c) {
             $features[] = [
-                'type'  => 'Feature',
+                'type' => 'Feature',
                 'geometry' => array(
                     'type' => 'Point',
-                    'coordinates' => [$c->getLng(), $c->getLat()]
+                    'coordinates' => [$c->getLng(), $c->getLat()],
                 ),
                 'properties' => [
-                    'commune'       => $c->getCommune() ? $c->getCommune()->getId() : null,
-                    'communeName'   => $c->getCommune() ? $c->getCommune()->getName() : null,
-                    'categorie'     => $c->getCategorie() ? $c->getCategorie()->getId() : null,
+                    'commune' => $c->getCommune() ? $c->getCommune()->getId() : null,
+                    'communeName' => $c->getCommune() ? $c->getCommune()->getName() : null,
+                    'categorie' => $c->getCategorie() ? $c->getCategorie()->getId() : null,
                     'categorieName' => $c->getCategorie() ? $c->getCategorie()->getName() : null,
-                    'id'            => $c->getId(),
-                    'slug'          => $c->getSlug(),
-                    'name'          => $c->getName(),
-                    'status'        => $c->getStatus(),
+                    'id' => $c->getId(),
+                    'slug' => $c->getSlug(),
+                    'name' => $c->getName(),
+                    'status' => $c->getStatus(),
                     'acceptNewMembers' => $c->getAcceptNewMembers(),
-                    'image'         => $c->getImage() ? $this->getImageUrl( $c->getImage()->getImageName() ) : null
-                ]
+                    'image' => $c->getImage() ? $this->getImageUrl($c->getImage()->getImageName()) : null,
+                ],
             ];
         }
         $geojson = [
-            'type'      => 'FeatureCollection',
-            'features'  => $features,
+            'type' => 'FeatureCollection',
+            'features' => $features,
         ];
 
         return $this->json($geojson);
     }
 
-     /**
+    /**
      * @Route("/composters-cartoquartiers.json", name="composters-cartoquartiers")
      * @param Request $request
      * @return Response
      */
     public function getCompostersCartoQuartiers(Request $request): Response
     {
-        $composters =  $this->getDoctrine()
+        $composters = $this->getDoctrine()
             ->getRepository(Composter::class)
             ->findAllForCartoQuartierFrontMap();
 
@@ -80,22 +77,21 @@ class ComposterController extends AbstractController
         /** @var Composter $c */
         foreach ($composters as $c) {
             $cartoQuartierfeatures[] = [
-                'IDOBJ'       => $c->getSerialNumber(),
-                'descriptif'  => $c->getPublicDescription(),
-                'photo'      => $c->getImage() ? $this->getImageUrl( $c->getImage()->getImageName() ) : null,
-                'horaires'    => $c->getPermanencesDescription(),
-                'mail'    => 'https://composteurs.compostri.fr/composteur/'.$c->getSlug(),
+                'IDOBJ' => $c->getSerialNumber(),
+                'descriptif' => $c->getPublicDescription(),
+                'photo' => $c->getImage() ? $this->getImageUrl($c->getImage()->getImageName()) : null,
+                'horaires' => $c->getPermanencesDescription(),
+                'mail' => 'https://composteurs.compostri.fr/composteur/' . $c->getSlug(),
             ];
         }
-
 
         return $this->json($cartoQuartierfeatures);
     }
 
-    private function getImageUrl( string $imageName ) : string
+    private function getImageUrl(string $imageName): string
     {
 
-        $dir = str_replace( $this->getParameter('kernel.project_dir') . '/public', '',  $this->getParameter('upload_destination') );
-        return $this->urlHelper->getAbsoluteUrl( $dir . $imageName  );
+        $dir = str_replace($this->getParameter('kernel.project_dir') . '/public', '', $this->getParameter('upload_destination'));
+        return $this->urlHelper->getAbsoluteUrl($dir . $imageName);
     }
 }
