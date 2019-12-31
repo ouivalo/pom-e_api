@@ -125,7 +125,7 @@ class Reparation
         return $this->refFacture;
     }
 
-    public function setRefFacture(string $refFacture): self
+    public function setRefFacture(?string $refFacture): self
     {
         $this->refFacture = $refFacture;
 
