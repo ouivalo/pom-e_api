@@ -15,12 +15,24 @@ class ComposterRepository extends ServiceEntityRepository
         parent::__construct($registry, Composter::class);
     }
 
-
-    public function findAllForFrontMap(){
+    public function findAllForFrontMap()
+    {
 
         return $this->createQueryBuilder('c')
             ->andWhere('c.lat IS NOT NULL')
             ->andWhere('c.lng IS NOT NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findAllForCartoQuartierFrontMap()
+    {
+
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.lat IS NOT NULL')
+            ->andWhere('c.lng IS NOT NULL')
+            ->andWhere('c.categorie IN (:quartier_categorie_id)')
+            ->setParameter('quartier_categorie_id', [1, 3])
             ->getQuery()
             ->getResult();
     }
