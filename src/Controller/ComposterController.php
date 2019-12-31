@@ -65,6 +65,33 @@ class ComposterController extends AbstractController
         return $this->json($geojson);
     }
 
+     /**
+     * @Route("/composters-cartoquartiers.json", name="composters-cartoquartiers")
+     * @param Request $request
+     * @return Response
+     */
+    public function getCompostersCartoQuartiers(Request $request): Response
+    {
+        $composters =  $this->getDoctrine()
+            ->getRepository(Composter::class)
+            ->findAllForCartoQuartierFrontMap();
+
+        $cartoQuartierfeatures = [];
+        /** @var Composter $c */
+        foreach ($composters as $c) {
+            $cartoQuartierfeatures[] = [
+                'IDOBJ'       => $c->getSerialNumber(),
+                'descriptif'  => $c->getPublicDescription(),
+                'photo'      => $c->getImage() ? $this->getImageUrl( $c->getImage()->getImageName() ) : null,
+                'horaires'    => $c->getPermanencesDescription(),
+                'mail'    => 'https://composteurs.compostri.fr/composteur/'.$c->getSlug(),
+            ];
+        }
+
+
+        return $this->json($cartoQuartierfeatures);
+    }
+
     private function getImageUrl( string $imageName ) : string
     {
 
