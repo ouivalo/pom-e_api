@@ -88,6 +88,36 @@ class ComposterController extends AbstractController
         return $this->json($cartoQuartierfeatures);
     }
 
+    /**
+     * @Route("/composters-opendata.json", name="composters-opendata")
+     * @param Request $request
+     * @return Response
+     */
+    public function getCompostersOpenData(Request $request): Response
+    {
+        $composters = $this->getDoctrine()
+            ->getRepository(Composter::class)
+            ->findAllForCartoQuartierFrontMap();
+
+        $openDataFeatures = [];
+        /** @var Composter $c */
+        foreach ($composters as $c) {
+            $openDataFeatures[] = [
+                'id' => "" . $c->getId(),
+                'nom' => $c->getName(),
+                'categorie' => $c->getCategorie() ? $c->getCategorie()->getName() : null,
+                'adresse' => $c->getAddress(),
+                'lieu' => $c->getCommune() ? $c->getCommune()->getName() : null,
+                'annee' => date_format($c->getDateMiseEnRoute(), 'Y'),
+                'lat' => $c->getLat(),
+                'lon' => $c->getLng(),
+                'lien' => 'https://composteurs.compostri.fr/composteur/' . $c->getSlug(),
+            ];
+        }
+
+        return $this->json($openDataFeatures);
+    }
+
     private function getImageUrl(string $imageName): string
     {
 
