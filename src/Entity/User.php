@@ -328,6 +328,25 @@ class User implements UserInterface
         return $this->userComposters;
     }
 
+    /**
+     * @param Composter $composter
+     * @return null|UserComposter
+     */
+    public function getUserCompostersFor( Composter $composter): ?UserComposter
+    {
+
+        $userComposter = null;
+        foreach ( $this->getUserComposters() as $uc ){
+
+            if( $uc->getComposter()->getId() === $composter->getId() ){
+                $userComposter = $uc;
+                break;
+            }
+        }
+
+        return $userComposter;
+    }
+
     public function addUserComposter(UserComposter $userComposter): self
     {
         if (!$this->userComposters->contains($userComposter)) {

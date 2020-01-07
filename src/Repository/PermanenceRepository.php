@@ -39,22 +39,9 @@ class PermanenceRepository extends ServiceEntityRepository
             ->setParameter('dateMax', $dateMax )
             ->setParameter('has_users_been_notify', false )
             ->orderBy('p.date', 'DESC')
-            ->setMaxResults(10)
+            ->setMaxResults(100)
             ->getQuery()
             ->getResult()
         ;
     }
-
-
-    /*
-    public function findOneBySomeField($value): ?Permanence
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

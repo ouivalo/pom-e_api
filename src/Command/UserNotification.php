@@ -6,19 +6,30 @@
 namespace App\Command;
 
 use App\Entity\Permanence;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use App\Entity\User;
+use App\Service\Mailjet;
+use Doctrine\ORM\EntityManagerInterface;
+use \Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Mailjet\Resources;
-use Mailjet\Client;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 
-class UserNotification extends ContainerAwareCommand
+class UserNotification extends Command
 {
 
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'compost:user-notification';
+
+    private $em;
+
+    private $mailjet;
+
+    public function __construct(EntityManagerInterface $entityManager, Mailjet $mailjet)
+    {
+        parent::__construct();
+        $this->em = $entityManager;
+        $this->mailjet = $mailjet;
+    }
 
     protected function configure()
     {
@@ -35,8 +46,8 @@ class UserNotification extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $entityManager = $this->getContainer()->get('doctrine')->getManager();
-        $permanenceRepo = $this->getContainer()->get('doctrine')->getRepository(Permanence::class);
+        //$entityManager = $this->getContainer()->get('doctrine')->getManager();
+        $permanenceRepo = $this->em->getRepository(Permanence::class);
 
         $permancesToComme = $permanenceRepo->findAllToNotify();
         $messages = [];
@@ -44,70 +55,48 @@ class UserNotification extends ContainerAwareCommand
         foreach ( $permancesToComme as $perm ){
 
             $openers = $perm->getOpeners();
+            $composter = $perm->getComposter();
 
-            foreach ($openers as $opener ){
-                $messages[] = $this->getFormatMessage( $opener->getEmail(), $perm->getDate(), $opener->getUsername(), $output );
+            if( $composter ){
+
+                foreach ($openers as $opener ){
+                    $userComposteur = $opener->getUserCompostersFor( $perm->getComposter() );
+
+                    if( $userComposteur && $userComposteur->getNotif() ){
+                        $messages[] = $this->getFormatMessage( $opener, $perm );
+                    }
+                }
+
+                // TODO vérifier que la réponse de l'API est bien OK avant de $perm->setHasUsersBeenNotify(true)
+                // Pas évident car j'ai mis la notification sur les permanence et que l'api répond par addresse mail
+                $perm->setHasUsersBeenNotify(true);
+                $this->em->persist( $perm );
             }
-
-            // TODO vérifier que la réponse de l'API est bien OK avant de $perm->setHasUsersBeenNotify(true)
-            // Pas évident car j'ai mis la notification sur les permanence et que l'api répond par addresse mail
-            $perm->setHasUsersBeenNotify(true);
-            $entityManager->persist( $perm );
         }
 
         if( count( $messages ) > 0 ){
 
-            $response = $this->sendEmail( $messages );
-            $output->writeln( print_r( $response, true ) );
+            $response = $this->mailjet->send( $messages );
         }
-        $entityManager->flush();
+        $this->em->flush();
     }
 
-    /**
-     * @param String $mail
-     * @param \DateTime $date
-     * @param string $name
-     * @param OutputInterface $output
-     * @return array
-     */
-    private function sendEmail($messages)
+    private function getFormatMessage( User $opener, Permanence $perm )
     {
-
-
-        $mj = new Client(
-            getenv('MJ_APIKEY_PUBLIC'),
-            getenv('MJ_APIKEY_PRIVATE'),
-            true,
-            ['version' => 'v3.1']
-        );
-        $body = [
-            'Messages' => $messages
-        ];
-        $response = $mj->post(Resources::$Email, ['body' => $body]);
-        return $response->getData();
-    }
-
-    private function getFormatMessage( $mail, \DateTime $date, $name )
-    {
-        $date_formated = $date->format('d/m/Y');
         return [
-            'From' => [
-                'Email' => "contact@recyclindre.fr",
-                'Name'  => "Recyclindre"
-            ],
             'To' => [
                 [
-                    'Email' => $mail, // $mail
-                    'Name'  => $name
+                    'Email' => $opener->getEmail(), // $mail
+                    'Name'  => $opener->getUsername()
                 ]
             ],
             'TemplateID'        => (int)getenv('MJ_NOTIFICATION_TEMPLATE_ID'),
-            'TemplateLanguage'  => true,
-            'Subject'           => "[Recyclindre] c'est bientôt à vous d'ouvrir",
-            'Variables'         => json_decode("{
-                                        \"prenom\": \"{$name}\",
-                                        \"date\": \"{$date_formated}\"
-                                      }", true)
+            'Subject'           => "[{$perm->getComposter()->getName()}] C'est bientôt à vous d'ouvrir",
+            'Variables'         => [
+                'prenom'            => $opener->getFirstname(),
+                'date'              => $perm->getDate()->format('d/m/Y'),
+                'openingProcedure'  => $perm->getComposter()->getOpeningProcedures()
+            ]
         ];
     }
 }

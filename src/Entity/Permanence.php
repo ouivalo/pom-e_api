@@ -146,7 +146,7 @@ class Permanence
 
     public function __toString()
     {
-        return $this->getDate()->format('Y-m-d H:i:s');
+        return $this->getDate() ? $this->getDate()->format('Y-m-d H:i:s') : ( string ) $this->getId();
     }
 
     public function getId(): ?int
