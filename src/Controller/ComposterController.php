@@ -91,7 +91,7 @@ class ComposterController extends AbstractController
             $cartoQuartierfeatures[] = [
                 'IDOBJ'         => $c->getSerialNumber(),
                 'descriptif'    => $description,
-                'photo'         => $c->getImage() ? $this->getImageUrl($c->getImage()->getImageName()) : null,
+                'photo'         => $c->getImage() ? $this->getImageUrl($c->getImage()->getImageName()) : 'https://www.cartoquartiers.fr/medias/2018/02/9.compostage.jpg',
                 'horaires'      => $c->getPermanencesDescription(),
                 'mail'          => 'https://composteurs.compostri.fr/composteur/' . $c->getSlug(),
             ];
