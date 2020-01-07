@@ -74,14 +74,26 @@ class ComposterController extends AbstractController
             ->findAllForCartoQuartierFrontMap();
 
         $cartoQuartierfeatures = [];
+
         /** @var Composter $c */
         foreach ($composters as $c) {
+            $description = $c->getDescription();
+
+            if( ! $description ){
+
+                if( $c->getCategorie()->getId() === 3 ){
+
+                    $description = 'Cet équipement est réservé à un usage pédagogique au sein de l’école';
+                } else {
+                    $description = 'Vous pouvez déposer vos déchets organiques lors des permanences assurées par un collectif d’habitants. Distribution de compost en retour. Nous vous invitons à vérifier qu’il reste de la place auprès du référent en le contactant via le formulaire ou en vous rendant sur place lors d[’une permanence';
+                }
+            }
             $cartoQuartierfeatures[] = [
-                'IDOBJ' => $c->getSerialNumber(),
-                'descriptif' => $c->getPublicDescription(),
-                'photo' => $c->getImage() ? $this->getImageUrl($c->getImage()->getImageName()) : null,
-                'horaires' => $c->getPermanencesDescription(),
-                'mail' => 'https://composteurs.compostri.fr/composteur/' . $c->getSlug(),
+                'IDOBJ'         => $c->getSerialNumber(),
+                'descriptif'    => $description,
+                'photo'         => $c->getImage() ? $this->getImageUrl($c->getImage()->getImageName()) : null,
+                'horaires'      => $c->getPermanencesDescription(),
+                'mail'          => 'https://composteurs.compostri.fr/composteur/' . $c->getSlug(),
             ];
         }
 
