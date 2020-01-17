@@ -27,6 +27,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     "equipement"  : "exact",
  *     "categorie"   : "exact",
  *     "financeur"   : "exact",
+ *     "financeurSuivi"  : "exact",
  *     "name"        : "partial",
  *     "broyatLevel" : "exact",
  * })

@@ -22,7 +22,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *     "composter"      : "exact",
  *     "user"           : "exact",
  *     "composter.name" : "partial",
- *     "user.username"  : "partial",
+ *     "user.email"     : "partial",
+ *     "user.lastname"  : "partial",
  *     "capability"     : "exact"
  * })
  */
