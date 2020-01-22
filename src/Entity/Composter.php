@@ -21,18 +21,19 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     normalizationContext={"groups"={"composter"}}
  * )
  * @ApiFilter(SearchFilter::class, properties={
- *     "commune"     : "exact",
- *     "quartier"    : "exact",
- *     "pole"        : "exact",
- *     "equipement"  : "exact",
- *     "categorie"   : "exact",
- *     "financeur"   : "exact",
- *     "financeurSuivi"  : "exact",
- *     "name"        : "partial",
- *     "broyatLevel" : "exact",
+ *     "commune"        : "exact",
+ *     "quartier"       : "exact",
+ *     "pole"           : "exact",
+ *     "equipement"     : "exact",
+ *     "categorie"      : "exact",
+ *     "financeur"      : "exact",
+ *     "financeurSuivi" : "exact",
+ *     "name"           : "partial",
+ *     "serialNumber"   : "partial",
+ *     "broyatLevel"    : "exact"
  * })
  * @ORM\EntityListeners({"App\EventListener\ComposterListener"})
- * @ApiFilter(OrderFilter::class, properties={"DateMiseEnRoute", "status", "name"}, arguments={"orderParameterName"="order"})
+ * @ApiFilter(OrderFilter::class, properties={"DateMiseEnRoute", "status", "name", "serialNumber"}, arguments={"orderParameterName"="order"})
  */
 class Composter
 {
@@ -257,7 +258,7 @@ class Composter
     private $financeur;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="integer", length=255, nullable=true)
      * @Groups({"composter"})
      */
     private $serialNumber;
@@ -862,12 +863,12 @@ class Composter
         return $this;
     }
 
-    public function getSerialNumber(): ?string
+    public function getSerialNumber(): ?int
     {
         return $this->serialNumber;
     }
 
-    public function setSerialNumber(?string $serialNumber): self
+    public function setSerialNumber(?int $serialNumber): self
     {
         $this->serialNumber = $serialNumber;
 
