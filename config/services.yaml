@@ -48,6 +48,10 @@ services:
     tags:
       - { name: doctrine.orm.entity_listener, lazy: true }
 
+  App\EventListener\LivraisonBroyatListener :
+    tags:
+      - { name: doctrine.orm.entity_listener, lazy: true }
+
   App\Serializer\ComposterContextBuilder:
       decorates: 'api_platform.serializer.context_builder'
       autoconfigure: false

@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * )
  * @ORM\Entity(repositoryClass="App\Repository\LivraisonBroyatRepository")
  * @ApiFilter(OrderFilter::class, properties={"date"})
+ * @ORM\EntityListeners({"App\EventListener\LivraisonBroyatListener"})
  */
 class LivraisonBroyat
 {
