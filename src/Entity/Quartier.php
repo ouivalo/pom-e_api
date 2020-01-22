@@ -16,7 +16,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * )
  * @ORM\Entity(repositoryClass="App\Repository\QuartierRepository")
  * @ApiFilter(OrderFilter::class, properties={"name"}, arguments={"orderParameterName"="order"})
-
  */
 class Quartier
 {
