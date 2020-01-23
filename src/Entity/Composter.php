@@ -18,7 +18,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ORM\Entity(repositoryClass="App\Repository\ComposterRepository")
  * @ApiResource(
- *     normalizationContext={"groups"={"composter"}}
+ *     normalizationContext={"groups"={"composter"}},
+ *     denormalizationContext={"groups"={"composter", "composter:write"}}
  * )
  * @ApiFilter(SearchFilter::class, properties={
  *     "commune"        : "exact",
@@ -232,7 +233,7 @@ class Composter
     /**
      * @var MediaObject|null
      * 
-     * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject")
+     * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      * @Groups({"composter"})
      * @ApiProperty(iri="http://schema.org/image")

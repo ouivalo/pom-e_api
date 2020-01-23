@@ -7,7 +7,6 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
-use App\Controller\CreateMediaObjectAction;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 use Exception;
@@ -23,7 +22,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     },
  *     collectionOperations={
  *         "post"={
- *             "controller"=CreateMediaObjectAction::class,
  *             "access_control"="is_granted('ROLE_USER')",
  *             "validation_groups"={"Default", "media_object_create"},
  *         },
@@ -37,6 +35,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     }
  * )
  * @ApiFilter(OrderFilter::class, properties={"id"}, arguments={"orderParameterName"="order"})
+ * @ORM\EntityListeners({"App\EventListener\MediaObjectListener"} )
  */
 class MediaObject
 {
@@ -88,13 +87,13 @@ class MediaObject
      * @ApiProperty(iri="http://schema.org/contentUrl")
      * @Groups({"media_object_read", "composter"})
      */
-    public $contentUrl;
+    private $contentUrl;
 
 
     /**
      * @var string|null base64 image
      *
-     * @Groups({"media_object_create"})
+     * @Groups({"media_object_create", "composter:write"})
      */
     private $data;
 
@@ -104,8 +103,6 @@ class MediaObject
      *
      */
     private $file;
-
-
 
 
     public function getId(): ?int
@@ -205,5 +202,21 @@ class MediaObject
         $this->imageMimeType = $imageMimeType;
 
         return $this;
+    }
+
+    /**
+     * @param string|null $contentUrl
+     */
+    public function setContentUrl(?string $contentUrl): void
+    {
+        $this->contentUrl = $contentUrl;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContentUrl(): ?string
+    {
+        return $this->contentUrl;
     }
 }
