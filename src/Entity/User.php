@@ -23,11 +23,12 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *
  * )
  * @ApiFilter(SearchFilter::class, properties={
- *   "username": "partial",
- *   "email": "partial",
- *   "firstname": "partial",
- *   "lastname": "partial",
- *   "phone": "partial"
+ *   "username"     : "partial",
+ *   "email"        : "partial",
+ *   "firstname"    : "partial",
+ *   "lastname"     : "partial",
+ *   "roles"        : "partial",
+ *   "phone"        : "partial"
  * })
  * @ApiFilter(BooleanFilter::class, properties={"enabled"})
  */
