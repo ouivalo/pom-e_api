@@ -48,6 +48,16 @@ class UserListener
             throw new BadRequestHttpException('Un utilisateur possédant le même email existe déja');
         }
 
+        /**
+         * Pour les utilisateur nouvellement créer qui sont en enabled = false :
+         *  1. On crée un token
+         */
+        if( ! $user->getEnabled() && $user->getUserConfirmedAccountURL() ){
+
+            $resetToken = $this->tokenGenerator->generateToken();
+            $user->setResetToken( $resetToken );
+        }
+
         $this->encodePassword($user);
 
     }
@@ -57,7 +67,6 @@ class UserListener
 
         /**
          * Pour les utilisateur nouvellement créer qui sont en enabled = false :
-         *  1. On crée un token
          *  2. On envoie un mail pour qu'il puisse confirmer leur compte
          */
         if( ! $user->getEnabled() ){
@@ -65,15 +74,12 @@ class UserListener
             $userConfirmedAccountURL =  $user->getUserConfirmedAccountURL();
             if( $userConfirmedAccountURL ){
 
-                $resetToken = $this->tokenGenerator->generateToken();
-                $user->setResetToken( $resetToken );
-
                 $this->email->send([
                     [
                         'To'            => [['Email' => $user->getEmail() , 'Name' => $user->getUsername() ]],
                         'Subject'       => '[Compostri] Confirmer votre compte',
                         'TemplateID'    => (int) getenv('MJ_VERIFIED_ACCOUNT_TEMPLATE_ID'),
-                        'Variables'     => [ 'recovery_password_url' => "{$userConfirmedAccountURL}?token={$resetToken}"]
+                        'Variables'     => [ 'recovery_password_url' => "{$userConfirmedAccountURL}?token={$user->getResetToken()}"]
                     ]
                 ]);
             } else {
