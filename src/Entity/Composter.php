@@ -29,6 +29,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     "categorie"      : "exact",
  *     "financeur"      : "exact",
  *     "financeurSuivi" : "exact",
+ *     "contacts"       : "exact",
  *     "status"         : "exact",
  *     "name"           : "partial",
  *     "serialNumber"   : "partial",
