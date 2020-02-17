@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -14,6 +15,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *      normalizationContext={"groups"={"suivis"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\SuiviRepository")
+ * @ApiFilter(SearchFilter::class, properties={
+ *     "composter.name"     : "partial",
+ *     "composter.pole"     : "exact",
+ *     "composter.commune"  : "exact"
+ * })
  * @ApiFilter(OrderFilter::class, properties={"date"})
  */
 class Suivi
