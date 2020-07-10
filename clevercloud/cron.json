@@ -1,0 +1,3 @@
+[
+  "0 14 * * * cd $ROOT && /usr/bin/php bin/console compost:user-notification"
+]
