@@ -7,7 +7,13 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource(
- *     attributes={"security"="is_granted('ROLE_ADMIN')"}
+ *     itemOperations={
+ *         "get"={"security"="is_granted('ROLE_ADMIN')"}
+ *     },
+ *     collectionOperations={
+ *         "get"={"security"="is_granted('ROLE_ADMIN')"},
+ *         "post"
+ *     }
  * )
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="App\Repository\ComposterContactRepository")
