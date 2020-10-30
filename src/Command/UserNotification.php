@@ -83,7 +83,10 @@ class UserNotification extends Command
 
     private function getFormatMessage( User $opener, Permanence $perm )
     {
-        return [
+
+        $firstReferent = $perm->getComposter()->getFirstReferent();
+
+        $formattedMessage =  [
             'To' => [
                 [
                     'Email' => $opener->getEmail(), // $mail
@@ -98,5 +101,14 @@ class UserNotification extends Command
                 'openingProcedure'  => $perm->getComposter()->getOpeningProcedures()
             ]
         ];
+
+        if( $firstReferent ){
+            $formattedMessage['ReplyTo'] = [
+                'Email' => $firstReferent->getUser()->getEmail(),
+                'Name'  => $firstReferent->getUser()->getUsername()
+            ];
+        }
+
+        return $formattedMessage;
     }
 }

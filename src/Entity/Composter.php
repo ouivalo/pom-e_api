@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use App\DBAL\Types\CapabilityEnumType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -774,6 +775,23 @@ class Composter
         }
 
         return $this;
+    }
+
+    /**
+     * @return UserComposter|null
+     */
+    public function getFirstReferent() : ?UserComposter
+    {
+        $firstReferent = null;
+
+        foreach ( $this->getUserComposters() as $user ){
+            if( $user->getCapability() === CapabilityEnumType::REFERENT ){
+                $firstReferent = $user;
+                break;
+            }
+        }
+
+        return $firstReferent;
     }
 
     /**

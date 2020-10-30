@@ -62,7 +62,7 @@ class ComposterContactListener
         $messages[] = [
             'ReplyTo'       => ['Email' => $composterContact->getEmail()],
             'To'            => $recipients,
-            'Subject'       => "[Compostri] Demande de contact pour le composteur $name",
+            'Subject'       => "[Pom-e] Demande de contact pour le composteur $name",
             'TemplateID'    => (int) getenv('MJ_CONTACT_FORM_TEMPLATE_ID' ),
             'TemplateLanguage' => true,
             'Variables'     => [
@@ -72,12 +72,22 @@ class ComposterContactListener
         ];
 
         // Envoie d'une confirmation de message à l'expéditeur
-        $messages[] = [
+        $confirmation = [
             'To'            => [['Email' => $composterContact->getEmail()]],
-            'Subject'       => '[Compostri] Demande de contact bien envoyé',
+            'Subject'       => '[Pom-e] Demande de contact bien envoyé',
             'TemplateID'    => (int) getenv('MJ_CONTACT_FORM_USER_CONFIRMED_TEMPLATE_ID' ),
             'TemplateLanguage' => true
         ];
+
+        // On rajoute un référent pour le "ReplyTo"
+        $firstReferent = $composter->getFirstReferent();
+        if( $firstReferent ){
+            $confirmation['ReplyTo'] = [
+                'Email' => $firstReferent->getUser()->getEmail(),
+                'Name'  => $firstReferent->getUser()->getUsername()
+            ];
+        }
+        $messages[] = $confirmation;
 
 
         $response = $this->email->send($messages);
