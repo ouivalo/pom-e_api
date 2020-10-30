@@ -279,7 +279,7 @@ class Mailjet
 
         if( ! $contactListId ) {
 
-            $slug = $composter->getSlug();
+            $slug = $composter->getName();
 
             $body = [
                 'Name' => $slug

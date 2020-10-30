@@ -98,7 +98,7 @@ class UserListener
     {
 
         if( $user->getOldPassword() && ! $this->encoder->isPasswordValid( $user, $user->getOldPassword() )){
-            throw new BadRequestHttpException('L’ancien mot de passe n’ai pas le bon');
+            throw new BadRequestHttpException('L’ancien mot de passe n’est pas le bon');
         }
 
         $user->setLastUpdateDate( new \DateTime() );
