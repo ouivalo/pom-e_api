@@ -33,15 +33,9 @@ class ComposterContactListener
 
         $recipients = [];
 
-        // On ajoute le maitre composteur à la liste des destinataires
-        if(isset($mc)) {
-            $recipients[] = [
-                'Email' => $mc->getEmail(),
-                'Name' => $mc->getUsername()
-            ];
-        }
-
         // Plus tous les référents qui sont ok pour être destinataires
+        $notify_mc = true;
+        $firstReferent = null;
         foreach ($composter->getUserComposters() as $userC) {
 
             if( $userC->getComposterContactReceiver() ){
@@ -52,8 +46,19 @@ class ComposterContactListener
                     'Email' => $user->getEmail(),
                     'Name' => $user->getUsername()
                 ];
+
+                $firstReferent = $user;
+                $notify_mc = false;
             }
 
+        }
+
+        // On ajoute le maitre composteur à la liste des destinataires
+        if($notify_mc && isset($mc)) {
+            $recipients[] = [
+                'Email' => $mc->getEmail(),
+                'Name' => $mc->getUsername()
+            ];
         }
 
         $messages = [];
@@ -80,11 +85,10 @@ class ComposterContactListener
         ];
 
         // On rajoute un référent pour le "ReplyTo"
-        $firstReferent = $composter->getFirstReferent();
         if( $firstReferent ){
             $confirmation['ReplyTo'] = [
-                'Email' => $firstReferent->getUser()->getEmail(),
-                'Name'  => $firstReferent->getUser()->getUsername()
+                'Email' => $firstReferent->getEmail(),
+                'Name'  => $firstReferent->getUsername()
             ];
         }
         $messages[] = $confirmation;
