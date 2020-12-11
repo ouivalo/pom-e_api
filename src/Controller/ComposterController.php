@@ -123,7 +123,7 @@ class ComposterController extends AbstractController
                 'annee' => date_format($c->getDateMiseEnRoute(), 'Y'),
                 'lat' => $c->getLat(),
                 'lon' => $c->getLng(),
-                'lien' => 'https://composteurs.compostri.fr/composteur/' . $c->getSlug(),
+                'lien' => getenv('FRONT_DOMAIN').'/composteur/' . $c->getSlug(),
             ];
         }
 
