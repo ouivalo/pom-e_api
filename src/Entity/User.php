@@ -11,6 +11,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -38,7 +39,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"permanence", "composter"})
+     * @Groups({"permanence", "composter", "userComposter"})
      */
     private $id;
 
@@ -51,6 +52,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"user","permanence", "composter", "userComposter"})
+     * @Assert\Email
      */
     private $email;
 
@@ -121,7 +123,7 @@ class User implements UserInterface
      *      Un lien sera créé et envoyé à cette URL de type {userConfirmedAccountURL}?token=token
      *      Il faudra utiliser le endpoint `user_password_changes` et renvoyer un mot de passe et le token
      *      Cela aura pour effet de vérifier le compte ( passer enabled a true )
-     * @Groups({"user:write", "userComposter"})
+     * @Groups({"user:write", "userComposter:write"})
      */
     private $userConfirmedAccountURL;
 

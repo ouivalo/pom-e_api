@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ApiResource(
@@ -41,6 +44,7 @@ class UserComposter
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userComposters", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"userComposter"})
+     * @Assert\Valid
      */
     private $user;
 
@@ -52,8 +56,9 @@ class UserComposter
     private $composter;
 
     /**
-     * @ORM\Column(type="enumcapability", options={"default":"Opener"})
+     * @ORM\Column(type="enumcapability", options={"default":"User"})
      * @Groups({"user:read", "userComposter"})
+     * @DoctrineAssert\Enum(entity="App\DBAL\Types\CapabilityEnumType")
      */
     private $capability;
 
