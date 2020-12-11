@@ -10,6 +10,7 @@ use App\Entity\User;
 use Mailjet\Client;
 use Mailjet\Resources;
 use Mailjet\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Security;
 use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
 
@@ -42,13 +43,14 @@ class Mailjet
      * @param Security $security
      * @param MJML $mjml
      * @param MarkdownParserInterface $parser
+     * @param KernelInterface $kernel
      */
-    public function __construct( Security $security, MJML $mjml, MarkdownParserInterface $parser )
+    public function __construct( Security $security, MJML $mjml, MarkdownParserInterface $parser, KernelInterface $kernel )
     {
         $this->mj = new Client(
             getenv('MJ_APIKEY_PUBLIC'),
             getenv('MJ_APIKEY_PRIVATE'),
-            true,
+            $kernel->getEnvironment() === 'prod',
             ['version' => 'v3']
         );
 
