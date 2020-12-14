@@ -279,11 +279,6 @@ class Composter
     private $publicDescription;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Consumer", mappedBy="composters")
-     */
-    private $consumers;
-
-    /**
      * @ORM\Column(type="bigint", nullable=true)
      * @Groups({"composter"})
      */
@@ -374,7 +369,6 @@ class Composter
         $this->acceptNewMembers = true;
         $this->broyatLevel = 'Full';
         $this->contacts = new ArrayCollection();
-        $this->consumers = new ArrayCollection();
     }
 
     public function __toString()
@@ -932,34 +926,6 @@ class Composter
     public function setPublicDescription(?string $publicDescription): self
     {
         $this->publicDescription = $publicDescription;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Consumer[]
-     */
-    public function getConsumers(): Collection
-    {
-        return $this->consumers;
-    }
-
-    public function addConsumer(Consumer $consumer): self
-    {
-        if (!$this->consumers->contains($consumer)) {
-            $this->consumers[] = $consumer;
-            $consumer->addComposter($this);
-        }
-
-        return $this;
-    }
-
-    public function removeConsumer(Consumer $consumer): self
-    {
-        if ($this->consumers->contains($consumer)) {
-            $this->consumers->removeElement($consumer);
-            $consumer->removeComposter($this);
-        }
 
         return $this;
     }

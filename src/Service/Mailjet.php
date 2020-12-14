@@ -130,44 +130,44 @@ class Mailjet
 
 
     /**
-     * @param Consumer $consumer
+     * @param User $consumer
      * @return Response|null
      */
-    public function addConsumer( Consumer $consumer ) : ?Response
+    public function addUser( User $user ) : ?Response
     {
 
         $response = null;
 
-        if( ! $consumer->getMailjetId() ){
+        if( ! $user->getMailjetId() ){
             // On ajoute notre contact sur Mailjet
-            $response = $this->addContact( $consumer->getUsername(), $consumer->getEmail() );
+            $response = $this->addContact( $user->getUsername(), $user->getEmail() );
 
             if( $response->success() ){
 
                 $contactData = $response->getData();
-                $consumer->setMailjetId( $contactData[0]['ID'] );
+                $user->setMailjetId( $contactData[0]['ID'] );
             }
         }
 
 
-        if( $consumer->getMailjetId() ){
+        if( $user->getMailjetId() ){
 
             // On ajoute notre contact aux composteurs
             $compostersMailjetListId = [];
-            foreach ( $consumer->getComposters() as $composter ){
-                $mailjetListId = $composter->getMailjetListID();
+            foreach ( $user->getUserComposters() as $uc ){
+                $mailjetListId = $uc->getComposter()->getMailjetListID();
 
-                if( $mailjetListId ){
+                if( $mailjetListId && $uc->getNewsletter() ){
                     $compostersMailjetListId[] = $mailjetListId;
                 }
             }
             // On l'ajoute à la newsletter de compostri
-            if( $consumer->getSubscribeToCompostriNewsletter() ){
-                $compostersMailjetListId[] = getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID');
-            }
+//            if( $user->getSubscribeToCompostriNewsletter() ){
+//                $compostersMailjetListId[] = getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID');
+//            }
 
             if( count( $compostersMailjetListId ) > 0 ){
-                $response = $this->addToList( $consumer->getMailjetId(), $compostersMailjetListId );
+                $response = $this->addToList( $user->getMailjetId(), $compostersMailjetListId );
             }
 
 

@@ -48,6 +48,8 @@ class UserListener
             throw new BadRequestHttpException('Un utilisateur possédant le même email existe déja');
         }
 
+        $this->email->addUser( $user );
+
         /**
          * Pour les utilisateur nouvellement créer qui sont en enabled = false :
          *  1. On crée un token
@@ -107,6 +109,8 @@ class UserListener
         // necessary to force the update to see the change
         $meta = $this->em->getClassMetadata(get_class($user));
         $this->em->getUnitOfWork()->recomputeSingleEntityChangeSet($meta, $user);
+
+        $this->email->addUser( $user );
     }
 
 
