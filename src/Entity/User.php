@@ -134,6 +134,12 @@ class User implements UserInterface
     private $phone;
 
     /**
+     * @ORM\Column(type="bigint", nullable=true)
+     * @Groups({"user", "userComposter"})
+     */
+    private $mailjetId;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"user", "userComposter"})
      */
@@ -469,6 +475,18 @@ class User implements UserInterface
     public function setLastUpdateDate(\DateTimeInterface $lastUpdateDate): self
     {
         $this->lastUpdateDate = $lastUpdateDate;
+
+        return $this;
+    }
+
+    public function getMailjetId(): ?int
+    {
+        return $this->mailjetId;
+    }
+
+    public function setMailjetId(?int $mailjetId): self
+    {
+        $this->mailjetId = $mailjetId;
 
         return $this;
     }
