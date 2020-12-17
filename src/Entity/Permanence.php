@@ -128,6 +128,14 @@ class Permanence
      */
     public $temperature;
 
+    /**
+     * @var float Poid total de biodéchet détourné
+     *
+     * @ORM\Column(type="float", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $weight;
+
 
     /**
      * @var bool has users been notify
@@ -287,6 +295,18 @@ class Permanence
     public function setHasUsersBeenNotify(bool $hasUsersBeenNotify): self
     {
         $this->hasUsersBeenNotify = $hasUsersBeenNotify;
+
+        return $this;
+    }
+
+    public function getWeight(): ?float
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?float $weight): self
+    {
+        $this->weight = $weight;
 
         return $this;
     }

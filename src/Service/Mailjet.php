@@ -37,6 +37,11 @@ class Mailjet
      */
     private $parser;
 
+    /**
+     * @var string
+     */
+    private $env;
+
 
     /**
      * Mailjet constructor.
@@ -47,10 +52,11 @@ class Mailjet
      */
     public function __construct( Security $security, MJML $mjml, MarkdownParserInterface $parser, KernelInterface $kernel )
     {
+        $this->env = $kernel->getEnvironment();
         $this->mj = new Client(
             getenv('MJ_APIKEY_PUBLIC'),
             getenv('MJ_APIKEY_PRIVATE'),
-            $kernel->getEnvironment() === 'prod',
+            $this->env === 'prod',
             ['version' => 'v3']
         );
 
@@ -258,7 +264,7 @@ class Mailjet
             // Ajouter du contenu : POST /campaigndraft/{draft_ID}/detailcontent
             $response = $this->addCampaignDraftContent( $campaignDraftId, $content );
 
-            if( $response->success() ){
+            if( $response->success() && $this->env === 'prod'){
                 // Et enfin l'envoyer : POST /campaigndraft/{draft_ID}/send
                 $response = $this->mj->post(Resources::$CampaigndraftSend, ['id' => $campaignDraftId]);
             }
