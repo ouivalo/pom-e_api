@@ -81,6 +81,14 @@ class Permanence
     public $openers;
 
     /**
+     * @var string People without account who will open the composter
+     *
+     * @ORM\Column(type="string", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $openersString;
+
+    /**
      * @var Composter of the permanence
      *
      * @ORM\ManyToOne(targetEntity="Composter", inversedBy="permanences")
@@ -307,6 +315,18 @@ class Permanence
     public function setWeight(?float $weight): self
     {
         $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getOpenersString(): ?string
+    {
+        return $this->openersString;
+    }
+
+    public function setOpenersString(?string $openersString): self
+    {
+        $this->openersString = $openersString;
 
         return $this;
     }
