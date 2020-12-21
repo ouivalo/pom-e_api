@@ -40,14 +40,6 @@ class UserListener
      */
     public function prePersist(User $user): void
     {
-
-        // On vérifie que l'utilisateur n'héxiste pas déja
-        $oldUser = $this->em->getRepository( User::class )->findOneBy(['email' => $user->getEmail()] );
-
-        if( $oldUser instanceof User ){
-            throw new BadRequestHttpException('Un utilisateur possédant le même email existe déja');
-        }
-
         $this->email->addUser( $user );
 
         /**
@@ -61,33 +53,6 @@ class UserListener
         }
 
         $this->encodePassword($user);
-
-    }
-
-    public function postPersist( User $user ): void
-    {
-
-        /**
-         * Pour les utilisateur nouvellement créer qui sont en enabled = false :
-         *  2. On envoie un mail pour qu'il puisse confirmer leur compte
-         */
-        if( ! $user->getEnabled() ){
-
-            $userConfirmedAccountURL =  $user->getUserConfirmedAccountURL();
-            if( $userConfirmedAccountURL ){
-
-                $this->email->send([
-                    [
-                        'To'            => [['Email' => $user->getEmail() , 'Name' => $user->getUsername() ]],
-                        'Subject'       => '[Compostri] Confirmer votre compte',
-                        'TemplateID'    => (int) getenv('MJ_VERIFIED_ACCOUNT_TEMPLATE_ID'),
-                        'Variables'     => [ 'recovery_password_url' => "{$userConfirmedAccountURL}?token={$user->getResetToken()}"]
-                    ]
-                ]);
-            } else {
-                throw new BadRequestHttpException('"userConfirmedAccountURL" champs obligatoire pour la création d‘utilisateur');
-            }
-        }
 
     }
 

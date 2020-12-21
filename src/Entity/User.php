@@ -12,9 +12,11 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity(fields={"email"},message="Cette email est déjà attribué à un utilisateur existant")
  * @ORM\EntityListeners({"App\EventListener\UserListener"})
  *
  * @ApiResource(
@@ -119,6 +121,7 @@ class User implements UserInterface
     private $enabled;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string userConfirmedAccountURL Url pour gérer la confirmation du compte.
      *      Un lien sera créé et envoyé à cette URL de type {userConfirmedAccountURL}?token=token
      *      Il faudra utiliser le endpoint `user_password_changes` et renvoyer un mot de passe et le token
@@ -135,7 +138,6 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="bigint", nullable=true)
-     * @Groups({"user", "userComposter"})
      */
     private $mailjetId;
 
