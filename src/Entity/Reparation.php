@@ -19,7 +19,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * )
  * @ORM\Entity(repositoryClass="App\Repository\ReparationRepository")
  * @ApiFilter(BooleanFilter::class, properties={"done"})
- * @ApiFilter(SearchFilter::class, properties={"composter.name": "partial"})
+ * @ApiFilter(SearchFilter::class, properties={
+ *     "composter.slug" : "exact",
+ *     "composter.name" : "partial"
+ * })
  * @ApiFilter(OrderFilter::class, properties={"date"})
  */
 class Reparation

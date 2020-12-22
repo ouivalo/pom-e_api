@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Repository\SuiviRepository")
  * @ApiFilter(SearchFilter::class, properties={
  *     "composter.name"     : "partial",
+ *     "composter.slug"     : "exact",
  *     "composter.pole"     : "exact",
  *     "composter.commune"  : "exact"
  * })

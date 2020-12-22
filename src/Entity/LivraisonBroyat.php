@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass="App\Repository\LivraisonBroyatRepository")
  * @ApiFilter(OrderFilter::class, properties={"date"})
  * @ApiFilter(SearchFilter::class, properties={
+ *     "composter.slug"     : "exact",
  *     "composter.name"     : "partial"
  * })
  * @ORM\EntityListeners({"App\EventListener\LivraisonBroyatListener"})
