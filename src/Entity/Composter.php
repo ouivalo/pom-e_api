@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use App\DBAL\Types\CapabilityEnumType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,6 +23,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     normalizationContext={"groups"={"composter"}},
  *     denormalizationContext={"groups"={"composter", "composter:write"}}
  * )
+ * @ApiFilter(BooleanFilter::class, properties={"acceptNewMembers"})
  * @ApiFilter(SearchFilter::class, properties={
  *     "commune"        : "exact",
  *     "quartier"       : "exact",
