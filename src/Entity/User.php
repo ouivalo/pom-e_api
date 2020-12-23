@@ -31,7 +31,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *   "firstname"    : "partial",
  *   "lastname"     : "partial",
  *   "roles"        : "partial",
- *   "phone"        : "partial"
+ *   "phone"        : "partial",
+ *   "userComposters.composter.name" : "partial"
  * })
  * @ApiFilter(BooleanFilter::class, properties={"enabled"})
  */
@@ -151,6 +152,18 @@ class User implements UserInterface
      * @ORM\Column(type="datetime", options={"default":"CURRENT_TIMESTAMP"})
      */
     private $lastUpdateDate;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true, options={"default":"0"})
+     * @Groups({"user"})
+     */
+    private $hasFormationReferentSite;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true, options={"default":"0"})
+     * @Groups({"user"})
+     */
+    private $hasFormationGuideComposteur;
 
 
     public function __construct()
@@ -489,6 +502,30 @@ class User implements UserInterface
     public function setMailjetId(?int $mailjetId): self
     {
         $this->mailjetId = $mailjetId;
+
+        return $this;
+    }
+
+    public function getHasFormationReferentSite(): ?bool
+    {
+        return $this->hasFormationReferentSite;
+    }
+
+    public function setHasFormationReferentSite(?bool $hasFormationReferentSite): self
+    {
+        $this->hasFormationReferentSite = $hasFormationReferentSite;
+
+        return $this;
+    }
+
+    public function getHasFormationGuideComposteur(): ?bool
+    {
+        return $this->hasFormationGuideComposteur;
+    }
+
+    public function setHasFormationGuideComposteur(?bool $hasFormationGuideComposteur): self
+    {
+        $this->hasFormationGuideComposteur = $hasFormationGuideComposteur;
 
         return $this;
     }
