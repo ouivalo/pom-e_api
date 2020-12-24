@@ -228,14 +228,15 @@ class Mailjet
     /**
      * @param int $campaignId
      * @param string $content
+     * @param Composter $composter
      * @return Response
      */
-    public function addCampaignDraftContent( int $campaignId, string $content ) : Response
+    public function addCampaignDraftContent( int $campaignId, string $content, Composter $composter) : Response
     {
 
         $html = $this->mjml->getHtml( str_replace(
-            '{{message}}',
-            $this->parser->transformMarkdown( $content ),
+            ['{{message}}', '{{composterURL}}','{{composterName}}'],
+            [$this->parser->transformMarkdown( $content ), getenv('FRONT_DOMAIN').'/composteur/' . $composter->getSlug(), $composter->getName()],
             file_get_contents(__DIR__ . '/../../templates/mjml/composteur-newsletter.mjml') )
         );
         $body = [
@@ -250,9 +251,10 @@ class Mailjet
      * @param string $listId
      * @param string $subject
      * @param string $content
+     * @param Composter $composter
      * @return string|null id of campaign or null on error
      */
-    public function sendCampaign( string $listId, string $subject, string $content ) : ?string
+    public function sendCampaign( string $listId, string $subject, string $content, Composter $composter) : ?string
     {
         // Créer un brouillont : POST 	/campaigndraft
         $response = $this->createCampaignDraft( $listId, $subject );
@@ -262,7 +264,7 @@ class Mailjet
             $campaignDraftId = $draftData[0]['ID'];
 
             // Ajouter du contenu : POST /campaigndraft/{draft_ID}/detailcontent
-            $response = $this->addCampaignDraftContent( $campaignDraftId, $content );
+            $response = $this->addCampaignDraftContent( $campaignDraftId, $content, $composter );
 
             if( $response->success() && $this->env === 'prod'){
                 // Et enfin l'envoyer : POST /campaigndraft/{draft_ID}/send

@@ -1,20 +1,26 @@
 <mjml>
-
   <mj-head>
-
     <mj-attributes>
       <mj-text color="#555" />
       <mj-section background-color="#fff" />
     </mj-attributes>
-
   </mj-head>
-
   <mj-body background-color="#eee">
-    <mj-section >
+    <mj-hero background-color="#a3c538" padding="10px">
+      <mj-image src="https://pom-e.compostri.fr/static/logo.svg" alt="Logo de Compostri" width="169px" height="69px" />
+    </mj-hero>
+    <mj-section>
       <mj-column>
         <mj-text>
           {{message}}
         </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#a3c538" padding="10px">
+      <mj-column>
+        <mj-text color="#fff">Retrouvez les informations de votre composteur
+        </mj-text>
+        <mj-button href="{{composterURL}}" align="left">{{composterName}}</mj-button>
       </mj-column>
     </mj-section>
   </mj-body>
