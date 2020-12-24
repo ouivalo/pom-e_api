@@ -127,7 +127,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Commune", inversedBy="composters")
-     * @Groups({"composter"})
+     * @Groups({"composter", "livraison"})
      */
     private $commune;
 
@@ -139,7 +139,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Quartier", inversedBy="composters")
-     * @Groups({"composter"})
+     * @Groups({"composter", "livraison"})
      */
     private $quartier;
 

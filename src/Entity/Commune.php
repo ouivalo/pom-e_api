@@ -31,7 +31,7 @@ class Commune
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter", "commune"})
+     * @Groups({"composter", "commune", "livraison"})
      */
     private $name;
 

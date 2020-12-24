@@ -28,7 +28,7 @@ class Quartier
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter", "quartier"})
+     * @Groups({"composter", "quartier", "livraison"})
      */
     private $name;
 
