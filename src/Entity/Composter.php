@@ -63,7 +63,7 @@ class Composter
      * @var string The name of the composter
      *
      * @ORM\Column
-     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence","userComposter", "contact", "user:read"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence","userComposter", "contact", "user:read", "media_object_read"})
      */
     private $name;
 
