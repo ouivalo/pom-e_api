@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use App\DBAL\Types\CapabilityEnumType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,6 +23,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     normalizationContext={"groups"={"composter"}},
  *     denormalizationContext={"groups"={"composter", "composter:write"}}
  * )
+ * @ApiFilter(BooleanFilter::class, properties={"acceptNewMembers"})
  * @ApiFilter(SearchFilter::class, properties={
  *     "commune"        : "exact",
  *     "quartier"       : "exact",
@@ -61,7 +63,7 @@ class Composter
      * @var string The name of the composter
      *
      * @ORM\Column
-     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence","userComposter", "contact"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence","userComposter", "contact", "user:read", "media_object_read"})
      */
     private $name;
 
@@ -125,7 +127,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Commune", inversedBy="composters")
-     * @Groups({"composter"})
+     * @Groups({"composter", "livraison"})
      */
     private $commune;
 
@@ -137,7 +139,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Quartier", inversedBy="composters")
-     * @Groups({"composter"})
+     * @Groups({"composter", "livraison"})
      */
     private $quartier;
 
@@ -279,11 +281,6 @@ class Composter
     private $publicDescription;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Consumer", mappedBy="composters")
-     */
-    private $consumers;
-
-    /**
      * @ORM\Column(type="bigint", nullable=true)
      * @Groups({"composter"})
      */
@@ -374,7 +371,6 @@ class Composter
         $this->acceptNewMembers = true;
         $this->broyatLevel = 'Full';
         $this->contacts = new ArrayCollection();
-        $this->consumers = new ArrayCollection();
     }
 
     public function __toString()
@@ -932,34 +928,6 @@ class Composter
     public function setPublicDescription(?string $publicDescription): self
     {
         $this->publicDescription = $publicDescription;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Consumer[]
-     */
-    public function getConsumers(): Collection
-    {
-        return $this->consumers;
-    }
-
-    public function addConsumer(Consumer $consumer): self
-    {
-        if (!$this->consumers->contains($consumer)) {
-            $this->consumers[] = $consumer;
-            $consumer->addComposter($this);
-        }
-
-        return $this;
-    }
-
-    public function removeConsumer(Consumer $consumer): self
-    {
-        if ($this->consumers->contains($consumer)) {
-            $this->consumers->removeElement($consumer);
-            $consumer->removeComposter($this);
-        }
 
         return $this;
     }

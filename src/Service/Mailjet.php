@@ -10,6 +10,7 @@ use App\Entity\User;
 use Mailjet\Client;
 use Mailjet\Resources;
 use Mailjet\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Security;
 use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
 
@@ -36,19 +37,26 @@ class Mailjet
      */
     private $parser;
 
+    /**
+     * @var string
+     */
+    private $env;
+
 
     /**
      * Mailjet constructor.
      * @param Security $security
      * @param MJML $mjml
      * @param MarkdownParserInterface $parser
+     * @param KernelInterface $kernel
      */
-    public function __construct( Security $security, MJML $mjml, MarkdownParserInterface $parser )
+    public function __construct( Security $security, MJML $mjml, MarkdownParserInterface $parser, KernelInterface $kernel )
     {
+        $this->env = $kernel->getEnvironment();
         $this->mj = new Client(
             getenv('MJ_APIKEY_PUBLIC'),
             getenv('MJ_APIKEY_PRIVATE'),
-            true,
+            $this->env === 'prod',
             ['version' => 'v3']
         );
 
@@ -128,44 +136,44 @@ class Mailjet
 
 
     /**
-     * @param Consumer $consumer
+     * @param User $consumer
      * @return Response|null
      */
-    public function addConsumer( Consumer $consumer ) : ?Response
+    public function addUser( User $user ) : ?Response
     {
 
         $response = null;
 
-        if( ! $consumer->getMailjetId() ){
+        if( ! $user->getMailjetId() ){
             // On ajoute notre contact sur Mailjet
-            $response = $this->addContact( $consumer->getUsername(), $consumer->getEmail() );
+            $response = $this->addContact( $user->getUsername(), $user->getEmail() );
 
             if( $response->success() ){
 
                 $contactData = $response->getData();
-                $consumer->setMailjetId( $contactData[0]['ID'] );
+                $user->setMailjetId( $contactData[0]['ID'] );
             }
         }
 
 
-        if( $consumer->getMailjetId() ){
+        if( $user->getMailjetId() ){
 
             // On ajoute notre contact aux composteurs
             $compostersMailjetListId = [];
-            foreach ( $consumer->getComposters() as $composter ){
-                $mailjetListId = $composter->getMailjetListID();
+            foreach ( $user->getUserComposters() as $uc ){
+                $mailjetListId = $uc->getComposter()->getMailjetListID();
 
-                if( $mailjetListId ){
+                if( $mailjetListId && $uc->getNewsletter() ){
                     $compostersMailjetListId[] = $mailjetListId;
                 }
             }
             // On l'ajoute à la newsletter de compostri
-            if( $consumer->getSubscribeToCompostriNewsletter() ){
-                $compostersMailjetListId[] = getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID');
-            }
+//            if( $user->getSubscribeToCompostriNewsletter() ){
+//                $compostersMailjetListId[] = getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID');
+//            }
 
             if( count( $compostersMailjetListId ) > 0 ){
-                $response = $this->addToList( $consumer->getMailjetId(), $compostersMailjetListId );
+                $response = $this->addToList( $user->getMailjetId(), $compostersMailjetListId );
             }
 
 
@@ -220,14 +228,15 @@ class Mailjet
     /**
      * @param int $campaignId
      * @param string $content
+     * @param Composter $composter
      * @return Response
      */
-    public function addCampaignDraftContent( int $campaignId, string $content ) : Response
+    public function addCampaignDraftContent( int $campaignId, string $content, Composter $composter) : Response
     {
 
         $html = $this->mjml->getHtml( str_replace(
-            '{{message}}',
-            $this->parser->transformMarkdown( $content ),
+            ['{{message}}', '{{composterURL}}','{{composterName}}'],
+            [$this->parser->transformMarkdown( $content ), getenv('FRONT_DOMAIN').'/composteur/' . $composter->getSlug(), $composter->getName()],
             file_get_contents(__DIR__ . '/../../templates/mjml/composteur-newsletter.mjml') )
         );
         $body = [
@@ -242,9 +251,10 @@ class Mailjet
      * @param string $listId
      * @param string $subject
      * @param string $content
+     * @param Composter $composter
      * @return string|null id of campaign or null on error
      */
-    public function sendCampaign( string $listId, string $subject, string $content ) : ?string
+    public function sendCampaign( string $listId, string $subject, string $content, Composter $composter) : ?string
     {
         // Créer un brouillont : POST 	/campaigndraft
         $response = $this->createCampaignDraft( $listId, $subject );
@@ -254,9 +264,9 @@ class Mailjet
             $campaignDraftId = $draftData[0]['ID'];
 
             // Ajouter du contenu : POST /campaigndraft/{draft_ID}/detailcontent
-            $response = $this->addCampaignDraftContent( $campaignDraftId, $content );
+            $response = $this->addCampaignDraftContent( $campaignDraftId, $content, $composter );
 
-            if( $response->success() ){
+            if( $response->success() && $this->env === 'prod'){
                 // Et enfin l'envoyer : POST /campaigndraft/{draft_ID}/send
                 $response = $this->mj->post(Resources::$CampaigndraftSend, ['id' => $campaignDraftId]);
             }

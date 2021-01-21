@@ -81,6 +81,14 @@ class Permanence
     public $openers;
 
     /**
+     * @var string People without account who will open the composter
+     *
+     * @ORM\Column(type="string", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $openersString;
+
+    /**
      * @var Composter of the permanence
      *
      * @ORM\ManyToOne(targetEntity="Composter", inversedBy="permanences")
@@ -127,6 +135,14 @@ class Permanence
      * @Groups({"permanence"})
      */
     public $temperature;
+
+    /**
+     * @var float Poid total de biodéchet détourné
+     *
+     * @ORM\Column(type="float", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $weight;
 
 
     /**
@@ -287,6 +303,30 @@ class Permanence
     public function setHasUsersBeenNotify(bool $hasUsersBeenNotify): self
     {
         $this->hasUsersBeenNotify = $hasUsersBeenNotify;
+
+        return $this;
+    }
+
+    public function getWeight(): ?float
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?float $weight): self
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getOpenersString(): ?string
+    {
+        return $this->openersString;
+    }
+
+    public function setOpenersString(?string $openersString): self
+    {
+        $this->openersString = $openersString;
 
         return $this;
     }

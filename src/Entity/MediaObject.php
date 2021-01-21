@@ -7,6 +7,8 @@ use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 use Exception;
@@ -104,6 +106,16 @@ class MediaObject
      */
     private $file;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Composter", mappedBy="image")
+     * @Groups({"media_object_read"})
+     */
+    private $composters;
+
+    public function __construct()
+    {
+        $this->composters = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -218,5 +230,13 @@ class MediaObject
     public function getContentUrl(): ?string
     {
         return $this->contentUrl;
+    }
+
+    /**
+     * @return Collection|Composter[]
+     */
+    public function getComposters(): Collection
+    {
+        return $this->composters;
     }
 }

@@ -11,9 +11,12 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @UniqueEntity(fields={"email"},message="Cette email est déjà attribué à un utilisateur existant")
  * @ORM\EntityListeners({"App\EventListener\UserListener"})
  *
  * @ApiResource(
@@ -28,7 +31,8 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  *   "firstname"    : "partial",
  *   "lastname"     : "partial",
  *   "roles"        : "partial",
- *   "phone"        : "partial"
+ *   "phone"        : "partial",
+ *   "userComposters.composter.name" : "partial"
  * })
  * @ApiFilter(BooleanFilter::class, properties={"enabled"})
  */
@@ -38,7 +42,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"permanence", "composter"})
+     * @Groups({"permanence", "composter", "userComposter"})
      */
     private $id;
 
@@ -51,6 +55,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"user","permanence", "composter", "userComposter"})
+     * @Assert\Email
      */
     private $email;
 
@@ -117,11 +122,12 @@ class User implements UserInterface
     private $enabled;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @var string userConfirmedAccountURL Url pour gérer la confirmation du compte.
      *      Un lien sera créé et envoyé à cette URL de type {userConfirmedAccountURL}?token=token
      *      Il faudra utiliser le endpoint `user_password_changes` et renvoyer un mot de passe et le token
      *      Cela aura pour effet de vérifier le compte ( passer enabled a true )
-     * @Groups({"user:write", "userComposter"})
+     * @Groups({"user:write", "userComposter:write"})
      */
     private $userConfirmedAccountURL;
 
@@ -130,6 +136,11 @@ class User implements UserInterface
      * @Groups({"user", "userComposter"})
      */
     private $phone;
+
+    /**
+     * @ORM\Column(type="bigint", nullable=true)
+     */
+    private $mailjetId;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -141,6 +152,18 @@ class User implements UserInterface
      * @ORM\Column(type="datetime", options={"default":"CURRENT_TIMESTAMP"})
      */
     private $lastUpdateDate;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true, options={"default":"0"})
+     * @Groups({"user"})
+     */
+    private $hasFormationReferentSite;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true, options={"default":"0"})
+     * @Groups({"user"})
+     */
+    private $hasFormationGuideComposteur;
 
 
     public function __construct()
@@ -467,6 +490,42 @@ class User implements UserInterface
     public function setLastUpdateDate(\DateTimeInterface $lastUpdateDate): self
     {
         $this->lastUpdateDate = $lastUpdateDate;
+
+        return $this;
+    }
+
+    public function getMailjetId(): ?int
+    {
+        return $this->mailjetId;
+    }
+
+    public function setMailjetId(?int $mailjetId): self
+    {
+        $this->mailjetId = $mailjetId;
+
+        return $this;
+    }
+
+    public function getHasFormationReferentSite(): ?bool
+    {
+        return $this->hasFormationReferentSite;
+    }
+
+    public function setHasFormationReferentSite(?bool $hasFormationReferentSite): self
+    {
+        $this->hasFormationReferentSite = $hasFormationReferentSite;
+
+        return $this;
+    }
+
+    public function getHasFormationGuideComposteur(): ?bool
+    {
+        return $this->hasFormationGuideComposteur;
+    }
+
+    public function setHasFormationGuideComposteur(?bool $hasFormationGuideComposteur): self
+    {
+        $this->hasFormationGuideComposteur = $hasFormationGuideComposteur;
 
         return $this;
     }

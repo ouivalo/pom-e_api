@@ -123,7 +123,7 @@ class ComposterVoter extends Voter
                         $diff = array_diff( $openers_request_ids, $openers_ids );
                     }
 
-                    $grant = count( $diff ) === 1 && array_shift( $diff) === $user->getID();
+                    $grant = count( $diff ) === 0 || (count( $diff ) === 1 && array_shift( $diff) === $user->getID());
                 } else {
 
                     // TODO peut être vérifier ici qu'il ne modifie que les données des stats

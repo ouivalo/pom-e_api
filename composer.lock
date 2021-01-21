@@ -4,33 +4,30 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc2a71973edca446bcb65cb56e7da081",
+    "content-hash": "06690d9b9ac3abcb97e8720aeb91a8a6",
     "packages": [
         {
             "name": "api-platform/api-pack",
-            "version": "v1.2.1",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/api-platform/api-pack.git",
-                "reference": "41364f8763475d7709c43f790aa77a4157d038e2"
+                "reference": "0fb12343362f565b65eb374d3c49bec580ffcf8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/api-platform/api-pack/zipball/41364f8763475d7709c43f790aa77a4157d038e2",
-                "reference": "41364f8763475d7709c43f790aa77a4157d038e2",
+                "url": "https://api.github.com/repos/api-platform/api-pack/zipball/0fb12343362f565b65eb374d3c49bec580ffcf8d",
+                "reference": "0fb12343362f565b65eb374d3c49bec580ffcf8d",
                 "shasum": ""
             },
             "require": {
-                "api-platform/core": "^2.1",
-                "doctrine/annotations": "^1.0",
-                "doctrine/doctrine-bundle": "^1.6 || ^2.0",
-                "doctrine/orm": "^2.4.5",
-                "nelmio/cors-bundle": "^1.5 || ^2.0",
-                "php": "^7.0",
-                "phpdocumentor/reflection-docblock": "^3.0 || ^4.0",
+                "api-platform/core": "*",
+                "nelmio/cors-bundle": "*",
                 "symfony/asset": "*",
                 "symfony/expression-language": "*",
+                "symfony/orm-pack": "*",
                 "symfony/security-bundle": "*",
+                "symfony/serializer-pack": "*",
                 "symfony/twig-bundle": "*",
                 "symfony/validator": "*"
             },
@@ -40,7 +37,7 @@
                 "MIT"
             ],
             "description": "A pack for API Platform",
-            "time": "2019-11-12T17:43:33+00:00"
+            "time": "2020-08-28T20:27:34+00:00"
         },
         {
             "name": "api-platform/core",
@@ -5897,6 +5894,49 @@
             "time": "2019-11-28T14:32:28+00:00"
         },
         {
+            "name": "symfony/serializer-pack",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/serializer-pack.git",
+                "reference": "61173947057d5e1bf1c79e2a6ab6a8430be0602e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/serializer-pack/zipball/61173947057d5e1bf1c79e2a6ab6a8430be0602e",
+                "reference": "61173947057d5e1bf1c79e2a6ab6a8430be0602e",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/annotations": "^1.0",
+                "phpdocumentor/reflection-docblock": "*",
+                "symfony/property-access": "*",
+                "symfony/property-info": "*",
+                "symfony/serializer": "*"
+            },
+            "type": "symfony-pack",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A pack for the Symfony serializer",
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-10-19T08:52:16+00:00"
+        },
+        {
             "name": "symfony/service-contracts",
             "version": "v2.0.1",
             "source": {
@@ -6871,6 +6911,7 @@
                 "code",
                 "zf"
             ],
+            "abandoned": "laminas/laminas-code",
             "time": "2019-10-05T23:18:22+00:00"
         },
         {
@@ -6925,6 +6966,7 @@
                 "events",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-eventmanager",
             "time": "2018-04-25T15:33:34+00:00"
         }
     ],
@@ -7160,8 +7202,10 @@
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
+        "ext-imagick": "*",
         "ext-json": "*",
         "ext-zip": "*"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
