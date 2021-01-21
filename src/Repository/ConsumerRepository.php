@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Consumer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Consumer|null find($id, $lockMode = null, $lockVersion = null)
