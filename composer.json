@@ -14,7 +14,7 @@
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/orm": "^2.6",
         "fresh/doctrine-enum-bundle": "^6.5",
-        "gesdinet/jwt-refresh-token-bundle": "^0.9.0",
+        "gesdinet/jwt-refresh-token-bundle": "^0.10.1",
         "intervention/image": "^2.5",
         "knplabs/knp-markdown-bundle": "^1.8",
         "lexik/jwt-authentication-bundle": "^2.6",
