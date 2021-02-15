@@ -97,9 +97,9 @@ class Mailjet
     /**
      * @param string $name
      * @param string $email
-     * @return Response
+     * @return ?int
      */
-    public function addContact( string $name, string $email ) : Response
+    public function addContact( string $name, string $email ) : ?int
     {
 
 
@@ -109,7 +109,22 @@ class Mailjet
             'Email'                     => $email
         ];
 
-        return $this->mj->post(Resources::$Contact, ['body' => $body], ['version' => 'v3']);
+        $response = $this->mj->post(Resources::$Contact, ['body' => $body], ['version' => 'v3']);
+
+        $mailjetId = null;
+        if( $response->success() ){
+            $contactData = $response->getData();
+            $mailjetId = $contactData[0]['ID'];
+        } else if( $response->getStatus() === 400 ){
+            // L'utilisateur existe déja
+            $response = $this->mj->get(Resources::$Contact, [ 'id' => $email]);
+
+            if( $response->success() ){
+                $contactData = $response->getData();
+                $mailjetId = $contactData['ID'];
+            }
+        }
+        return $mailjetId;
     }
 
 
@@ -146,12 +161,10 @@ class Mailjet
 
         if( ! $user->getMailjetId() ){
             // On ajoute notre contact sur Mailjet
-            $response = $this->addContact( $user->getUsername(), $user->getEmail() );
+            $mailjetId = $this->addContact( $user->getUsername(), $user->getEmail() );
 
-            if( $response->success() ){
-
-                $contactData = $response->getData();
-                $user->setMailjetId( $contactData[0]['ID'] );
+            if( $mailjetId ){
+                $user->setMailjetId( $mailjetId );
             }
         }
 
