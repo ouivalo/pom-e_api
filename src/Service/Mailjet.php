@@ -121,7 +121,7 @@ class Mailjet
 
             if( $response->success() ){
                 $contactData = $response->getData();
-                $mailjetId = $contactData['ID'];
+                $mailjetId = $contactData[0]['ID'];
             }
         }
         return $mailjetId;
