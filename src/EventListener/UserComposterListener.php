@@ -7,6 +7,7 @@ use App\DBAL\Types\CapabilityEnumType;
 use App\Entity\UserComposter;
 use App\Service\Mailjet;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 
@@ -48,9 +49,17 @@ class UserComposterListener
          */
         $this->sendConfirmationMail($userComposter);
 
+
+
     }
 
-    public function postUpdate( UserComposter $userComposter ){
+    public function postUpdate( UserComposter $userComposter, LifecycleEventArgs $eventArgs )
+    {
+
+        $changeSet = $eventArgs->getEntityManager()->getUnitOfWork()->getEntityChangeSet( $userComposter);
+        if( isset($changeSet['newsletter']) && ! $changeSet['newsletter'][0] && $changeSet['newsletter'][1] ){
+            $this->email->addUser($userComposter->getUser() );
+        }
 
         // Si on change les droits du l'utilisateur et qu'il n'a plus des droits ouvreur il faut désactivé l'utilisateur
         $user = $userComposter->getUser();

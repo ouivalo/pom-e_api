@@ -151,7 +151,7 @@ class Mailjet
 
 
     /**
-     * @param User $consumer
+     * @param User $user
      * @return Response|null
      */
     public function addUser( User $user ) : ?Response
