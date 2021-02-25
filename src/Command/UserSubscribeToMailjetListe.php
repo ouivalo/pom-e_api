@@ -47,9 +47,11 @@ class UserSubscribeToMailjetListe extends Command
 
             $response = $this->mailjet->addUser( $user );
 
-            if( $response->success() ){
+            if( $response && $response->success() ){
                 $this->em->persist($user);
-                $output->writeln( "{$user->getEmail()}"  );
+                $output->writeln( "Success : {$user->getEmail()}"  );
+            } else {
+                $output->writeln( "Error : {$user->getEmail()}");
             }
         }
 

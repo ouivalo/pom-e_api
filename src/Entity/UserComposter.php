@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\UniqueConstraint;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,6 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     "user.lastname"  : "partial",
  *     "capability"     : "exact"
  * })
+ * @ApiFilter(OrderFilter::class, properties={"id"})
  */
 class UserComposter
 {
