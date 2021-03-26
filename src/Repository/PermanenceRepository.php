@@ -29,7 +29,7 @@ class PermanenceRepository extends ServiceEntityRepository
 
         $today = new \DateTime();
         $dateMax = new \DateTime();
-        $dateMax->add( new \DateInterval( 'P1W'));
+        $dateMax->add( new \DateInterval( 'P3D'));
 
         return $this->createQueryBuilder('p')
             ->andWhere('p.date > :date')
