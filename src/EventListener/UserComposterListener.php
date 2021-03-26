@@ -49,13 +49,16 @@ class UserComposterListener
          */
         $this->sendConfirmationMail($userComposter);
 
-
-
+        // Si le user c'est abonné a là newsletter du composteur on l'y ajoute
+        if( $userComposter->getNewsletter() ){
+            $this->email->addToList($userComposter->getUser()->getMailjetId(),[$userComposter->getComposter()->getMailjetListID()]);
+        }
     }
 
     public function postUpdate( UserComposter $userComposter, LifecycleEventArgs $eventArgs )
     {
 
+        // Si on change l'abonnement a la newsletter on envoie l'information a MailJet
         $changeSet = $eventArgs->getEntityManager()->getUnitOfWork()->getEntityChangeSet( $userComposter);
         if( isset($changeSet['newsletter']) && ! $changeSet['newsletter'][0] && $changeSet['newsletter'][1] ){
             $this->email->addUser($userComposter->getUser() );
