@@ -28,6 +28,7 @@
         "symfony/framework-bundle": "*",
         "symfony/http-client": "4.4.*",
         "symfony/maker-bundle": "^1.7",
+        "symfony/mime": "4.4.*",
         "symfony/orm-pack": "^1.0",
         "symfony/security-bundle": "*",
         "symfony/templating": "*",
