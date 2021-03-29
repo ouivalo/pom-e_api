@@ -165,6 +165,12 @@ class User implements UserInterface
      */
     private $hasFormationGuideComposteur;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default":"0"})
+     * @Groups({"user"})
+     */
+    private $isSubscribeToCompostriNewsletter;
+
 
     public function __construct()
     {
@@ -526,6 +532,18 @@ class User implements UserInterface
     public function setHasFormationGuideComposteur(?bool $hasFormationGuideComposteur): self
     {
         $this->hasFormationGuideComposteur = $hasFormationGuideComposteur;
+
+        return $this;
+    }
+
+    public function getIsSubscribeToCompostriNewsletter(): ?bool
+    {
+        return $this->isSubscribeToCompostriNewsletter;
+    }
+
+    public function setIsSubscribeToCompostriNewsletter(bool $isSubscribeToCompostriNewsletter): self
+    {
+        $this->isSubscribeToCompostriNewsletter = $isSubscribeToCompostriNewsletter;
 
         return $this;
     }
