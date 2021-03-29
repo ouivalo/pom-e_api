@@ -167,7 +167,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="boolean", options={"default":"0"})
-     * @Groups({"user"})
+     * @Groups({"user","userComposter:write"})
      */
     private $isSubscribeToCompostriNewsletter;
 
