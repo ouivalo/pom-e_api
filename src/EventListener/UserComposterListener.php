@@ -60,8 +60,14 @@ class UserComposterListener
 
         // Si on change l'abonnement a la newsletter on envoie l'information a MailJet
         $changeSet = $eventArgs->getEntityManager()->getUnitOfWork()->getEntityChangeSet( $userComposter);
-        if( isset($changeSet['newsletter']) && ! $changeSet['newsletter'][0] && $changeSet['newsletter'][1] ){
-            $this->email->addUser($userComposter->getUser() );
+        if( isset($changeSet['newsletter']) ){
+            if( $userComposter->getNewsletter() ){
+                // Si le user c'est abonné a là newsletter du composteur on l'y ajoute
+                $this->email->addUser($userComposter->getUser() );
+            } else {
+                // Sinon on le désabonne
+                $this->email->removeFromList($userComposter->getUser()->getMailjetId(),[$userComposter->getComposter()->getMailjetListID()]);
+            }
         }
 
         // Si on change les droits du l'utilisateur et qu'il n'a plus des droits ouvreur il faut désactivé l'utilisateur

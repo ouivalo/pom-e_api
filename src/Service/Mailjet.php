@@ -149,6 +149,27 @@ class Mailjet
         return $this->mj->post(Resources::$ContactManagecontactslists, ['id' => $contactMailjetId, 'body' => $body]);
     }
 
+    /**
+     * @param int $contactMailjetId
+     * @param array $listsId
+     * @return Response
+     */
+    public function removeFromList( int $contactMailjetId, array $listsId ) : Response
+    {
+        $contactList = [];
+        foreach ( $listsId as $lId ){
+            $contactList[] = [
+                    'Action' => 'remove',
+                    'ListID' => $lId
+                ];
+        }
+        $body = [
+            'ContactsLists' => $contactList
+        ];
+
+        return $this->mj->post(Resources::$ContactManagecontactslists, ['id' => $contactMailjetId, 'body' => $body]);
+    }
+
 
     /**
      * @param User $user
