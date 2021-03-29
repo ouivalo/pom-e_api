@@ -87,7 +87,7 @@ class UserComposterListener
     private function sendConfirmationMail(UserComposter $userComposter)
     {
         $user = $userComposter->getUser();
-        if ($userComposter->getCapability() === CapabilityEnumType::OPENER && !$user->getEnabled() ) {
+        if ( in_array( $userComposter->getCapability(), [ CapabilityEnumType::OPENER, CapabilityEnumType::REFERENT ] )&& !$user->getEnabled() ) {
 
             if( ! $user->getResetToken()){
                 $resetToken = $this->tokenGenerator->generateToken();
