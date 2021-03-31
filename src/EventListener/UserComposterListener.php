@@ -49,16 +49,25 @@ class UserComposterListener
          */
         $this->sendConfirmationMail($userComposter);
 
-
-
+        // Si le user c'est abonné a là newsletter du composteur on l'y ajoute
+        if( $userComposter->getNewsletter() ){
+            $this->email->addToList($userComposter->getUser()->getMailjetId(),[$userComposter->getComposter()->getMailjetListID()]);
+        }
     }
 
     public function postUpdate( UserComposter $userComposter, LifecycleEventArgs $eventArgs )
     {
 
+        // Si on change l'abonnement a la newsletter on envoie l'information a MailJet
         $changeSet = $eventArgs->getEntityManager()->getUnitOfWork()->getEntityChangeSet( $userComposter);
-        if( isset($changeSet['newsletter']) && ! $changeSet['newsletter'][0] && $changeSet['newsletter'][1] ){
-            $this->email->addUser($userComposter->getUser() );
+        if( isset($changeSet['newsletter']) ){
+            if( $userComposter->getNewsletter() ){
+                // Si le user c'est abonné a là newsletter du composteur on l'y ajoute
+                $this->email->addUser($userComposter->getUser() );
+            } else {
+                // Sinon on le désabonne
+                $this->email->removeFromList($userComposter->getUser()->getMailjetId(),[$userComposter->getComposter()->getMailjetListID()]);
+            }
         }
 
         // Si on change les droits du l'utilisateur et qu'il n'a plus des droits ouvreur il faut désactivé l'utilisateur
@@ -84,7 +93,7 @@ class UserComposterListener
     private function sendConfirmationMail(UserComposter $userComposter)
     {
         $user = $userComposter->getUser();
-        if ($userComposter->getCapability() === CapabilityEnumType::OPENER && !$user->getEnabled() ) {
+        if ( in_array( $userComposter->getCapability(), [ CapabilityEnumType::OPENER, CapabilityEnumType::REFERENT ] )&& !$user->getEnabled() ) {
 
             if( ! $user->getResetToken()){
                 $resetToken = $this->tokenGenerator->generateToken();

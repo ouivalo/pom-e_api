@@ -46,6 +46,7 @@ class JWTCreatedListener
     $payload['firstname'] = $user->getFirstname();
     $payload['username'] = $user->getUsername();
     $payload['userId'] = $user->getId();
+    $payload['isSubscribeToCompostriNewsletter'] = $user->getIsSubscribeToCompostriNewsletter();
 
     $event->setData($payload);
   }

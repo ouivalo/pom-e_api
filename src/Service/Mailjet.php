@@ -56,7 +56,7 @@ class Mailjet
         $this->mj = new Client(
             getenv('MJ_APIKEY_PUBLIC'),
             getenv('MJ_APIKEY_PRIVATE'),
-            $this->env === 'prod',
+            true,
             ['version' => 'v3']
         );
 
@@ -149,6 +149,27 @@ class Mailjet
         return $this->mj->post(Resources::$ContactManagecontactslists, ['id' => $contactMailjetId, 'body' => $body]);
     }
 
+    /**
+     * @param int $contactMailjetId
+     * @param array $listsId
+     * @return Response
+     */
+    public function removeFromList( int $contactMailjetId, array $listsId ) : Response
+    {
+        $contactList = [];
+        foreach ( $listsId as $lId ){
+            $contactList[] = [
+                    'Action' => 'remove',
+                    'ListID' => $lId
+                ];
+        }
+        $body = [
+            'ContactsLists' => $contactList
+        ];
+
+        return $this->mj->post(Resources::$ContactManagecontactslists, ['id' => $contactMailjetId, 'body' => $body]);
+    }
+
 
     /**
      * @param User $user
@@ -168,7 +189,6 @@ class Mailjet
             }
         }
 
-
         if( $user->getMailjetId() ){
 
             // On ajoute notre contact aux composteurs
@@ -181,9 +201,9 @@ class Mailjet
                 }
             }
             // On l'ajoute à la newsletter de compostri
-//            if( $user->getSubscribeToCompostriNewsletter() ){
-//                $compostersMailjetListId[] = getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID');
-//            }
+            if( $user->getIsSubscribeToCompostriNewsletter() ){
+                $compostersMailjetListId[] = getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID');
+            }
 
             if( count( $compostersMailjetListId ) > 0 ){
                 $response = $this->addToList( $user->getMailjetId(), $compostersMailjetListId );

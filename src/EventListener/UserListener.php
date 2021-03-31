@@ -7,6 +7,7 @@ namespace App\EventListener;
 use App\Entity\User;
 use App\Service\Mailjet;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -75,10 +76,23 @@ class UserListener
         $meta = $this->em->getClassMetadata(get_class($user));
         $this->em->getUnitOfWork()->recomputeSingleEntityChangeSet($meta, $user);
 
-        $this->email->addUser( $user );
     }
 
 
+    public function postUpdate( User $user, LifecycleEventArgs $eventArgs )
+    {
+
+        // Si on change l'abonnement a la newsletter on envoie l'information a MailJet
+        $changeSet = $eventArgs->getEntityManager()->getUnitOfWork()->getEntityChangeSet($user);
+        if (isset($changeSet['isSubscribeToCompostriNewsletter'])) {
+
+            if( $user->getIsSubscribeToCompostriNewsletter()){
+                $this->email->addUser( $user );
+            } else {
+                $this->email->removeFromList($user->getMailjetId(),[getenv('MJ_COMPOSTRI_NEWSLETTER_CONTACT_LIST_ID')]);
+            }
+        }
+    }
 
     /**
      * @param User $user
