@@ -109,7 +109,7 @@ class ComposterController extends AbstractController
     {
         $composters = $this->getDoctrine()
             ->getRepository(Composter::class)
-            ->findAllForCartoQuartierFrontMap();
+            ->findAllForFrontMap();
 
         $openDataFeatures = [];
         /** @var Composter $c */
