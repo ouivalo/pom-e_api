@@ -74,7 +74,7 @@ class Composter
      *
      * @ORM\Column(type="string", length=255, unique=true)
      * @Gedmo\Slug(fields={"name"})
-     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence", "userComposter",})
      * @ApiProperty(identifier=true)
      */
     private $slug;
