@@ -1,7 +1,11 @@
 ###> symfony/framework-bundle ###
 .env
 public/bundles/
+public/media/
 var/
 vendor/
 ###< symfony/framework-bundle ###
 
+.DS_Store
+/config/jwt/private.pem
+/config/jwt/public.pem

@@ -1,0 +1,3 @@
+[
+  "0 10,12,14,16,18 * * * $ROOT/bash/send-perm-notification.sh"
+]

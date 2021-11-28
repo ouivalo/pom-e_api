@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: arnaudbanvillet
@@ -25,9 +26,17 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * A Permanence
  *
  * @ORM\Entity(repositoryClass="App\Repository\PermanenceRepository")
+ *
  * @ApiResource(
- *     collectionOperations={"get"},
- *     itemOperations={"get"},
+ *     collectionOperations={
+ *          "get",
+ *          "post"={"security"="is_granted('Opener', object)"}
+ *     },
+ *     itemOperations={
+ *         "get",
+ *         "put"={"security"="is_granted('Opener', object)"},
+ *         "delete"={"security"="is_granted('Referent', object)"}
+ *     },
  *     normalizationContext={"groups"={"permanence"}}
  * )
  * @ApiFilter(OrderFilter::class, properties={"date":"ASC"})
@@ -43,6 +52,7 @@ class Permanence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"permanence"})
      */
     private $id;
 
@@ -57,7 +67,7 @@ class Permanence
     /**
      * @var \Boolean Permanence is canceled
      *
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default" : false})
      * @Groups({"permanence"})
      */
     public $canceled;
@@ -71,9 +81,18 @@ class Permanence
     public $openers;
 
     /**
+     * @var string People without account who will open the composter
+     *
+     * @ORM\Column(type="string", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $openersString;
+
+    /**
      * @var Composter of the permanence
      *
      * @ORM\ManyToOne(targetEntity="Composter", inversedBy="permanences")
+     * @Groups({"permanence"})
      */
     public $composter;
 
@@ -117,6 +136,14 @@ class Permanence
      */
     public $temperature;
 
+    /**
+     * @var float Poid total de biodéchet détourné
+     *
+     * @ORM\Column(type="float", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $weight;
+
 
     /**
      * @var bool has users been notify
@@ -126,12 +153,16 @@ class Permanence
     public $hasUsersBeenNotify;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->openers = new ArrayCollection();
+        $this->canceled = false;
+        $this->hasUsersBeenNotify = false;
     }
 
-    public function __toString() {
-        return $this->getDate()->format('Y-m-d H:i:s');
+    public function __toString()
+    {
+        return $this->getDate() ? $this->getDate()->format('Y-m-d H:i:s') : ( string ) $this->getId();
     }
 
     public function getId(): ?int
@@ -202,14 +233,14 @@ class Permanence
 
         return $this;
     }
-    
+
 
     public function getNbUsers()
     {
         return $this->nbUsers;
     }
 
-    public function setNbUsers($nbUsers): self
+    public function setNbUsers(?int $nbUsers): self
     {
         $this->nbUsers = $nbUsers;
 
@@ -221,7 +252,7 @@ class Permanence
         return $this->nbBuckets;
     }
 
-    public function setNbBuckets(float $nbBuckets): self
+    public function setNbBuckets(?float $nbBuckets): self
     {
         $this->nbBuckets = $nbBuckets;
 
@@ -233,7 +264,7 @@ class Permanence
         return $this->temperature;
     }
 
-    public function setTemperature(float $temperature): self
+    public function setTemperature(?float $temperature): self
     {
         $this->temperature = $temperature;
 
@@ -276,4 +307,27 @@ class Permanence
         return $this;
     }
 
+    public function getWeight(): ?float
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?float $weight): self
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getOpenersString(): ?string
+    {
+        return $this->openersString;
+    }
+
+    public function setOpenersString(?string $openersString): self
+    {
+        $this->openersString = $openersString;
+
+        return $this;
+    }
 }
