@@ -6,7 +6,15 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     itemOperations={
+ *         "get"={"security"="is_granted('ROLE_ADMIN')"}
+ *     },
+ *     collectionOperations={
+ *         "get"={"security"="is_granted('ROLE_ADMIN')"},
+ *         "post"
+ *     }
+ * )
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass="App\Repository\ComposterContactRepository")
  */
@@ -98,12 +106,12 @@ class ComposterContact
         return $this;
     }
 
-    public function getComposter(): ?Composter
+    public function getComposter(): Composter
     {
         return $this->composter;
     }
 
-    public function setComposter(?Composter $composter): self
+    public function setComposter(Composter $composter): self
     {
         $this->composter = $composter;
 

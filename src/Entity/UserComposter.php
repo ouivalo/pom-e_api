@@ -2,24 +2,36 @@
 
 namespace App\Entity;
 
+use App\DBAL\Types\CapabilityEnumType;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use Fresh\DoctrineEnumBundle\Validator\Constraints as DoctrineAssert;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ApiResource(
  *     attributes={"security"="is_granted('ROLE_USER')"},
- *     normalizationContext={"groups"={"userComposter"}}
+ *     normalizationContext={"groups"={"userComposter"}},
+ *     denormalizationContext={"groups"={"userComposter", "userComposter:write"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserComposterRepository")
+ * @ORM\EntityListeners({"App\EventListener\UserComposterListener"})
  * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="user_composter_unique", columns={"user_id", "composter_id"})})
  * @ApiFilter(SearchFilter::class, properties={
- *     "composter"  : "exact",
- *     "user"       : "exact",
+ *     "composter"      : "exact",
+ *     "user"           : "exact",
+ *     "composter.name" : "partial",
+ *     "user.email"     : "partial",
+ *     "user.lastname"  : "partial",
+ *     "capability"     : "exact"
  * })
+ * @ApiFilter(OrderFilter::class, properties={"id"})
  */
 class UserComposter
 {
@@ -32,9 +44,10 @@ class UserComposter
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userComposters")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="userComposters", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"userComposter"})
+     * @Assert\Valid
      */
     private $user;
 
@@ -46,8 +59,9 @@ class UserComposter
     private $composter;
 
     /**
-     * @ORM\Column(type="enumcapability")
+     * @ORM\Column(type="enumcapability", options={"default":"User"})
      * @Groups({"user:read", "userComposter"})
+     * @DoctrineAssert\Enum(entity="App\DBAL\Types\CapabilityEnumType")
      */
     private $capability;
 
@@ -69,17 +83,25 @@ class UserComposter
      */
     private $composterContactReceiver;
 
+    public function __construct()
+    {
+        $this->capability = CapabilityEnumType::OPENER;
+        $this->notif = true;
+        $this->newsletter = false;
+        $this->composterContactReceiver = false;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 

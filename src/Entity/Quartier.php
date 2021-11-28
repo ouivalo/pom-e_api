@@ -16,7 +16,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * )
  * @ORM\Entity(repositoryClass="App\Repository\QuartierRepository")
  * @ApiFilter(OrderFilter::class, properties={"name"}, arguments={"orderParameterName"="order"})
-
  */
 class Quartier
 {
@@ -29,7 +28,7 @@ class Quartier
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter", "quartier"})
+     * @Groups({"composter", "quartier", "livraison"})
      */
     private $name;
 

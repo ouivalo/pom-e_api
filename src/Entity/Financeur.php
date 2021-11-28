@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,28 +12,34 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- *     normalizationContext={"groups"={"pavilion"}}
+ *     attributes={"security"="is_granted('ROLE_ADMIN')"},
  * )
- * @ORM\Entity(repositoryClass="App\Repository\PavilionsVolumeRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\FinanceurRepository")
+ * @ApiFilter(OrderFilter::class, properties={"name"})
  */
-class PavilionsVolume
+class Financeur
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"composter", "pavilion"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter", "pavilion"})
+     * @Groups({"composter"})
      */
-    private $volume;
+    private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Composter", mappedBy="pavilionsVolume")
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"composter"})
+     */
+    private $initials;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Composter", mappedBy="financeur")
      */
     private $composters;
 
@@ -45,14 +53,26 @@ class PavilionsVolume
         return $this->id;
     }
 
-    public function getVolume(): ?string
+    public function getName(): ?string
     {
-        return $this->volume;
+        return $this->name;
     }
 
-    public function setVolume(string $volume): self
+    public function setName(string $name): self
     {
-        $this->volume = $volume;
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getInitials(): ?string
+    {
+        return $this->initials;
+    }
+
+    public function setInitials(string $initials): self
+    {
+        $this->initials = $initials;
 
         return $this;
     }
@@ -69,7 +89,7 @@ class PavilionsVolume
     {
         if (!$this->composters->contains($composter)) {
             $this->composters[] = $composter;
-            $composter->setPavilionsVolume($this);
+            $composter->setFinanceur($this);
         }
 
         return $this;
@@ -80,8 +100,8 @@ class PavilionsVolume
         if ($this->composters->contains($composter)) {
             $this->composters->removeElement($composter);
             // set the owning side to null (unless already changed)
-            if ($composter->getPavilionsVolume() === $this) {
-                $composter->setPavilionsVolume(null);
+            if ($composter->getFinanceur() === $this) {
+                $composter->setFinanceur(null);
             }
         }
 

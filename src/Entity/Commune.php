@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\ExistsFilter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,7 +17,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *  )
  * @ORM\Entity(repositoryClass="App\Repository\CommuneRepository")
  * @ApiFilter(OrderFilter::class, properties={"name"}, arguments={"orderParameterName"="order"})
-
+ * @ApiFilter(ExistsFilter::class, properties={"composters.lat", "composters.lng"})
  */
 class Commune
 {
@@ -30,7 +31,7 @@ class Commune
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"composter", "commune"})
+     * @Groups({"composter", "commune", "livraison"})
      */
     private $name;
 

@@ -14,19 +14,20 @@ security:
         property: email
     # used to reload user from session & other features (e.g. switch_user)
   access_control:
-    - { path: ^/api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
     refresh:
-      pattern: ^/api/token/refresh
+      pattern: ^/token/refresh
       stateless: true
       anonymous: true
     main:
       stateless: true
       anonymous: true
       provider: user_provider
+      user_checker: App\Security\UserChecker
       json_login:
         check_path: /login_check
         username_path: email

@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+  upload_destination: "%kernel.project_dir%/public/media/"
 
 services:
   # default configuration for services in *this* file
@@ -31,12 +32,37 @@ services:
   # please note that last definitions always *replace* previous ones
   App\EventListener\UserListener:
     tags:
-      - { name: doctrine.orm.entity_listener, event: prePersist, entity: App\Entity\User, lazy: true }
-      - { name: doctrine.orm.entity_listener, event: preUpdate, entity: App\Entity\User, lazy: true }
+      - { name: doctrine.orm.entity_listener, lazy: true }
+
+  App\EventListener\UserComposterListener:
+    tags:
+      - { name: doctrine.orm.entity_listener, lazy: true }
 
   App\EventListener\ComposterContactListener:
     tags:
       - { name: doctrine.orm.entity_listener, event: prePersist, entity: App\Entity\ComposterContact, lazy: true }
+
+  consumer_listener :
+    class: App\EventListener\ConsumerListener
+    tags:
+      - { name: doctrine.orm.entity_listener, lazy: true }
+
+  composter_listener :
+    class: App\EventListener\ComposterListener
+    tags:
+      - { name: doctrine.orm.entity_listener, lazy: true }
+
+  App\EventListener\LivraisonBroyatListener :
+    tags:
+      - { name: doctrine.orm.entity_listener, lazy: true }
+
+  App\EventListener\MediaObjectListener :
+    tags:
+      - { name: doctrine.orm.entity_listener, lazy: true }
+
+  App\Serializer\ComposterContextBuilder:
+      decorates: 'api_platform.serializer.context_builder'
+      autoconfigure: false
 
   acme_api.event.jwt_created_listener:
     class: App\EventListener\JWTCreatedListener

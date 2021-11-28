@@ -2,35 +2,46 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use App\Filter\YearFilter;
+use App\DBAL\Types\CapabilityEnumType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * Composter. Lieux ou l'on transform les bio déchets en composte
  *
  * @ORM\Entity(repositoryClass="App\Repository\ComposterRepository")
  * @ApiResource(
- *     normalizationContext={"groups"={"composter"}}
+ *     normalizationContext={"groups"={"composter"}},
+ *     denormalizationContext={"groups"={"composter", "composter:write"}}
  * )
+ * @ApiFilter(BooleanFilter::class, properties={"acceptNewMembers"})
+ * @ApiFilter(YearFilter::class, properties={"DateMiseEnRoute"})
  * @ApiFilter(SearchFilter::class, properties={
- *     "commune"    : "exact",
- *     "quartier"   : "exact",
- *     "pole"       : "exact",
- *     "pavilionsVolume": "exact",
- *     "categorie"  : "exact",
- *     "name"       : "partial"
+ *     "commune"        : "exact",
+ *     "quartier"       : "exact",
+ *     "pole"           : "exact",
+ *     "equipement"     : "exact",
+ *     "categorie"      : "exact",
+ *     "financeur"      : "exact",
+ *     "financeurSuivi" : "exact",
+ *     "contacts"       : "exact",
+ *     "status"         : "exact",
+ *     "name"           : "partial",
+ *     "serialNumber"   : "partial",
+ *     "broyatLevel"    : "exact"
  * })
- * @ApiFilter(OrderFilter::class, properties={"id", "DateMiseEnRoute"}, arguments={"orderParameterName"="order"})
+ * @ORM\EntityListeners({"App\EventListener\ComposterListener"})
+ * @ApiFilter(OrderFilter::class, properties={"DateMiseEnRoute", "status", "name", "serialNumber"}, arguments={"orderParameterName"="order"})
  */
 class Composter
 {
@@ -54,7 +65,7 @@ class Composter
      * @var string The name of the composter
      *
      * @ORM\Column
-     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence","userComposter", "contact", "user:read", "media_object_read"})
      */
     private $name;
 
@@ -63,7 +74,7 @@ class Composter
      *
      * @ORM\Column(type="string", length=255, unique=true)
      * @Gedmo\Slug(fields={"name"})
-     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence", "userComposter",})
      * @ApiProperty(identifier=true)
      */
     private $slug;
@@ -75,7 +86,7 @@ class Composter
      * @ORM\Column(type="text", nullable=true)
      * @Groups({"composter"})
      */
-    private $shortDescription;
+    private $permanencesDescription;
 
     /**
      * @var string The description of the composter to be shown on the composter page
@@ -118,7 +129,7 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Commune", inversedBy="composters")
-     * @Groups({"composter"})
+     * @Groups({"composter", "livraison"})
      */
     private $commune;
 
@@ -130,15 +141,16 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Quartier", inversedBy="composters")
-     * @Groups({"composter"})
+     * @Groups({"composter", "livraison"})
      */
     private $quartier;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\PavilionsVolume", inversedBy="composters")
-     * @Groups({"composter"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Equipement", inversedBy="composters")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     * @Groups({"composter:admin"})
      */
-    private $pavilionsVolume;
+    private $equipement;
 
     /**
      * Name of the Maitre Composter
@@ -156,32 +168,9 @@ class Composter
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\ApprovisionnementBroyat", inversedBy="composters")
+     * @Groups({"composter"})
      */
     private $approvisionnementBroyat;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"composter"})
-     */
-    private $animation;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"composter"})
-     */
-    private $environnement;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"composter"})
-     */
-    private $technique;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"composter"})
-     */
-    private $autonomie;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -203,19 +192,19 @@ class Composter
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\LivraisonBroyat", mappedBy="composter", orphanRemoval=true)
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $livraisonBroyats;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Suivi", mappedBy="composter", orphanRemoval=true)
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $suivis;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Reparation", mappedBy="composter")
-     * @Groups({"composter"})
+     * @Groups({"composter:admin"})
      */
     private $reparations;
 
@@ -248,11 +237,10 @@ class Composter
     private $acceptNewMembers;
 
 
-
     /**
      * @var MediaObject|null
      * 
-     * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject")
+     * @ORM\ManyToOne(targetEntity="App\Entity\MediaObject", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      * @Groups({"composter"})
      * @ApiProperty(iri="http://schema.org/image")
@@ -271,6 +259,107 @@ class Composter
      */
     private $broyatLevel;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Financeur", inversedBy="composters")
+     * @Groups({"composter:admin"})
+     */
+    private $financeur;
+
+    /**
+     * @ORM\Column(type="integer", length=255, nullable=true)
+     * @Groups({"composter"})
+     */
+    private $serialNumber;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Contact", mappedBy="composters")
+     */
+    private $contacts;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Groups({"composter"})
+     */
+    private $publicDescription;
+
+    /**
+     * @ORM\Column(type="bigint", nullable=true)
+     * @Groups({"composter"})
+     */
+    private $mailjetListID;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $nbFoyersPotentiels;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $nbInscrit;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $nbDeposant;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $signaletiqueRond;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $signaletiquePanneau;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasCroc;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasCadenas;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasFourche;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasThermometre;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $hasPeson;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Financeur")
+     * @Groups({"composter:admin"})
+     */
+    private $financeurSuivi;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"composter:admin"})
+     */
+    private $plateNumber;
+
 
     public function __construct()
     {
@@ -283,6 +372,7 @@ class Composter
         $this->composterContacts = new ArrayCollection();
         $this->acceptNewMembers = true;
         $this->broyatLevel = 'Full';
+        $this->contacts = new ArrayCollection();
     }
 
     public function __toString()
@@ -404,14 +494,14 @@ class Composter
         return $this;
     }
 
-    public function getShortDescription(): ?string
+    public function getPermanencesDescription(): ?string
     {
-        return $this->shortDescription;
+        return $this->permanencesDescription;
     }
 
-    public function setShortDescription(?string $short_description): self
+    public function setPermanencesDescription(?string $permanencesDescription): self
     {
-        $this->shortDescription = $short_description;
+        $this->permanencesDescription = $permanencesDescription;
 
         return $this;
     }
@@ -452,14 +542,14 @@ class Composter
         return $this;
     }
 
-    public function getPavilionsVolume(): ?PavilionsVolume
+    public function getEquipement(): ?Equipement
     {
-        return $this->pavilionsVolume;
+        return $this->equipement;
     }
 
-    public function setPavilionsVolume(?PavilionsVolume $pavilionsVolume): self
+    public function setEquipement(?Equipement $equipement): self
     {
-        $this->pavilionsVolume = $pavilionsVolume;
+        $this->equipement = $equipement;
 
         return $this;
     }
@@ -496,54 +586,6 @@ class Composter
     public function setApprovisionnementBroyat(?ApprovisionnementBroyat $approvisionnementBroyat): self
     {
         $this->approvisionnementBroyat = $approvisionnementBroyat;
-
-        return $this;
-    }
-
-    public function getAnimation(): ?int
-    {
-        return $this->animation;
-    }
-
-    public function setAnimation(?int $animation): self
-    {
-        $this->animation = $animation;
-
-        return $this;
-    }
-
-    public function getEnvironnement(): ?int
-    {
-        return $this->environnement;
-    }
-
-    public function setEnvironnement(?int $environnement): self
-    {
-        $this->environnement = $environnement;
-
-        return $this;
-    }
-
-    public function getTechnique(): ?int
-    {
-        return $this->technique;
-    }
-
-    public function setTechnique(?int $technique): self
-    {
-        $this->technique = $technique;
-
-        return $this;
-    }
-
-    public function getAutonomie(): ?int
-    {
-        return $this->autonomie;
-    }
-
-    public function setAutonomie(?int $autonomie): self
-    {
-        $this->autonomie = $autonomie;
 
         return $this;
     }
@@ -734,6 +776,23 @@ class Composter
     }
 
     /**
+     * @return UserComposter|null
+     */
+    public function getFirstReferent() : ?UserComposter
+    {
+        $firstReferent = null;
+
+        foreach ( $this->getUserComposters() as $user ){
+            if( $user->getCapability() === CapabilityEnumType::REFERENT ){
+                $firstReferent = $user;
+                break;
+            }
+        }
+
+        return $firstReferent;
+    }
+
+    /**
      * @return Collection|ComposterContact[]
      */
     public function getComposterContacts(): Collection
@@ -807,6 +866,226 @@ class Composter
     public function setBroyatLevel($broyatLevel): self
     {
         $this->broyatLevel = $broyatLevel;
+
+        return $this;
+    }
+
+    public function getFinanceur(): ?Financeur
+    {
+        return $this->financeur;
+    }
+
+    public function setFinanceur(?Financeur $financeur): self
+    {
+        $this->financeur = $financeur;
+
+        return $this;
+    }
+
+    public function getSerialNumber(): ?int
+    {
+        return $this->serialNumber;
+    }
+
+    public function setSerialNumber(?int $serialNumber): self
+    {
+        $this->serialNumber = $serialNumber;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Contact[]
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(Contact $contact): self
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts[] = $contact;
+            $contact->addComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(Contact $contact): self
+    {
+        if ($this->contacts->contains($contact)) {
+            $this->contacts->removeElement($contact);
+            $contact->removeComposter($this);
+        }
+
+        return $this;
+    }
+
+    public function getPublicDescription(): ?string
+    {
+        return $this->publicDescription;
+    }
+
+    public function setPublicDescription(?string $publicDescription): self
+    {
+        $this->publicDescription = $publicDescription;
+
+        return $this;
+    }
+
+    public function getMailjetListID(): ?string
+    {
+        return $this->mailjetListID;
+    }
+
+    public function setMailjetListID(?string $mailjetListID): self
+    {
+        $this->mailjetListID = $mailjetListID;
+
+        return $this;
+    }
+
+    public function getNbFoyersPotentiels(): ?int
+    {
+        return $this->nbFoyersPotentiels;
+    }
+
+    public function setNbFoyersPotentiels(?int $nbFoyersPotentiels): self
+    {
+        $this->nbFoyersPotentiels = $nbFoyersPotentiels;
+
+        return $this;
+    }
+
+    public function getNbInscrit(): ?int
+    {
+        return $this->nbInscrit;
+    }
+
+    public function setNbInscrit(?int $nbInscrit): self
+    {
+        $this->nbInscrit = $nbInscrit;
+
+        return $this;
+    }
+
+    public function getNbDeposant(): ?int
+    {
+        return $this->nbDeposant;
+    }
+
+    public function setNbDeposant(?int $nbDeposant): self
+    {
+        $this->nbDeposant = $nbDeposant;
+
+        return $this;
+    }
+
+    public function getSignaletiqueRond(): ?bool
+    {
+        return $this->signaletiqueRond;
+    }
+
+    public function setSignaletiqueRond(?bool $signaletiqueRond): self
+    {
+        $this->signaletiqueRond = $signaletiqueRond;
+
+        return $this;
+    }
+
+    public function getSignaletiquePanneau(): ?bool
+    {
+        return $this->signaletiquePanneau;
+    }
+
+    public function setSignaletiquePanneau(?bool $signaletiquePanneau): self
+    {
+        $this->signaletiquePanneau = $signaletiquePanneau;
+
+        return $this;
+    }
+
+    public function getHasCroc(): ?bool
+    {
+        return $this->hasCroc;
+    }
+
+    public function setHasCroc(?bool $croc): self
+    {
+        $this->hasCroc = $croc;
+
+        return $this;
+    }
+
+    public function getHasCadenas(): ?bool
+    {
+        return $this->hasCadenas;
+    }
+
+    public function setHasCadenas(?bool $hasCadenas): self
+    {
+        $this->hasCadenas = $hasCadenas;
+
+        return $this;
+    }
+
+    public function getHasFourche(): ?bool
+    {
+        return $this->hasFourche;
+    }
+
+    public function setHasFourche(?bool $hasFourche): self
+    {
+        $this->hasFourche = $hasFourche;
+
+        return $this;
+    }
+
+    public function getHasThermometre(): ?bool
+    {
+        return $this->hasThermometre;
+    }
+
+    public function setHasThermometre(?bool $hasThermometre): self
+    {
+        $this->hasThermometre = $hasThermometre;
+
+        return $this;
+    }
+
+    public function getHasPeson(): ?bool
+    {
+        return $this->hasPeson;
+    }
+
+    public function setHasPeson(?bool $hasPeson): self
+    {
+        $this->hasPeson = $hasPeson;
+
+        return $this;
+    }
+
+    public function getFinanceurSuivi(): ?Financeur
+    {
+        return $this->financeurSuivi;
+    }
+
+    public function setFinanceurSuivi(?Financeur $financeurSuivi): self
+    {
+        $this->financeurSuivi = $financeurSuivi;
+
+        return $this;
+    }
+
+    public function getPlateNumber(): ?string
+    {
+        return $this->plateNumber;
+    }
+
+    public function setPlateNumber(?string $plateNumber): self
+    {
+        $this->plateNumber = $plateNumber;
 
         return $this;
     }

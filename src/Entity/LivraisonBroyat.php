@@ -3,14 +3,24 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
+ *     attributes={"security"="is_granted('ROLE_ADMIN')"},
  *     normalizationContext={"groups"={"livraison"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\LivraisonBroyatRepository")
+ * @ApiFilter(OrderFilter::class, properties={"date"})
+ * @ApiFilter(SearchFilter::class, properties={
+ *     "composter.slug"     : "exact",
+ *     "composter.name"     : "partial"
+ * })
+ * @ORM\EntityListeners({"App\EventListener\LivraisonBroyatListener"})
  */
 class LivraisonBroyat
 {
@@ -34,17 +44,6 @@ class LivraisonBroyat
      */
     private $quantite;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"livraison"})
-     */
-    private $unite;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"livraison"})
-     */
-    private $livreur;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Composter", inversedBy="livraisonBroyats")
@@ -52,6 +51,12 @@ class LivraisonBroyat
      * @Groups({"livraison"})
      */
     private $composter;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\ApprovisionnementBroyat", inversedBy="livraisonBroyats")
+     * @Groups({"livraison"})
+     */
+    private $livreur;
 
     public function getId(): ?int
     {
@@ -82,30 +87,6 @@ class LivraisonBroyat
         return $this;
     }
 
-    public function getUnite(): ?string
-    {
-        return $this->unite;
-    }
-
-    public function setUnite(string $unite): self
-    {
-        $this->unite = $unite;
-
-        return $this;
-    }
-
-    public function getLivreur(): ?string
-    {
-        return $this->livreur;
-    }
-
-    public function setLivreur(string $livreur): self
-    {
-        $this->livreur = $livreur;
-
-        return $this;
-    }
-
     public function getComposter(): ?Composter
     {
         return $this->composter;
@@ -114,6 +95,18 @@ class LivraisonBroyat
     public function setComposter(?Composter $composter): self
     {
         $this->composter = $composter;
+
+        return $this;
+    }
+
+    public function getLivreur(): ?ApprovisionnementBroyat
+    {
+        return $this->livreur;
+    }
+
+    public function setLivreur(?ApprovisionnementBroyat $livreur): self
+    {
+        $this->livreur = $livreur;
 
         return $this;
     }

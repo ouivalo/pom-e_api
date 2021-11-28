@@ -52,6 +52,7 @@ class Permanence
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"permanence"})
      */
     private $id;
 
@@ -78,6 +79,14 @@ class Permanence
      * @Groups({"permanence"})
      */
     public $openers;
+
+    /**
+     * @var string People without account who will open the composter
+     *
+     * @ORM\Column(type="string", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $openersString;
 
     /**
      * @var Composter of the permanence
@@ -127,6 +136,14 @@ class Permanence
      */
     public $temperature;
 
+    /**
+     * @var float Poid total de biodéchet détourné
+     *
+     * @ORM\Column(type="float", nullable=true, options={"default" : null})
+     * @Groups({"permanence"})
+     */
+    public $weight;
+
 
     /**
      * @var bool has users been notify
@@ -145,7 +162,7 @@ class Permanence
 
     public function __toString()
     {
-        return $this->getDate()->format('Y-m-d H:i:s');
+        return $this->getDate() ? $this->getDate()->format('Y-m-d H:i:s') : ( string ) $this->getId();
     }
 
     public function getId(): ?int
@@ -223,7 +240,7 @@ class Permanence
         return $this->nbUsers;
     }
 
-    public function setNbUsers($nbUsers): self
+    public function setNbUsers(?int $nbUsers): self
     {
         $this->nbUsers = $nbUsers;
 
@@ -235,7 +252,7 @@ class Permanence
         return $this->nbBuckets;
     }
 
-    public function setNbBuckets(float $nbBuckets): self
+    public function setNbBuckets(?float $nbBuckets): self
     {
         $this->nbBuckets = $nbBuckets;
 
@@ -247,7 +264,7 @@ class Permanence
         return $this->temperature;
     }
 
-    public function setTemperature(float $temperature): self
+    public function setTemperature(?float $temperature): self
     {
         $this->temperature = $temperature;
 
@@ -286,6 +303,30 @@ class Permanence
     public function setHasUsersBeenNotify(bool $hasUsersBeenNotify): self
     {
         $this->hasUsersBeenNotify = $hasUsersBeenNotify;
+
+        return $this;
+    }
+
+    public function getWeight(): ?float
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?float $weight): self
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getOpenersString(): ?string
+    {
+        return $this->openersString;
+    }
+
+    public function setOpenersString(?string $openersString): self
+    {
+        $this->openersString = $openersString;
 
         return $this;
     }

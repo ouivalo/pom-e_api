@@ -87,15 +87,17 @@ class ComposterVoter extends Voter
         $attribute_array = $attribute === $this::OPENER ? [ $this::OPENER, $this::REFERENT ] : $attribute;
 
         // On vérifie que le user est bien rattaché au composteur
+        $current_role = null;
         foreach ($user->getUserComposters() as $userComposter) {
           if ( in_array($userComposter->getCapability(), $attribute_array, true) &&
             $userComposter->getComposter()->getId() === $composter->getId() ) {
+            $current_role = $userComposter->getCapability();
             $grant = true;
           }
         }
 
         // Dans le cas d'un ouvreur on vérifie qu'il modifie ou supprime uniquement une permance ou il est inscrit
-        if( $grant && $attribute === $this::OPENER && $subject instanceof Permanence ){
+        if( $grant && $subject instanceof Permanence && $current_role === $this::OPENER ){
             $grant = false;
             if( $currentRequest && $currentRequest->getMethod() === 'PUT' ){
                 // On récupére les ids des ouvreurs de la permanence
@@ -121,7 +123,7 @@ class ComposterVoter extends Voter
                         $diff = array_diff( $openers_request_ids, $openers_ids );
                     }
 
-                    $grant = count( $diff ) === 1 && array_shift( $diff) === $user->getID();
+                    $grant = count( $diff ) === 0 || (count( $diff ) === 1 && array_shift( $diff) === $user->getID());
                 } else {
 
                     // TODO peut être vérifier ici qu'il ne modifie que les données des stats

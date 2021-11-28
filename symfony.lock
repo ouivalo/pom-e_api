@@ -11,6 +11,9 @@
             "ref": "18727d8f229306860b46955f438e1897421da689"
         }
     },
+    "beberlei/doctrineextensions": {
+        "version": "v1.3.0"
+    },
     "behat/transliterator": {
         "version": "v1.2.0"
     },
@@ -38,6 +41,9 @@
     "doctrine/dbal": {
         "version": "v2.8.0"
     },
+    "doctrine/deprecations": {
+        "version": "v0.5.3"
+    },
     "doctrine/doctrine-bundle": {
         "version": "1.6",
         "recipe": {
@@ -46,9 +52,6 @@
             "version": "1.6",
             "ref": "ae205d5114e719deb64d2110f56ef910787d1e04"
         }
-    },
-    "doctrine/doctrine-cache-bundle": {
-        "version": "1.3.3"
     },
     "doctrine/doctrine-migrations-bundle": {
         "version": "1.2",
@@ -83,8 +86,8 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
-    "egulias/email-validator": {
-        "version": "2.1.6"
+    "doctrine/sql-formatter": {
+        "version": "1.1.1"
     },
     "fig/link-util": {
         "version": "1.0.0"
@@ -101,6 +104,9 @@
             "src/DBAL/Types/.gitignore"
         ]
     },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.3"
+    },
     "gedmo/doctrine-extensions": {
         "version": "v2.4.37"
     },
@@ -116,11 +122,26 @@
     "guzzlehttp/psr7": {
         "version": "1.5.2"
     },
+    "intervention/image": {
+        "version": "2.5.1"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
-    "jms/metadata": {
-        "version": "2.1.0"
+    "knplabs/knp-markdown-bundle": {
+        "version": "1.8.1"
+    },
+    "laminas/laminas-code": {
+        "version": "4.0.0"
+    },
+    "laminas/laminas-eventmanager": {
+        "version": "3.3.0"
+    },
+    "laminas/laminas-zendframework-bridge": {
+        "version": "1.1.1"
+    },
+    "lcobucci/clock": {
+        "version": "2.0.0"
     },
     "lcobucci/jwt": {
         "version": "3.2.5"
@@ -136,6 +157,9 @@
     },
     "mailjet/mailjet-apiv3-php": {
         "version": "v1.4.1"
+    },
+    "michelf/php-markdown": {
+        "version": "1.9.0"
     },
     "namshi/jose": {
         "version": "7.2.3"
@@ -158,6 +182,9 @@
     "ocramius/proxy-manager": {
         "version": "2.2.2"
     },
+    "php": {
+        "version": "7.4"
+    },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
     },
@@ -172,6 +199,12 @@
     },
     "psr/container": {
         "version": "1.0.0"
+    },
+    "psr/http-client": {
+        "version": "1.0.1"
+    },
+    "psr/http-factory": {
+        "version": "1.0.1"
     },
     "psr/http-message": {
         "version": "1.0.1"
@@ -199,9 +232,6 @@
         "files": [
             "config/packages/stof_doctrine_extensions.yaml"
         ]
-    },
-    "swiftmailer/swiftmailer": {
-        "version": "v6.1.3"
     },
     "symfony/apache-pack": {
         "version": "1.0",
@@ -242,11 +272,17 @@
     "symfony/dependency-injection": {
         "version": "v4.1.6"
     },
+    "symfony/deprecation-contracts": {
+        "version": "v2.2.0"
+    },
     "symfony/doctrine-bridge": {
         "version": "v4.1.6"
     },
     "symfony/dotenv": {
         "version": "v4.1.6"
+    },
+    "symfony/error-handler": {
+        "version": "v4.4.1"
     },
     "symfony/event-dispatcher": {
         "version": "v4.1.6"
@@ -284,6 +320,12 @@
             "ref": "1717e67afa995e4f01a25ba9ae7aca5b2327bcaa"
         }
     },
+    "symfony/http-client": {
+        "version": "v4.4.1"
+    },
+    "symfony/http-client-contracts": {
+        "version": "v2.0.1"
+    },
     "symfony/http-foundation": {
         "version": "v4.1.6"
     },
@@ -314,11 +356,17 @@
     "symfony/orm-pack": {
         "version": "v1.0.5"
     },
+    "symfony/polyfill-intl-grapheme": {
+        "version": "v1.22.0"
+    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.11.0"
     },
     "symfony/polyfill-intl-idn": {
         "version": "v1.11.0"
+    },
+    "symfony/polyfill-intl-normalizer": {
+        "version": "v1.22.0"
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.9.0"
@@ -328,6 +376,12 @@
     },
     "symfony/polyfill-php73": {
         "version": "v1.12.0"
+    },
+    "symfony/polyfill-php80": {
+        "version": "v1.22.0"
+    },
+    "symfony/polyfill-php81": {
+        "version": "v1.23.0"
     },
     "symfony/property-access": {
         "version": "v4.1.6"
@@ -368,20 +422,17 @@
     "symfony/serializer": {
         "version": "v4.1.6"
     },
+    "symfony/serializer-pack": {
+        "version": "v1.0.4"
+    },
     "symfony/service-contracts": {
         "version": "v1.1.7"
     },
     "symfony/stopwatch": {
         "version": "v4.1.12"
     },
-    "symfony/swiftmailer-bundle": {
-        "version": "2.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "2.5",
-            "ref": "3db029c03e452b4a23f7fc45cec7c922c2247eb8"
-        }
+    "symfony/string": {
+        "version": "v5.2.1"
     },
     "symfony/templating": {
         "version": "v4.1.12"
@@ -410,6 +461,9 @@
             "ref": "0cdc982334f45d554957a6167e030482795bf9d7"
         }
     },
+    "symfony/var-dumper": {
+        "version": "v4.4.1"
+    },
     "symfony/var-exporter": {
         "version": "v4.2.8"
     },
@@ -421,18 +475,6 @@
     },
     "twig/twig": {
         "version": "v2.5.0"
-    },
-    "vich/uploader-bundle": {
-        "version": "1.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "1.5",
-            "ref": "c4f5755b37fb65b9c6a3cbdae91205c15a137ed4"
-        },
-        "files": [
-            "config/packages/vich_uploader.yaml"
-        ]
     },
     "webmozart/assert": {
         "version": "1.3.0"

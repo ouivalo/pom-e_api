@@ -3,8 +3,6 @@
 
 namespace App\DBAL\Types;
 
-
-
 use Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType;
 
 class StatusEnumType extends AbstractEnumType
