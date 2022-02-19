@@ -459,9 +459,11 @@ class User implements UserInterface
     /**
      * @param string $userConfirmedAccountURL
      */
-    public function setUserConfirmedAccountURL(string $userConfirmedAccountURL): void
+    public function setUserConfirmedAccountURL(string $userConfirmedAccountURL): self
     {
         $this->userConfirmedAccountURL = $userConfirmedAccountURL;
+
+        return $this;
     }
 
     public function getPhone(): ?string
