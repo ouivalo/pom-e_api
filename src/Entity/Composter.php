@@ -8,6 +8,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use App\Filter\YearFilter;
 use App\DBAL\Types\CapabilityEnumType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,6 +25,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     denormalizationContext={"groups"={"composter", "composter:write"}}
  * )
  * @ApiFilter(BooleanFilter::class, properties={"acceptNewMembers"})
+ * @ApiFilter(YearFilter::class, properties={"DateMiseEnRoute"})
  * @ApiFilter(SearchFilter::class, properties={
  *     "commune"        : "exact",
  *     "quartier"       : "exact",
@@ -72,7 +74,7 @@ class Composter
      *
      * @ORM\Column(type="string", length=255, unique=true)
      * @Gedmo\Slug(fields={"name"})
-     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence"})
+     * @Groups({"composter", "suivis", "livraison", "reparation", "permanence", "userComposter",})
      * @ApiProperty(identifier=true)
      */
     private $slug;
