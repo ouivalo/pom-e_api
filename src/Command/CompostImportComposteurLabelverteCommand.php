@@ -3,9 +3,13 @@
 namespace App\Command;
 
 use App\DBAL\Types\CapabilityEnumType;
+use App\DBAL\Types\ContactEnumType;
 use App\DBAL\Types\StatusEnumType;
 use App\Entity\Commune;
 use App\Entity\Composter;
+use App\Entity\ComposterContact;
+use App\Entity\Contact;
+use App\Entity\Equipement;
 use App\Entity\User;
 use App\Entity\UserComposter;
 use Box\Spout\Common\Entity\Cell;
@@ -89,15 +93,23 @@ class CompostImportComposteurLabelverteCommand extends Command
                     // Les trois premières lignes du doc sont des entête
                     if ($rkey > ($rowToImportBySheet[$key][0] - 1) && $rkey <= $rowToImportBySheet[$key][1]) {
 
-                        $composteur = $this->getComposteurs($cells);
-                        $this->em->persist($composteur);
 
-                        $composterCount++;
+                        $composteur = $this->getComposteurs($cells, $key + 2008);
+                        if($composteur){
+
+                            $this->em->persist($composteur);
+
+                            $composterCount++;
+                        }
                     }
 //                    else {
 //                        foreach ( $cells as $index => $cell){
-//                            if( $cell->getValue() === 'Inauguration du 1er composteur'){
+//                            if( $cell->getValue() === 'Modèle'){
 //                                $output->writeln("c la colone {$index}");
+//                            }
+//                            if( $cell->getValue() === 'Contenance'){
+//                                $output->writeln("c la colone {$index}");
+//                                die;
 //                            }
 //                        }
 //                    }
@@ -118,7 +130,7 @@ class CompostImportComposteurLabelverteCommand extends Command
      * @param Cell[] $cells
      * @return Composter
      */
-    private function getComposteurs($cells) : Composter
+    private function getComposteurs($cells, int $installationYear) : ?Composter
     {
 
         $plateNumber = (string) $cells[0];
@@ -129,9 +141,8 @@ class CompostImportComposteurLabelverteCommand extends Command
             $composteur = new Composter();
         }
 
-        $bailleur = (string) $cells[2];
+        $dateIgnoguration = $cells[70]->isDate() ? $cells[70]->getValue() : null;
 
-        $dateIgnoguration = $cells[50]->isDate() ? $cells[50]->getValue() : null;
 
         $composteur
             ->setPlateNumber($plateNumber)
@@ -139,15 +150,31 @@ class CompostImportComposteurLabelverteCommand extends Command
             ->setCommune( $this->getCommune((string) $cells[6]))
             ->setName((string) $cells[3])
             ->setAddress((string) $cells[4])
+            ->setDateInstallation(new \DateTime("01-01-{$installationYear}"))
             ->setDateInauguration($dateIgnoguration)
+            ->setEquipement(!$cells[76]->isDate() && !$cells[77]->isDate() ? $this->getEquipement((string) $cells[76], (string) $cells[77]) : null)
             ->setMailjetListID(10)
             ->setStatus(StatusEnumType::ACTIVE)
         ;
 
-        $referent = $this->getReferent((string) $cells[12], (string) $cells[13]);
+        $referent = $this->getReferent((string) $cells[12], (string) $cells[13], $composteur);
         if($referent){
             $composteur->addUserComposter($referent);
         }
+
+        $contact1 = $this->getContact((string) $cells[15], (string) $cells[16], 'Gestionnaire de copropriété / représentant du bailleur');
+        if($contact1){
+            $composteur->addContact($contact1);
+        }
+        $contact2 = $this->getContact((string) $cells[17], (string) $cells[18], 'Président(e) du c. s. de copropriété');
+        if($contact2){
+            $composteur->addContact($contact2);
+        }
+        $contact3 = $this->getContact((string) $cells[22], (string) $cells[23], 'Gardien d’immeuble');
+        if($contact3){
+            $composteur->addContact($contact3);
+        }
+
         return $composteur;
     }
 
@@ -189,7 +216,6 @@ class CompostImportComposteurLabelverteCommand extends Command
             $this->em->persist($mc);
             $this->em->flush();
         }
-
 
         return $mc;
     }
@@ -243,7 +269,7 @@ class CompostImportComposteurLabelverteCommand extends Command
         return $commune;
     }
 
-    private function getReferent(string $referentName, string $referentPhone) : ?UserComposter
+    private function getReferent(string $referentName, string $referentPhone, Composter $composter) : ?UserComposter
     {
 
         $user = $this->getUser(
@@ -256,22 +282,90 @@ class CompostImportComposteurLabelverteCommand extends Command
             return null;
         }
 
-        $userComposter = new UserComposter();
-        $userComposter
-            ->setUser($user)
-            ->setCapability(CapabilityEnumType::REFERENT)
-            ->setComposterContactReceiver(true)
-            ->setNewsletter(false)
-            ->setNotif(true)
-        ;
+        $ucr = $this->em->getRepository(UserComposter::class);
+        $userComposter = $ucr->findOneBy(['user' => $user, 'composter' => $composter]);
 
-        $this->em->persist($userComposter);
+        if( ! $userComposter){
+
+            $userComposter = new UserComposter();
+            $userComposter
+                ->setUser($user)
+                ->setCapability(CapabilityEnumType::REFERENT)
+                ->setComposterContactReceiver(true)
+                ->setNewsletter(false)
+                ->setNotif(true)
+            ;
+
+            $this->em->persist($userComposter);
+        }
 
         return $userComposter;
     }
 
-    private function cleanPhoneNumber(string $phoneNumber) : string
+    private function cleanPhoneNumber(string $phoneNumber) : ?string
     {
-        return str_replace( [' ', '-'], '', $phoneNumber);
+        return $phoneNumber !== 'X' ? str_replace( [' ', '-'], '', $phoneNumber) : null;
+    }
+
+    private function getContact(string $fullName, string $phone, string $role) : ?Contact
+    {
+
+        if(empty($fullName) || in_array($fullName, [ 'x', 'X', '/', 'oui', 'Non'])){
+            return null;
+        }
+
+        $fullNameArray = explode(' ', $fullName);
+
+        if( count($fullNameArray) < 2){
+            $this->output->writeln($fullName);
+            return null;
+        }
+        $firstName = $fullNameArray[0];
+        $LastName = $fullNameArray[1];
+
+        $contactRepo = $this->em->getRepository(Contact::class);
+        $contact = $contactRepo->findOneBy(['firstName' => $firstName, 'lastName' => $LastName ]);
+
+
+        if( ! $contact ){
+            $contact = new Contact();
+            $contact
+                ->setFirstname($firstName)
+                ->setLastname($LastName)
+                ->setPhone($this->cleanPhoneNumber($phone))
+                ->setRole($role)
+                ->setEmail("{$firstName}.{$LastName}@labelverte.fr")
+                ->setContactType(ContactEnumType::SYNDIC)
+            ;
+
+            $this->em->persist($contact);
+            $this->em->flush();
+        }
+
+        return $contact;
+
+    }
+
+    private function getEquipement(string $type, string $capacity) : ?Equipement
+    {
+        if(empty($type)){
+            return null;
+        }
+
+        $er = $this->em->getRepository(Equipement::class);
+        $equipement = $er->findOneBy(['type' => $type, 'capacite' => $capacity ]);
+
+        if( ! $equipement){
+            $equipement = new Equipement();
+            $equipement
+                ->setCapacite($capacity)
+                ->setType($type)
+            ;
+
+            $this->em->persist($equipement);
+            $this->em->flush();
+        }
+
+        return $equipement;
     }
 }
