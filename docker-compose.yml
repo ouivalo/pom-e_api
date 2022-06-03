@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: db_pom-e
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_USER: 'user'
+      MYSQL_ROOT_PASSWORD: 'password'
+      #database name
+      MYSQL_DATABASE: 'db_mysql'
+    ports:
+      - "3306:3306"
+
+  app:
+    container_name: app_pom-e
+    tty: true
+    build: .
+    volumes:
+     - .:/pom-e_api/
+
+
