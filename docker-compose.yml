@@ -6,10 +6,10 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_USER: 'user'
-      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_USER: user
+      MYSQL_ROOT_PASSWORD: password
       #database name
-      MYSQL_DATABASE: 'db_mysql'
+      MYSQL_DATABASE: db_mysql
     ports:
       - "3306:3306"
 
@@ -19,5 +19,3 @@ services:
     build: .
     volumes:
      - .:/pom-e_api/
-
-
