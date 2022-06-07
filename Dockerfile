@@ -29,6 +29,19 @@ RUN  apt install -y libzip-dev \
 RUN docker-php-ext-install pdo_mysql
 
 # install dependancies
-#RUN composer config allow-plugins.symfony/flex true
-#RUN composer install
+#RUN composer update -n --no-cache
+RUN composer install --no-scripts --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-ansi --no-progress
+#RUN yes | composer install -n --no-cache
+
 COPY . .
+
+
+
+
+
+
+
+#RUN openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -pass env:${JWT_PASSPHRASE}
+
+#RUN openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -pass pass:"beef3957a98872a91b3dd3bcf1d3bd87"
+#RUN openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout
