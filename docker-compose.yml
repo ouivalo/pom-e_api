@@ -26,3 +26,21 @@ services:
      - /app/vendor/
      - /app/var/
      - /app/public/
+    networks:
+      - pom-e
+
+  node:
+    container_name: pom-e_front-admin
+    tty: true
+    build: ../pom-e_front-admin/
+    volumes:
+      - ../pom-e_front-admin/:/app/
+      - /app/node_modules
+    networks:
+      - pom-e
+    ports:
+      - "3000:3000"
+    command: yarn start
+
+networks:
+  pom-e:
