@@ -11,6 +11,10 @@
 Développé par matière noire pour Compostri
 Repo repris par ouivalo en juin 2022. Dockerization du projet. 
 
+## Branches
+* `master` : branche du repo source compostri
+* `main` : branche référence principale des évolutions ouivalo
+
 # Utilisation de la configuration de dev par Docker
 1. Cloner le dépot
 2. Dupliquer le fichier `.env.dist` en `.env`
