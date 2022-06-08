@@ -30,10 +30,12 @@ RUN docker-php-ext-install pdo_mysql
 
 # install dependancies
 #RUN composer update -n --no-cache
-RUN composer install --no-scripts --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-ansi --no-progress
+#RUN composer dump-autoload 
+#--no-dev --prefer-dist --optimize-autoloader --no-interaction --no-ansi --no-progress
+RUN composer install --no-scripts 
 #RUN yes | composer install -n --no-cache
-
 COPY . .
+RUN php bin/console assets:install
 
 
 
